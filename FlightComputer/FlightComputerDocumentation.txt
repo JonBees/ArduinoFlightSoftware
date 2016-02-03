@@ -1,0 +1,13 @@
+FlightComputer:
+
+Input:							Output:
+'a' - aborts the process of opening the motors		'a' - repeating the abort command
+'o' - begins the code					'o' - repeating the beging command
+'r' - resets counter					'r' - repeating the reset counter command
+'s' - softkill						's' - repeating the softkill command
+'p' - Received from the radio				failed if it encounters an error with the coordinates received
+
+
+This code is reading a text file named PWMCOORD.txt which has PWM coordinates written in.
+These coordinates will open or close the motors to certain positions which enables us to control how much power is being outputted to the motors.
+Once the code receives the character 'p' it's going to beging reading the coordinates from the text file and start setting the motors to the coordinates in the text file which enables lift off.

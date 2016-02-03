@@ -1,0 +1,18 @@
+Overview:
+This sketch tests the speed at which you can write time data to the sd card. It does this by recording 101 values of the millis() function to a file on the SD card. It also prints a message of success after each write to the SD card file. It does this via Serial.write to the console. 
+
+
+setup():
+	-specifies which pin to output to
+	-if this pin does not initialize, it outputs an error message and returns
+	-opens a file on the SD and assigns it to the variable testFile
+	-checks to make sure that this SD text file exists. Displays a message for success or failure
+	-assigns loop gaurd variable i to 0 
+
+loop():
+	-while(i < 101)
+		-open file on SD card and assign it to testFile for writing data
+		-print the value of millis() to the file
+		-close the file
+		-print output message of which line has been written to the SD card on the console
+		-increment i
