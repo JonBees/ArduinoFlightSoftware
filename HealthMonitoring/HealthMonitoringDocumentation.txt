@@ -1,4 +1,4 @@
-Overview: This sketch runs on the health monitoring arduino, which is the arduino on the craft that has the XBee. It takes the data from the pressure sensors, thermocouples(pixhawk), voltage sensor and XBee (such as data from ground control and whether the connection is valid or not). It then sends this data over XBee to ground control while at the same time saving it to the SD card. This sketch also ontrols the dump valves and the safety.
+Overview: This sketch runs on the health monitoring arduino, which is the arduino on the craft that has the XBee. It takes the data from the pressure sensors, thermocouples(pixhawk), voltage sensor and XBee (such as data from ground control and whether the connection is valid or not). It then sends this data over XBee to ground control while at the same time saving it to the SD card. This sketch also controls the dump valves and the safety.
 
 
 
