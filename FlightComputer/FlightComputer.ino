@@ -43,9 +43,8 @@ int sendPacketCounter = 0;
 
 void setup()
 {
-  Serial.begin(9600);
-  // Open Serial2 communications and wait for port to open:
-  Serial2.begin(9600);
+  Serial.begin(9600);//USB connection
+  Serial2.begin(9600);//communication with HealthMonitoring Arduino
   servoFrontLeft.attach(3);//first value
   servoFrontRight.attach(4);//second value
   servoBackLeft.attach(5);
@@ -261,16 +260,3 @@ void loop()
   myFile.close();
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

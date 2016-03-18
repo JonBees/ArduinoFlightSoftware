@@ -2,9 +2,9 @@ long time = 0;
 void setup()  
 {
   // Open serial communications and wait for port to open:
-  Serial.begin(9600);
-  Serial1.begin(9600);
-  Serial2.begin(9600);
+  Serial.begin(9600);//USB connection to PC with LabView
+  Serial1.begin(9600);//Connection to XBee
+  Serial2.begin(9600);//Connection to GroundControlWithoutRadio
   //Serial.flush();
   //Serial2.flush();
 }

@@ -2,7 +2,7 @@ FlightComputer:
 
 Input:							Output:
 'a' - aborts the process of opening the motors		'a' - repeating the abort command
-'o' - begins the code					'o' - repeating the beging command
+'o' - begins the code					'o' - repeating the beginning command
 'r' - resets counter					'r' - repeating the reset counter command
 's' - softkill						's' - repeating the softkill command
 'p' - Received from the radio				failed if it encounters an error with the coordinates received
