@@ -53,7 +53,7 @@ void setup() {
   Serial.begin(9600);
   Serial2.begin(9600);
 
-  pinMode(2, INPUT);
+  pinMode(6, INPUT);
   pinMode(13, OUTPUT);
 }
 
@@ -105,11 +105,13 @@ void loop() {
   //labview
 
   if (!Serial.available()) {
-    if (digitalRead(2) == LOW) {
+    if (digitalRead(6) == HIGH) {
       labview_stateString = "h:a;1|"; 
+      digitalWrite(13,HIGH);
     }
     else {
       labview_stateString = ""; 
+      digitalWrite(13,LOW);
     }
   }
   else {
@@ -131,11 +133,14 @@ void loop() {
           check = Serial.read();
         }
         if (check == ';'){
-          if (digitalRead(2) == LOW) {
+          if (digitalRead(6) == HIGH) {
             if (incomingString.indexOf('a') == -1){
               incomingString += String('a');
             }
             digitalWrite(13, HIGH);
+          }
+          else {
+           digitalWrite(13,LOW); 
           }
           incomingString +=check;
           labview_stateString = incomingString;
@@ -156,3 +161,13 @@ void loop() {
   //send new_state
 
 }
+
+
+
+
+
+
+
+
+
+
