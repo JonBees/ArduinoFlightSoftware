@@ -1,6 +1,6 @@
 
 /*
-Healt Mointering Sketch
+Health Monitoring Sketch
  
  Overall Inputs Acepted:
  Pressure Transducers - analog inputs pins 0 - 6
@@ -45,6 +45,7 @@ Servo dump_valve_servo;
 
 //SD Card
 File recordingFile;
+#define SD_CHIP_SELECT 53 //needs to be set to LOW when the SD card is being used and HIGH otherwise.
 
 //Power Relay
 #define power_relay_digital_on 8
@@ -60,7 +61,7 @@ File recordingFile;
 #define pressure_transducer_seven_analog 6
 
 //thermocouple
-#define THERMOCOUPLE_CHIP_SELECT 24
+#define THERMOCOUPLE_CHIP_SELECT 24 //needs to be set to LOW when the Thermocouple shield is being used and HIGH otherwise.
 MAX31855 TC(THERMOCOUPLE_CHIP_SELECT); 
 
 //Max/Min Pressure Values
@@ -204,10 +205,10 @@ void valveChecks(health_packet& data);
 
 
 void setup() {
-  Serial.begin(9600);
-  Serial1.begin(9600);
-  Serial2.begin(9600);
-  Serial3.begin(9600);
+  Serial.begin(9600);//USB connection
+  Serial1.begin(9600);//connection with XBee
+  Serial2.begin(9600);//connection with FlightComputer
+  Serial3.begin(9600);//currently disconnected
   resetState();//reset bool states
   //Motors/Valves init
   tank_iso_servo.attach(TANK_ISO);
@@ -232,16 +233,16 @@ void setup() {
   TC.begin();
   TC.setMUX(thermoCounter);//call the thermocouple in the start up since this is going to be evaulated first loop.
   delayMicroseconds(50);
-  TC.setMUXADJUSTED();
+  digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);
   for (int i=0; i <6;i++){
     current_health_packet.temp_values[i] = 0.00;
   }
   //SD Card
   //SD card initiation
-  pinMode(53, OUTPUT);
+  pinMode(SD_CHIP_SELECT, OUTPUT);
 
   //SD card feed back, do not remove this feedback it is neccasry for function of SD card
-  if (!SD.begin(53)) {
+  if (!SD.begin(SD_CHIP_SELECT)) {
     Serial.println("initialization failed!");
     return;
   }
@@ -369,7 +370,7 @@ void loop() {
     loopTime = millis();
     delay(1);
   }
-  TC.setMUXADJUSTED();//this resets the thermocouple shield to be called again. allowing us to run the program while the thermocouple shield computes the data.
+  digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);//this resets the thermocouple shield to be called again. allowing us to run the program while the thermocouple shield computes the data.
 }
 
 ///////////////////////////////////////////////////
@@ -774,7 +775,7 @@ double readThermocouple(int index, byte& error)
 {
   double result, dummy;
 
-  TC.getTemp(result, dummy, 0, error);
+  TC.getTemp(result, dummy, 2, error); // ExternalTempDoubleVariable, InternalTempDoubleVariable, SCALE, ErrorByteVariable) --- SCALE: 0 for Celsius/Centigrade, 1 for Kelvin, 2 for Fahrenheit, and 3 for Rankine.
   if (error & 0x01){
     result = -1.0;
   } 
@@ -790,6 +791,8 @@ double readThermocouple(int index, byte& error)
 
 void readThermocouples(health_packet& data)
 {
+  digitalWrite(SD_CHIP_SELECT, HIGH);
+  digitalWrite(THERMOCOUPLE_CHIP_SELECT, LOW);
   byte dummy;
   int thermoCounterTemp = thermoCounter-1;
 
@@ -824,6 +827,7 @@ void readThermocouples(health_packet& data)
   }
 
   TC.setMUX(thermoCounter);
+  digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);
 }
 
 
@@ -868,6 +872,8 @@ void sendHealthPacket(String& str){
 
 void SDcardWrite(String& str){
   ///
+  digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);
+  digitalWrite(SD_CHIP_SELECT, LOW);
   File recordingFile = SD.open("datalog.txt", FILE_WRITE);
   delay(1);
   if (recordingFile){
@@ -878,6 +884,7 @@ void SDcardWrite(String& str){
     recordingFile.println(boxTemp);
     recordingFile.close();
   }
+  digitalWrite(SD_CHIP_SELECT, HIGH);
 }
 
 
@@ -932,34 +939,3 @@ void readFlags()
   }
   //Serial.flush();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
