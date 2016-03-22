@@ -50,6 +50,12 @@ void setup()
   servoBackLeft.attach(5);
   servoBackRight.attach(6);
 
+for (int j = 0; j < MAX_PWM; j++){//sets servos to initial values
+  servoFrontLeft.writeMicroseconds(defaultValue[0]);
+  servoFrontRight.writeMicroseconds(defaultValue[1]);
+  servoBackLeft.writeMicroseconds(defaultValue[2]);
+  servoBackRight.writeMicroseconds(defaultValue[3]);
+}
 
 
   // On the Ethernet Shield, CS is pin 4. It's set as an output by default.
@@ -109,10 +115,9 @@ void loop()
       //Serial2.clearing();
     }
     if (inByte == 'k'){//softkill
-      //do softkill here
       softKillBool = true;
       for (int j = 0; j < MAX_PWM; j++){
-        softKill[j] = currentValue[j];
+        softKill[j] = currentValue[j];//grabs the beginning values for softkill 
       } 
       start = false;
       //Serial.println("s"); 
@@ -194,7 +199,7 @@ void loop()
       currentValue[j] = defaultValue[j];
     }
   }
-  if (softKillBool){
+  if (softKillBool){//decreases the current servo values by SOFTKILLDECREMENT each loop until they reach 1000 (min position).
     for (int j = 0; j < MAX_PWM; j++){
       currentValue[j] = softKill[j] - SOFTKILLDECREMENT;
       softKill[j] = currentValue[j];
