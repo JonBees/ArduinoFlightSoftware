@@ -46,7 +46,6 @@ while shouldContinue:
                 outfile.write("{}".format(vals[i][j]))
                 if(i != 3):
                     outfile.write(",")
-            outfile.write("\n")
 
     iterate = 1
     outfile.close()
