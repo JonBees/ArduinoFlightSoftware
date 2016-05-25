@@ -28,12 +28,5 @@ void loop() // run over and over
     char d = Serial1.read();
 
     Serial2.write(d);
-
-
   }
 }
-
-
-
-
-

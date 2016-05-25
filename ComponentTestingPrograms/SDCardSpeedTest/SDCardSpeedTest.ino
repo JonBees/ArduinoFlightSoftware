@@ -1,9 +1,8 @@
 /*
-Fat 32 recomended format type for the card 
 
   52 to CLK      | 13
-  50 to DO       | 12 
-  51 to DI       | 11
+  50 to MISO     | 12 
+  51 to MOSI     | 11
   53 to CS       | 10
 
 */
@@ -19,17 +18,17 @@ void setup() {
   Serial.begin(9600);
   pinMode(53, OUTPUT);    //53  |  10
 
-  //feed back regarding initlization. DO NOT REMOVE THIS it is reuired for some reason
+  //feedback regarding initlization. DO NOT REMOVE THIS it is required for some reason
   if (!SD.begin(53)) {
     Serial.println("initialization failed!");
     return;
   }
   
-  //create a file named testFile.txt
+  //create a file named a.txt
   testFile = SD.open("a.txt", FILE_WRITE);
   testFile.close();
   
-  //feed back regarding the existance of a.txt
+  //checks whether a.txt eists
   if(SD.exists("a.txt")) {
     Serial.println("a.txt exists");
   }
@@ -44,13 +43,20 @@ int i = 0;
 void loop() {
   
   while(i < 101) { 
-  
+    
     testFile = SD.open("a.txt", FILE_WRITE);
     testFile.println(millis());
     testFile.close();
-  
-    Serial.print("Line "); Serial.print (i); Serial.println(" was written to SD card");  
-    i++;
+    
+    if(SD.exists("a.txt")){
+      Serial.print("Line "); Serial.print (i); Serial.println(" was written to SD card");  
+      i++;
+    }
+    else{
+      Serial.print("Read Failed for ");
+      Serial.println(i);
+      i++;
+    }
+    
   }
-  
 }
