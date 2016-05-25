@@ -1,6 +1,0 @@
-****Blank Arduino Sketch Documentation****
-
-functions
-	void Setup - code run once
-	void loop - code run repeatedly
-
