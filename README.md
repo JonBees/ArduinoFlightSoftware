@@ -2,11 +2,11 @@
 ﻿
 ####This is the repository for the Lunar Lions' Arduino-based Flight Software. Currently, this includes:
 
-* [ComponentTestingPrograms](https://github.com/JonBees/ArduinoFlightSoftware/tree/master/ComponentTestingPrograms)
-  * SDCardSpeedTest tests the functionality and speed of the Arduino SD card adapter.
-
 * [ArduinoLibraries](https://github.com/JonBees/ArduinoFlightSoftware/tree/master/ArduinoLibraries)
   * [MAX31855](https://github.com/JonBees/ArduinoFlightSoftware/tree/master/ArduinoLibraries/MAX31855) contains the library for the thermocouple board.
+
+* [ComponentTestingPrograms](https://github.com/JonBees/ArduinoFlightSoftware/tree/master/ComponentTestingPrograms)
+  * SDCardSpeedTest tests the functionality and speed of the Arduino SD card adapter.
 
 * [FlightComputer](https://github.com/JonBees/ArduinoFlightSoftware/tree/master/FlightComputer)
   * Runs on Puma's arduino without the XBee. Reads a text file named PWMCOORD.txt, which contains PWM values from 1000 to 2000.
@@ -26,3 +26,7 @@ Sends craft health monitoring information to the PC with Labview, and sends cont
 It aggregates the data from the pressure sensors, thermocouples, voltage sensor, etc. 
 It then sends this data over XBee to ground control and saves it to the SD card. 
 This sketch also controls and responds to the command flags from the ground control station.
+
+* [Labview](https://github.com/JonBees/ArduinoFlightSoftware/tree/master/Labview)
+  * This is the ground control interface software. 
+It sends command flags and recieves health monitoring information via the ground control arduinos, and displays it in a (somewhat) user-friendly way. 
