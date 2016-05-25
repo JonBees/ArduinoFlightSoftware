@@ -30,5 +30,5 @@ This sketch also controls and responds to the command flags from the ground cont
   * This is the ground control interface software. 
 It sends command flags and recieves health monitoring information via the ground control arduinos, and displays it in a (somewhat) user-friendly way. 
 
-*SampleThrustValues.py
+* SampleThrustValues.py
   * Generates a pwmcoord file for the FlightComputer to use to set thrust values.
