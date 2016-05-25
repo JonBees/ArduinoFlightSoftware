@@ -1,32 +1,66 @@
 import sys
 import math
 
-thrust_nums = 4
-
-time = input("Enter the time interval through which the thruster valves must be actuated (in ms):")
-
-its = int(round(time/10))
+thrustNums = 4
+timeInc = 100
+shouldContinue = 1
+first = 1
 
 fts = []
+itss = []
 vals = []
 
-for i in range(0, thrust_nums):
-    fts.append(input("Enter the desired final servo value for valve " + str(i + 1) + "(0-2000):"))
-    vals.append([])
-    inc = float(fts[i])/its
-    for j in range(0, its):
-        vals[i].append(int(math.ceil(inc*(j+1))))
+#WILL BE CHANGED
+def percToServ(perc):
+    return int((10*perc)+1000);
+    
+def exitCheck(resp):
+    return {
+        "Y" : 1,
+        "N" : 0,
+        }[resp]
 
-open("out.txt","w")
+while shouldContinue:
+    time = input("Enter the time interval through which the thruster valves must be actuated (in ms):")
+    its = int(round(time/timeInc))
+    if(not first):
+        itss = fts[:]
+        del vals[:]
+    for i in range(0, thrustNums):
+        if(first):
+            itss.append(percToServ(input("Enter the desired initial thrust percent for valve " + str(i + 1) + "(0% - 100%):")))
+            fts.append(percToServ(input("Enter the desired final thrust percent for valve " + str(i + 1) + "(0% - 100%):")))
+        else:
+            fts[i] = percToServ(input("Enter the desired final thrust percent for valve " + str(i + 1) + "(0% - 100%):"))
+        vals.append([])
+        inc = float(fts[i] - itss[i])/its
+        for j in range(0, its):
+            vals[i].append(itss[i] + int(math.floor(inc*(j+1))))
 
-with open("out.txt", "a") as outfile:
-    for j in range(0, its):
-        for i in range(0, thrust_nums):
-            outfile.write("{}".format(vals[i][j]))
-            if(i != 3):
-                outfile.write(",")
-        outfile.write("\n")
+    if(first):
+        open("out.txt","w")
+
+    with open("out.txt", "a") as outfile:
+        for j in range(0, its):
+            for i in range(0, thrustNums):
+                outfile.write("{}".format(vals[i][j]))
+                if(i != 3):
+                    outfile.write(",")
+            outfile.write("\n")
+
+    iterate = 1
+    outfile.close()
+    
+    while iterate:
+        cont = raw_input("Add another iteration (Y/N)?")
+        if(cont == "Y" or cont == "N"):
+            shouldContinue = exitCheck(str(cont))
+            iterate = 0
+            first = 0
+            
+                
+            
+        
 
 
-#insert definition for thrust-to-motor position equation
         
