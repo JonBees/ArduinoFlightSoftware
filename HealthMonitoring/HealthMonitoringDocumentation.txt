@@ -1,11 +1,8 @@
-TODO: 
-	-safety should default to true/on, only be false when button pressed
-
-
-
 HealthMonitoring: Runs on Puma's arduino with the XBee. 
-It takes the data from the pressure sensors, thermocouples, voltage sensor and XBee (such as data from ground control and whether the connection is valid or not). 
-It then sends this data over XBee to ground control while at the same time saving it to the SD card. This sketch also controls the dump valves and the safety.
+It aggregates the data from the pressure sensors, thermocouples, voltage sensor, etc. 
+It then sends this data over XBee to ground control and saves it to the SD card. 
+This sketch also controls and responds to the command flags from the ground control station.
+
 
 Serial connections:
 	-Serial: can connect via USB
@@ -13,6 +10,7 @@ Serial connections:
 	-Serial2: FlightComputer
 	-Serial3: Disconnected, previously pixhawk
 
+	
 Functions (all return void unless otherwise noted):
 setup():
 	-begins serial connections
@@ -65,7 +63,7 @@ voltage_sensor(health_packet&):
 	-checks voltage data to see if it is below MIN_VOLTAGE.
 		if the voltage is below min for 5 cycles (1s), sets voltage error flag
 
-initThermocoupleMonitor:
+initThermocoupleMonitor():
 	-begins communication with thermocouple board
 
 double readThermocouple(int index, byte& error):
@@ -91,7 +89,7 @@ readFlags:
 	-checks for incoming flags from the Xbee
 		format: "h:"<command flags>';'<command string length>'|'
 
-
+		
 Input Flags (all default to false):
 	s:	safety - refuses to take off when false 
 	t:	tank_iso_open - fully opens isolation valve when true
@@ -105,7 +103,8 @@ Input Flags (all default to false):
 	k: 	soft_kill - adds flag to current health packet (if triggered by onboard health event), sends 'k' to flight computer
 	i: 	ullage_main_tank - sets FAIL_CLOSED pin to HIGH, opening ullage_main_tank
 	p: 	sddump - if not aborting, sends 'p' to flight computer
-	
+
+
 Libraries used:
 SPI		- used for communication with thermocouples
 SD		- used for saving data to SD card

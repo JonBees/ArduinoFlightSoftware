@@ -1,6 +1,7 @@
 FlightComputer: Runs on Puma's arduino without the XBee.
 Reads servo values from a text file named PWMCOORD.txt, refreshed every 100ms.
 
+
 Serial connections:
 	-Serial: can connect via USB
 	-Serial2: HealthMonitoring arduino
@@ -20,6 +21,7 @@ loop():
 	-sends packet of current servo values (prefixed with "m:") to health monitoring arduino (if not aborting)
 	-sets all servos to currentValue[]
 
+	
 Input Flags:
 'a' - abort: immediately sets all servo values to abort values
 'o' - begins the code (take_off)

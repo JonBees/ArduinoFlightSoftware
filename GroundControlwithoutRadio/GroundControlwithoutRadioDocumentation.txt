@@ -1,9 +1,11 @@
 GroundControlwithoutRadio: Runs on the ground control arduino without the XBee.
 Sends craft health monitoring information to the PC with Labview, and sends control flags to the craft.
 
+
 Serial connections:
 	-Serial: PC with Labview
 	-Serial2: GroundControlwithRadio
+	
 	
 setup():
 	-Begins serial connections

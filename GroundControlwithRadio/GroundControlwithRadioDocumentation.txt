@@ -1,12 +1,14 @@
-GroundConttrolwithRadio: Runs on the ground control arduino with the XBee. 
-It takes a radio input from the XBee and sends it to an adjacent arduino as an intermediate step which will ultimately go to the ground control arduino without radio. 
-This is beacuse the arduino Mega could not read Xbee data and send via USB at the same time.
+GroundControlwithRadio: Runs on the ground control arduino with the XBee. 
+It takes a radio input from the XBee and sends it to the GroundControlWithoutRadio.
+This is necessary beacuse the arduino can't read Xbee data and send via USB at the same time.
+
 
 Serial connections:
 	-Serial: PC with Labview (for power)
 	-Serial1: XBee
 	-Serial2: GroundControlWithoutRadio
 
+	
 setup():
 	-Begins serial connections
 
