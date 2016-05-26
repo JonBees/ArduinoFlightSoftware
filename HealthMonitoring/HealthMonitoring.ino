@@ -37,6 +37,7 @@ Health Monitoring Sketch
 #define DUMP_VALVE 11
 #define FAIL_CLOSED 45
 #define FAIL_OPEN 44
+#define POWERBOX_FAN 7
 
 //Servo
 Servo tank_iso_servo;
@@ -285,6 +286,9 @@ void loop() {
   String outgoingPacket = createHealthPacket(current_health_packet);
   SDcardWrite(outgoingPacket);
   sendHealthPacket(outgoingPacket);
+  //Adjust fan speed based on power box's temperature
+  adjustFanSpeed();
+
 
   if (relayTriggered){
     if (relayTimer == 2){
@@ -703,6 +707,19 @@ void readThermocouples(health_packet& data)
   digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);//disables connection from TC board
 }
 
+void adjustFanSpeed(){
+  double temp = TC.intTemp(2);//gets temperature of internal thermocouple (in F)
+  int fanValue = (temp - 135)*10;//scales from 0 to 250
+  if(temp>135 && temp < 160){
+    analogWrite(POWERBOX_FAN, fanValue);
+  }
+  else if(temp < 135){
+    analogWrite(POWERBOX_FAN, 0);
+  }
+  else if(temp > 160){
+    analogWrite(POWERBOX_FAN, 255);
+  }
+}
 
 String createHealthPacket(health_packet& data)
 {

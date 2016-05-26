@@ -75,6 +75,10 @@ readThermocouples(health_packet&):
 		if box thermocouple (7) is above 122 for 5 cycles (1s), sets temperature error flag
 		if any other thermocouple is above its MAX_TEMPERATURE for 5 cycles (1s), sets temperature error flag
 		
+adjustFanSpeed():
+	-reads thermocouple board's internal temperature
+	-sets pwm value of POWERBOX_FAN (0 to 255 duty cycle at 16Mhz)
+
 String createHealthPacket(health_packet&):	
 	-grabs values from health_packet and turns them into a string with format:
 		"p:"<pressure values>";t:"<temperature values>";v:"<voltage>";m:"<servo values>";h:"<state string>";s:"<loop time>";?"<packet length>"|"
