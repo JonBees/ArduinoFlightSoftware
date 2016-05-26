@@ -89,43 +89,31 @@ sendHealthPacket(String&):
 SDcardWrite(String&):
 	-Writes loop time, outgoing packet, and box temp to SD card
 
-readFlags:		
+readFlags():		
 	-checks for incoming flags from the Xbee
 		format: "h:"<command flags>';'<command string length>'|'
 
 		
 Input Flags (all default to false):
-	s:	safety - refuses to take off when false 
-	t:	tank_iso_open - fully opens isolation valve when true
-	v:	dump_valve_open - fully opens fuel dump valve when true
-	a,b:abort - sends 'a' to flight computer, closes isolation valve, opens ullage_dump, closes ullage_main_tank
-	z,c:flight_computer_on - powers on the flight computer, sets relayTriggered to true
-	r:	flight_computer_reset - if not aborting, sends 'r' to flight computer, sets softkillGlobal and abortGlobal to false
-	d:	ullage_dump - sets FAIL_OPEN pin to LOW, opening ullage_dump
-	y(REMOVED):	pixhawk_enable - if not aborting, sends 'o' to PixHawk
-	o:	take_off - if safety is true and abort & softkill are false, sends 'o' to flight computer
-	k: 	soft_kill - adds flag to current health packet (if triggered by onboard health event), sends 'k' to flight computer
-	i: 	ullage_main_tank - sets FAIL_CLOSED pin to HIGH, opening ullage_main_tank
-	p: 	sddump - if not aborting, sends 'p' to flight computer
+	's' - safety: refuses to take off when false 
+	't' - tank_iso_open: fully opens isolation valve when true
+	'v' - dump_valve_open: fully opens fuel dump valve when true
+	'a','b' - abort: sends 'a' to flight computer, closes isolation valve, opens ullage_dump, closes ullage_main_tank
+	'z','c' - flight_computer_on: powers on the flight computer, sets relayTriggered to true
+	'r' - flight_computer_reset: if not aborting, sends 'r' to flight computer, sets softkillGlobal and abortGlobal to false
+	'd' - ullage_dump: sets FAIL_OPEN pin to LOW, opening ullage_dump
+	'y'(REMOVED) - pixhawk_enable: if not aborting, sends 'o' to PixHawk
+	'o' - take_off: if safety is true and abort & softkill are false, sends 'o' to flight computer
+	'k' - soft_kill: adds flag to current health packet (if triggered by onboard health event), sends 'k' to flight computer
+	'i' - ullage_main_tank: sets FAIL_CLOSED pin to HIGH, opening ullage_main_tank
+	'p' - sddump: if not aborting, sends 'p' to flight computer
 
 
 Libraries used:
-SPI		- used for communication with thermocouples
-SD		- used for saving data to SD card
-SoftwareSerial	- used for communication with thermocouples
-String		- used for XBee communication
-ctype		- C library for dealing with characters
-MAX31855	- used for communicating with thermocouples
-Servo		- used for dump valve operation
-
-
-Pinouts: sets pins for valves
-Servo: gives name to valve servos
-SD Card: creates file for recording sensor data
-Power Relay: sets pins for power toggle
-Pressure Transducer: sets pins for pressure sensors
-Thermocouple: connects to MAX31855 thermocouple board
-Max Pressure Values: sets maximum values for pressure
-Max Temperature Values: sets max values for temperature
-Voltage Sensor: sets pin for voltage sensor
-Xbee input flags: creates and sets multiple boolean flags for the commands that can be sent to the craft
+SPI - used for communication with thermocouples
+SD - used for saving data to SD card
+SoftwareSerial - used for communication with thermocouples
+String - used for XBee communication
+ctype - C library for dealing with characters
+MAX31855 - used for communicating with thermocouples
+Servo - used for dump valve operation
