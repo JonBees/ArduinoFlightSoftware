@@ -1,4 +1,5 @@
-int counter = 0;
+int curpacketnum = 0;
+int nextpacketnum = 0;
 
 void setup()  
 {
@@ -8,7 +9,6 @@ void setup()
 
 void loop() // run over and over
 {
-
  if (Serial.available()){
     String s = String(readBatch());
     Serial2.print(s);
@@ -17,8 +17,6 @@ void loop() // run over and over
   else{
     createHealthPacket("fail");
   }
-  /*Serial.flush();
-  Serial2.flush();*/
 }
 
 
@@ -55,55 +53,6 @@ String createHealthPacket(String s)
   return outgoingPacket;
 }
 
-String readFlags() 
-{
-  long timeEval = millis();
-  long time = timeEval + 200;
-  boolean packetReceived = false;
-  String packetString = "";
-  while (!packetReceived && (time >= timeEval)){
-    timeEval = millis();
-    char check = NULL;
-    if (Serial.available()){
-      check = Serial.read();
-    }
-    if (check == 'h'){
-      check = Serial.read();
-      if (check == ':'){
-        //here is our health packet
-        String incomingString = "";
-        while(check != ';' && Serial.available() && (time >= timeEval)){
-          timeEval = millis();
-          check = Serial.read();
-          if(check != ';'){
-            incomingString +=check;
-          } 
-        }
-        String checkSum = "";
-        while(check != '|' && (time >= timeEval)){
-          timeEval = millis();
-          if (Serial.available()){
-            check = Serial.read();
-            if (check != '|'){
-              checkSum +=check;
-            }
-          }
-        }
-        int checkSumInt = checkSum.toInt();
-        if (checkSumInt == incomingString.length()){
-          packetString = String(incomingString + "^");
-          packetReceived = true;
-        }
-        while (Serial.available() && (time >= timeEval)){
-          Serial.read();
-          timeEval = millis();
-        }
-      }
-    }
-  }
-  return String(packetString);
-}
-
 String readBatch(){
   long timeEval = millis();
   long time = timeEval + 200;
@@ -112,12 +61,24 @@ String readBatch(){
     timeEval = millis();
     if(Serial.available()){
       char c = Serial.read();
-      if(c != 'h' && c != ':'){
+      /*if(c == '|'){
+        String curpacketstring = "";
+        while(c != '-'){
+          c = Serial.read();
+          curpacketstring += c;
+        }
+        curpacketnum = curpacketstring.toInt();
+        if(!(curpacketnum == nextpacketnum)){
+          Serial2.println("PACKET LOST");
+        }
+        nextpacketnum = curpacketnum + 1;
+      }*/
+      /*else*/ if(c != 'h' && c != ':'){
       packetString += String(c);
       }
       else if(c == 'h'){
-        packetString += (String(counter)+"-->");
-        counter++;
+        packetString += (/*String(counter)+*/"-->");
+        //counter++;
       }
     }
   }

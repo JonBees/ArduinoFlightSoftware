@@ -20,6 +20,12 @@ def exitCheck(resp):
         "N" : 0,
         }[resp]
 
+def pctCheck(pct):
+    return {
+        (pct > 100 or pct < 0) : 0,
+        (pct <= 100 or pct >= 0) : 1,
+        }[pct]
+
 while shouldContinue:
     time = input("Enter the time interval through which the thruster valves must be actuated (in ms):")
     its = int(round(time/timeInc))
@@ -52,7 +58,7 @@ while shouldContinue:
     
     while iterate:
         cont = raw_input("Add another iteration (Y/N)?")
-        if(cont == "Y" or cont == "N"):
+        if(cont == "Y" or cont == "N" or cont == "y" or cont == "n"):
             shouldContinue = exitCheck(str(cont))
             iterate = 0
             first = 0
