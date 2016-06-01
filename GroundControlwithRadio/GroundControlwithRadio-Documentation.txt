@@ -1,0 +1,12 @@
+Overview: This sketch runs on the arduino with the XBee. It takes a radio input from the XBee and sends it to and adjacent arduino as an intermediate step which will ultimately go to the ground control arduino without radio. This is beacuse the arduino Mega could not read Xbee data and send via USB at the same time.
+
+setup():
+	-Opens serial communications and waits for port to open.
+	-Flushes Serial and Serial2
+
+loop():
+	inputs
+	-radio from Serial
+		-output: write what was read from Serial2
+	-radio from Serial2
+		-output: write what was read from Serial
