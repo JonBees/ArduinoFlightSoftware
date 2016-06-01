@@ -1,4 +1,4 @@
-GroundControlwithoutRadio: Runs on the ground control arduino without the XBee.
+GroundControl: Runs on the ground control arduino.
 Sends craft health monitoring information to the PC with Labview, and sends control flags to the craft.
 
 
