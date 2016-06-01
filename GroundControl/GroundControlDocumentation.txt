@@ -4,7 +4,7 @@ Sends craft health monitoring information to the PC with Labview, and sends cont
 
 Serial connections:
 	-Serial: PC with Labview
-	-Serial2: GroundControlwithRadio
+	-Serial1: XBee
 	
 	
 setup():
@@ -20,5 +20,5 @@ loop():
 		-If there is a connection, 
 			-gets command string
 				format: "h:"<command flags>';'<command string length>'|'
-			-If hardkill button is pressed, adds abort flag to string and turns on arduini's LED
-	-Sends command packet to GroundControlwithRadio and health_StateString to PC with Labview
+			-If hardkill button is pressed, adds abort flag to string and turns on arduino's LED
+	-Sends command packet to XBee and health_StateString to PC with Labview

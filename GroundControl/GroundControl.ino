@@ -3,11 +3,11 @@
 
 String health_StateString = "";
 String labview_stateString = "";
+int count = 0;
 
 void setup() {
   Serial.begin(9600);//USB connection to PC with Labview
-  Serial2.begin(9600);//Connection to GroundControlwithRadio
-
+  Serial1.begin(9600);//Connection to XBee
   pinMode(6, INPUT);
   pinMode(13, OUTPUT);
 }
@@ -21,24 +21,24 @@ void loop() {
   while (!packetReceived && (time >= timeEval) && (timeEval-time) < 200){
     timeEval = millis();
     char check = NULL;
-    if (Serial2.available()){
-      check = Serial2.read();
+    if (Serial1.available()){
+      check = Serial1.read();
     }
     if (check == 'p'){
       String incomingString = "";
       while(check != '?' && (time >= timeEval) && (timeEval-time) < 200){
         timeEval = millis();
-        if (Serial2.available()){
+        if (Serial1.available()){
           incomingString +=check;
-          check = Serial2.read();
+          check = Serial1.read();
         }
       }
       if (check == '?'){
         String checkSum = "";
         while(check != '|' && (time >= timeEval) && (timeEval-time) < 200){
           timeEval = millis();
-          if (Serial2.available()){
-            check = Serial2.read();
+          if (Serial1.available()){
+            check = Serial1.read();
             if (check != '|'){
               checkSum +=check;
             }
@@ -77,6 +77,8 @@ void loop() {
       if (Serial.available())
         check = Serial.read();
       if (check == 'h'){
+        count++;
+        Serial1.print(count);
         String incomingString = "";
         while(check != ';' && Serial.available() && (time >= timeEval)){
           timeEval = millis();
@@ -103,6 +105,6 @@ void loop() {
       }
     }
   }
-  Serial2.print(labview_stateString);
+  Serial1.print(labview_stateString);
   Serial.println(health_StateString);
 }
