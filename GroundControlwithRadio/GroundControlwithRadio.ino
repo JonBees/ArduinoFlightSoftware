@@ -5,12 +5,16 @@ void setup()
   Serial.begin(9600);//USB connection to PC with LabView
   Serial1.begin(9600);//Connection to XBee
   Serial2.begin(9600);//Connection to GroundControlWithoutRadio
+  digitalWrite(13,LOW);
 }
 
 void loop() // run over and over
 {
   if(Serial2.available()){
+    digitalWrite(13,HIGH);
     char c = Serial2.read();
+    if(c == '~'){    }
+    
     if (c == 'h'){
       count++;
       Serial1.print(count);
@@ -19,14 +23,17 @@ void loop() // run over and over
       Serial.write(c);
   }
   else{
-      Serial2.begin(9600);
+      digitalWrite(13,LOW);
+      //Serial2.begin(9600);
   }
   
   if(Serial1.available()){
     char d = Serial1.read();
     Serial2.write(d);
+    digitalWrite(13,HIGH);
   }
   else{
-    Serial1.begin(9600);
+    digitalWrite(13,LOW);
+    //Serial1.begin(9600);
   }
 }
