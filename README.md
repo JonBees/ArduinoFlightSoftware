@@ -11,13 +11,8 @@
   * Runs on Puma's arduino without the XBee. Reads a text file named PWMCOORD.txt, which contains PWM values from 1000 to 2000.
 These values will open or close the servos to certain positions, which enables us to control thrust.
 
-[GroundControlwithRadio](https://github.com/JonBees/ArduinoFlightSoftware/tree/master/GroundControlwithRadio)
-  * Runs on the ground control arduino with the XBee. 
-It takes a radio input from the XBee and sends it to the GroundControlWithoutRadio.
-This is necessary beacuse the arduino can't read Xbee data and send via USB at the same time.
-
-[GroundControlwithoutRadio](https://github.com/JonBees/ArduinoFlightSoftware/tree/master/GroundControlwithoutRadio)
-  *  Runs on the ground control arduino without the XBee.
+[GroundControl](https://github.com/JonBees/ArduinoFlightSoftware/tree/master/GroundControl)
+  *  Runs on the ground control arduino.
 Sends craft health monitoring information to the PC with Labview, and sends control flags to the craft.
 
 [HealthMonitoring](https://github.com/JonBees/ArduinoFlightSoftware/tree/master/HealthMonitoring)
