@@ -24,9 +24,17 @@ void loop() // run over and over
       Serial.write(c);
     }
   }
+  else
+  {
+      Serial2.begin(9600);//Connection to GroundControlWithoutRadio
+  }
   if (Serial1.available()){
     char d = Serial1.read();
 
     Serial2.write(d);
+  }
+  else
+  {
+    Serial1.begin(9600);//Connection to XBee
   }
 }
