@@ -1,6 +1,11 @@
 int curpacketnum = 0;
 int nextpacketnum = 0;
 
+long curTime;
+long loopStartTime;
+long loopEndTime;
+boolean packetReceived = false;
+
 void setup()  
 {
   Serial.begin(9600);//Connection to XBee
@@ -9,6 +14,11 @@ void setup()
 
 void loop() // run over and over
 {
+  curTime = millis();
+  loopStartTime = curTime;
+  loopEndTime = curTime + 200;
+  packetReceived = false;
+  
  if (Serial.available()){
     String s = String(readBatch());
     Serial2.print(s);
@@ -17,8 +27,10 @@ void loop() // run over and over
   else{
     createHealthPacket("fail");
   }
+  /*while(curTime < loopEndTime){
+    curTime = millis();
+  }*/
 }
-
 
 String createHealthPacket(String s)
 {
@@ -45,7 +57,7 @@ String createHealthPacket(String s)
   outgoingPacket += String(";h:");
   outgoingPacket += String(s);
   outgoingPacket += String(";s:");
-  outgoingPacket += String(200);
+  outgoingPacket += String(millis() - loopStartTime);
   outgoingPacket += String(";?");
   int packetLength = outgoingPacket.length()-1;
   outgoingPacket += String(packetLength);
@@ -54,32 +66,25 @@ String createHealthPacket(String s)
 }
 
 String readBatch(){
-  long timeEval = millis();
-  long time = timeEval + 200;
+  /*long timeEval = millis();
+  long time = timeEval + 200;*/
+  curTime = millis();
+  long readTime = curTime + 200;
   String packetString = "";
-  while(timeEval < time /*&& Serial.available()*/){
-    timeEval = millis();
+  while(curTime < readTime /*&& !packetReceived*/){
+    curTime = millis();
     if(Serial.available()){
       char c = Serial.read();
-      /*if(c == '|'){
-        String curpacketstring = "";
-        while(c != '-'){
-          c = Serial.read();
-          curpacketstring += c;
-        }
-        curpacketnum = curpacketstring.toInt();
-        if(!(curpacketnum == nextpacketnum)){
-          Serial2.println("PACKET LOST");
-        }
-        nextpacketnum = curpacketnum + 1;
-      }*/
-      /*else*/ if(c != 'h' && c != ':'){
+    if(c != 'h' && c != ':'){
       packetString += String(c);
       }
       else if(c == 'h'){
-        packetString += (/*String(counter)+*/"-->");
-        //counter++;
+        packetString += ("-->");
       }
+      /*else if (c == '|'){
+        packetString += String(c);
+        packetReceived = true;
+      }*/
     }
   }
   return packetString;

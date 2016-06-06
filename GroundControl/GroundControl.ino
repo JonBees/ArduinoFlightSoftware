@@ -5,14 +5,27 @@ String health_StateString = "";
 String labview_stateString = "";
 int count = 0;
 
+int loopCount = 0;
+
 void setup() {
   Serial.begin(9600);//USB connection to PC with Labview
   Serial1.begin(9600);//Connection to XBee
   pinMode(6, INPUT);
-  pinMode(13, OUTPUT);
+  pinMode(13, OUTPUT);//Abort LED (on Arduino)
+  pinMode(12, OUTPUT);//Green craft communication LED
+  pinMode(10,OUTPUT);//Yellow Labview communication LED
 }
 
 void loop() {
+  digitalWrite(12, LOW);
+  digitalWrite(10, LOW);
+
+  if(Serial.available()){
+    digitalWrite(10, HIGH);
+    }
+  if(Serial1.available()){
+    digitalWrite(12, HIGH);
+    }
 
   //XBee Readin Packets 
   boolean packetReceived = false;
@@ -107,4 +120,5 @@ void loop() {
   }
   Serial1.print(labview_stateString);
   Serial.println(health_StateString);
+  loopCount++;
 }
