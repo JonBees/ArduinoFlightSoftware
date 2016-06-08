@@ -36,6 +36,7 @@ boolean USBCheck = false;
 boolean start = false;
 boolean softKillBool = false;
 boolean abortBool = false;
+int softKilledCount = 0;
 
 int sendPacketCounter = 0;
 
@@ -157,6 +158,10 @@ void loop()
       softKill[j] = currentValue[j];
       if (currentValue[j] < 1000){
         currentValue[j] = 1000;
+        softKilledCount++;
+      }
+      if(softKilledCount == 4){
+        softKilledCount = 0;
         softKillBool = false;
         start = false;
       }
@@ -164,7 +169,6 @@ void loop()
   }
 
   if (abortBool) {
-
     for (int j = 0; j < MAX_PWM; j++){
       currentValue[j] = abortValue[j];
     }
