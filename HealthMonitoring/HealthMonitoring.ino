@@ -439,7 +439,7 @@ void errorFlagsEvaluation(health_packet& data){
       data.stateString += String('a');
     }
   }
-  if (data.state.soft_kill || softkillGlobal) {
+  if (data.state.soft_kill) {
     addFlagToString(current_health_packet);
   }
 }

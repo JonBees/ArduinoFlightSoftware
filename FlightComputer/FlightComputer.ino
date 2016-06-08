@@ -176,7 +176,7 @@ void loop()
   packetToSend += String(currentValue[2]);
   packetToSend += String(currentValue[3]);
 
-  if (start || USBCheck || softKillBool) {//sends packet every 2 loops (200ms) if not aborting
+  if (start || USBCheck || softKillBool || abortBool) {//sends packet every 2 loops (200ms)
     //   Serial.println(packetToSend);
     if (sendPacketCounter == 1) {
       Serial2.println(packetToSend);
