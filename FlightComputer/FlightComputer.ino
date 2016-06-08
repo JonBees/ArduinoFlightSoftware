@@ -32,9 +32,8 @@ long loopTime = 0;
 long loopTimeCounter = 0;
 long MICRO_STEPS = 100;
 
-boolean check = false;
+boolean USBCheck = false;
 boolean start = false;
-boolean failed = false;
 boolean softKillBool = false;
 boolean abortBool = false;
 
@@ -85,7 +84,7 @@ void loop()
       filePos = 0;
       softKillBool = false;
       abortBool = false;
-      check = false;
+      USBCheck = false;
       start = false;
       //Serial.print("r");
       //Serial2.clearing();
@@ -100,7 +99,7 @@ void loop()
     }
     if (inByte == 'o'){//begin
       start = true;
-      check = false;
+      USBCheck = false;
       //Serial.print("o");
       //Serial2.clearing();
     }
@@ -115,7 +114,7 @@ void loop()
     }
     if (inByte == 'p'){
       start = true;
-      check = true;
+      USBCheck = true;
       //Serial2.clearing();
 
     }
@@ -124,7 +123,7 @@ void loop()
   myFile = SD.open("PWMCOORD.TXT");
 
   //read file
-  if (start ){
+  if (start){
     if (myFile){
       myFile.seek(filePos);
       for (int i = 0; i < MAX_MOTORS; i++){
@@ -136,7 +135,6 @@ void loop()
             filePos++;
           }
           else{
-            failed = true;
             start = false;
           }
         }
@@ -146,7 +144,8 @@ void loop()
     }
   }
 
-  if ((!start) || failed || check){
+
+  if ((!start) || USBCheck){
     for (int j = 0; j < MAX_PWM; j++){
       currentValue[j] = defaultValue[j];
     }
@@ -177,7 +176,7 @@ void loop()
   packetToSend += String(currentValue[2]);
   packetToSend += String(currentValue[3]);
 
-  if (start || check || softkillBool) {//sends packet every 2 loops (200ms) if not aborting
+  if (start || USBCheck || softKillBool) {//sends packet every 2 loops (200ms) if not aborting
     //   Serial.println(packetToSend);
     if (sendPacketCounter == 1) {
       Serial2.println(packetToSend);
@@ -201,7 +200,6 @@ void loop()
   servoFrontRight.writeMicroseconds(currentValue[1]);
   servoBackLeft.writeMicroseconds(currentValue[2]);
   servoBackRight.writeMicroseconds(currentValue[3]);
-  failed = false;
 
   myFile.close();
 }

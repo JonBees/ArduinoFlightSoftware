@@ -5,7 +5,7 @@ Health Monitoring Sketch
  Inputs:
  Pressure Transducers - analog input pins 0 - 6
  Thermocouple - digital pins 24,26,27,28,29,50,52
- Power Realy - digital pins 8,10  
+ Power Relay - digital pins 8,10  
  
  Output:
  Xbee Radio - Serial1
@@ -150,10 +150,6 @@ bool time :
   1;//time abort
 };
 
-//Global softkill bool
-bool softkillGlobal = false;
-bool abortGlobal = false;
-
 
 // Data structure for XBee health packet
 struct health_packet
@@ -208,7 +204,7 @@ void setup() {
   resetState();//reset bool states
   //Motors/Valves init
   tank_iso_servo.attach(TANK_ISO);
-  dump_valve_servo.attach(DUMP_z);
+  dump_valve_servo.attach(DUMP_VALVE);
   pinMode(power_relay_digital_on, OUTPUT);
   pinMode(power_relay_digital_off, OUTPUT);
   pinMode(FAIL_CLOSED, OUTPUT);
@@ -269,7 +265,7 @@ void loop() {
 
     if (lastFlagReadTime < (currentTime - 300000)){
     current_health_packet.errorflags.time = true;
-    Serial1.clearing();
+//    Serial1.clearing();
   }
 
   //ThermoCouple check temp
@@ -306,7 +302,7 @@ void loop() {
   }
 
   //if abort, change valve states
-  if (current_health_packet.state.abort || abortGlobal) {
+  if (current_health_packet.state.abort) {
     current_health_packet.state.tank_iso_open = false;
     if (current_health_packet.stateString.indexOf('t') != -1) {
       current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('t'), 1);
@@ -411,7 +407,6 @@ void errorFlagsEvaluation(health_packet& data){
     //first append craft abort
     addFlagToString(current_health_packet);
     //temperature abort
-    softkillGlobal = true;
     data.state.soft_kill = true;
     if (data.stateString.indexOf('k') == -1){
       data.stateString += String('k');
@@ -422,7 +417,6 @@ void errorFlagsEvaluation(health_packet& data){
     addFlagToString(current_health_packet);
     //pressure abort
 
-      softkillGlobal = true;
     data.state.soft_kill = true;
     if (data.stateString.indexOf('k') == -1){
       data.stateString += String('k');
@@ -433,7 +427,6 @@ void errorFlagsEvaluation(health_packet& data){
     addFlagToString(current_health_packet);
     //voltage abort
 
-      softkillGlobal = true;
     data.state.soft_kill = true;
     if (data.stateString.indexOf('k') == -1){
       data.stateString += String('k');
@@ -442,7 +435,6 @@ void errorFlagsEvaluation(health_packet& data){
   if (current_health_packet.errorflags.time){
     //timeout abort
     data.state.abort = true;
-    abortGlobal = true;
     if (data.stateString.indexOf('a') == -1){
       data.stateString += String('a');
     }
@@ -460,12 +452,12 @@ void addFlagToString(health_packet& data){
 void stateFunctionEvaluation(health_packet& data){
 
   //flight states
-  if (data.state.abort || abortGlobal){
+  if (data.state.abort){
     //abort sequence
     //Serial2.write('a');
     Serial2.write('a');
   }
-  if ((data.state.soft_kill || softkillGlobal)&& !data.state_activated.abort){       
+  if ((data.state.soft_kill)&& !data.state_activated.abort){       
     // True starts soft kill procedure
     //Serial2.write('k');
     Serial2.write('k');
@@ -502,7 +494,7 @@ void stateFunctionEvaluation(health_packet& data){
      } 
      */
   }
-  if (data.state.take_off && !data.state_activated.safety && !data.state_activated.abort && !abortGlobal && !data.state_activated.soft_kill && !softkillGlobal){// && !data.state_activated.abort){        //ensures take_off is not enable unless no abort is in effect
+  if (data.state.take_off && !data.state_activated.safety && !data.state_activated.abort && !data.state_activated.soft_kill){// && !data.state_activated.abort){        //ensures take_off is not enable unless no abort is in effect
     // Take off on true
     //Serial2.write('o');
     Serial2.write('o');
@@ -511,15 +503,13 @@ void stateFunctionEvaluation(health_packet& data){
 
   //Flight computer state adjustments
   ///////////////////////////////////////////////////////////////////////////////////////////////
-  if (data.state.flight_computer_reset && !data.state_activated.abort){  
+  if (data.state.flight_computer_reset && !data.state_activated.abort && !data.state_activated.safety){  
     // On change, will reset computer
     //Serial2.write('r');
     Serial2.print('r');
-    softkillGlobal = false;
-    abortGlobal = false;
   }
 
-  if (data.state.flight_computer_on){  
+  if (data.state.flight_computer_on && !data.state_activated.safety){  
     // True means turn on the flight controller
     digitalWrite(power_relay_digital_off,LOW);
     digitalWrite(power_relay_digital_on,HIGH);
