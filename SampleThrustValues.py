@@ -50,8 +50,6 @@ while shouldContinue:
         for j in range(0, its):
             for i in range(0, thrustNums):
                 outfile.write("{}".format(vals[i][j]))
-                if(i != 3):
-                    outfile.write(",")
 
     iterate = 1
     outfile.close()
