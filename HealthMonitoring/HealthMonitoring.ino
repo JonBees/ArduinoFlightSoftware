@@ -699,7 +699,7 @@ void readThermocouples(health_packet& data)
 
 void adjustFanSpeed(){
   double temp = TC.intTemp(2);//gets temperature of internal thermocouple (in F)
-  int fanValue = (temp - 135)*10;//scales from 0 to 250
+  int fanValue = (temp - 135)*8;//scales from 0 to 250
   if(temp>135 && temp < 160){
     analogWrite(POWERBOX_FAN, fanValue);
   }
@@ -707,7 +707,7 @@ void adjustFanSpeed(){
     analogWrite(POWERBOX_FAN, 0);
   }
   else if(temp > 160){
-    analogWrite(POWERBOX_FAN, 255);
+    analogWrite(POWERBOX_FAN, 200);
   }
 }
 
