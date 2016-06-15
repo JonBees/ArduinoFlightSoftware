@@ -9,10 +9,10 @@ long millisNow = 0;
 long millisLast = 0;
 int SOFTKILLDECREMENT = 10;
 
-Servo servoFrontLeft;//AV5-1
-Servo servoFrontRight;//AV5-2
-Servo servoBackLeft;//AV5-3
-Servo servoBackRight;//AV5-4
+Servo AV1;//AV1-M
+Servo AV2;//AV2-M
+Servo AV3;//AV3-M
+Servo AV4;//AV4-M
 
 int defaultValue[] = {
   1000,1000,1000,1000};
@@ -44,16 +44,16 @@ void setup()
 {
   Serial.begin(9600);//USB connection
   Serial2.begin(9600);//communication with HealthMonitoring Arduino
-  servoFrontLeft.attach(3);
-  servoFrontRight.attach(4);
-  servoBackLeft.attach(5);
-  servoBackRight.attach(6);
+  AV1.attach(6);
+  AV2.attach(5);
+  AV3.attach(4);
+  AV4.attach(3);
 
 for (int j = 0; j < MAX_PWM; j++){//sets servos to initial values
-  servoFrontLeft.writeMicroseconds(defaultValue[0]);
-  servoFrontRight.writeMicroseconds(defaultValue[1]);
-  servoBackLeft.writeMicroseconds(defaultValue[2]);
-  servoBackRight.writeMicroseconds(defaultValue[3]);
+  AV1.writeMicroseconds(defaultValue[0]);
+  AV2.writeMicroseconds(defaultValue[1]);
+  AV3.writeMicroseconds(defaultValue[2]);
+  AV4.writeMicroseconds(defaultValue[3]);
 }
 
   pinMode(53, OUTPUT);
@@ -200,10 +200,10 @@ void loop()
   loopTimeCounter = millis()+100;
   
   //output to motors
-  servoFrontLeft.writeMicroseconds(currentValue[0]);
-  servoFrontRight.writeMicroseconds(currentValue[1]);
-  servoBackLeft.writeMicroseconds(currentValue[2]);
-  servoBackRight.writeMicroseconds(currentValue[3]);
+  AV1.writeMicroseconds(currentValue[0]);
+  AV2.writeMicroseconds(currentValue[1]);
+  AV3.writeMicroseconds(currentValue[2]);
+  AV4.writeMicroseconds(currentValue[3]);
 
   myFile.close();
 }
