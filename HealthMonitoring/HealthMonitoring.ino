@@ -279,9 +279,9 @@ void loop() {
   currentTime = millis();
   resetErrorFlags(current_health_packet);
 
-    //if no read check time 5 min handshake process has failed. Turn on appropriate abort based on last health packet
+    //if no read check time 30 sec handshake process has failed. Turn on appropriate abort based on last health packet
 
-    if (lastFlagReadTime < (currentTime - 300000)){
+    if (lastFlagReadTime < (currentTime - 30000)){
     current_health_packet.errorflags.time = true;
 //    Serial1.clearing();
   }
