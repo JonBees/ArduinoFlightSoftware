@@ -195,6 +195,8 @@ long loopTime = 0;
 long loopTimeCounter = 0;
 int relayTimer = 0;
 
+int looplength = 100;
+
 health_packet current_health_packet;
 String lastStateString = "";
 
@@ -274,16 +276,14 @@ void setup() {
 
 void loop() {
   loopTime = millis();
-  loopTimeCounter = loopTime+200;
+  loopTimeCounter = loopTime+looplength;
   readFlags(); //read input
   currentTime = millis();
   resetErrorFlags(current_health_packet);
 
     //if no read check time 30 sec handshake process has failed. Turn on appropriate abort based on last health packet
-
-    if (lastFlagReadTime < (currentTime - 30000)){
+  if (lastFlagReadTime < (currentTime - 30000)){
     current_health_packet.errorflags.time = true;
-//    Serial1.clearing();
   }
 
   //ThermoCouple check temp
@@ -312,8 +312,8 @@ void loop() {
       digitalWrite(power_relay_digital_off,LOW);
     }
     relayTimer++;
-
   }
+
   if (!current_health_packet.stateString.equals(lastStateString)){
     stateEvaluation(current_health_packet);
     stateFunctionEvaluation(current_health_packet);
@@ -337,7 +337,7 @@ void loop() {
 
   checkValves(current_health_packet);
 
-  while (loopTime < loopTimeCounter && !((loopTime-loopTimeCounter) > 200)){
+  while (loopTime < loopTimeCounter && !((loopTime-loopTimeCounter) > looplength)){
     loopTime = millis();
     delay(1);
   }
@@ -813,7 +813,7 @@ void SDcardWrite(String& str){
 void readFlags() 
 {
   long timeEval = millis();
-  long time = timeEval + 200;
+  long time = timeEval + looplength;
   boolean packetReceived = false;
   while (!packetReceived && (time >= timeEval)){
     timeEval = millis();
@@ -826,7 +826,7 @@ void readFlags()
       if (check == ':'){
         //here is our health packet
         String incomingString = "";
-        while(check != ';' && Serial1.available() && (time >= timeEval)  && !((loopTime-loopTimeCounter) > 200)){
+        while(check != ';' && Serial1.available() && (time >= timeEval)  && !((loopTime-loopTimeCounter) > looplength)){
           timeEval = millis();
           check = Serial1.read();
           if(check != ';'){
@@ -834,7 +834,7 @@ void readFlags()
           } 
         }
         String checkSum = "";
-        while(check != '|' && (time >= timeEval) && !((loopTime-loopTimeCounter) > 200)){
+        while(check != '|' && (time >= timeEval) && !((loopTime-loopTimeCounter) > looplength)){
           timeEval = millis();
           if (Serial1.available()){
             check = Serial1.read();
@@ -849,7 +849,7 @@ void readFlags()
           lastFlagReadTime = millis();
           packetReceived = true;
         }
-        while (Serial1.available() && (time >= timeEval) && !((loopTime-loopTimeCounter) > 200)){
+        while (Serial1.available() && (time >= timeEval) && !((loopTime-loopTimeCounter) > looplength)){
           Serial1.read();
           timeEval = millis();
         }
