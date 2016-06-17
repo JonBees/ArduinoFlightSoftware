@@ -195,7 +195,7 @@ long loopTime = 0;
 long loopTimeCounter = 0;
 int relayTimer = 0;
 
-int looplength = 100;
+int looplength = 200;
 
 health_packet current_health_packet;
 String lastStateString = "";
