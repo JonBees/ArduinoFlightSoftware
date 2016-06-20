@@ -18,6 +18,8 @@ int defaultValue[] = {
   1000,1000,1000,1000};
 int currentValue[] = {
   1000,1000,1000,1000};
+int checkValue[] = {
+  1000,1000,1000,1000};
 int abortValue[] = {
   2000,2000,2000,2000};
 int numbers[] = {
@@ -32,7 +34,7 @@ long loopTime = 0;
 long loopTimeCounter = 0;
 long MICRO_STEPS = 100;
 
-boolean USBCheck = false;
+boolean profileCheck = false;
 boolean start = false;
 boolean softKillBool = false;
 boolean abortBool = false;
@@ -85,7 +87,7 @@ void loop()
       filePos = 0;
       softKillBool = false;
       abortBool = false;
-      USBCheck = false;
+      profileCheck = false;
       start = false;
       //Serial.print("r");
       //Serial2.clearing();
@@ -100,7 +102,7 @@ void loop()
     }
     if (inByte == 'o'){//begin
       start = true;
-      USBCheck = false;
+      profileCheck = false;
       //Serial.print("o");
       //Serial2.clearing();
     }
@@ -115,7 +117,7 @@ void loop()
     }
     if (inByte == 'p'){
       start = true;
-      USBCheck = true;
+      profileCheck = true;
       //Serial2.clearing();
 
     }
@@ -145,8 +147,13 @@ void loop()
     }
   }
 
+  if(profileCheck){
+    for(int j=0; j<MAX_PWM; j++){
+      checkValue[j] = currentValue[j];
+    }
+  }
 
-  if ((!start) || USBCheck){
+  if ((!start) || profileCheck){
     for (int j = 0; j < MAX_PWM; j++){
       currentValue[j] = defaultValue[j];
     }
@@ -175,12 +182,20 @@ void loop()
   }
 
   String packetToSend = "m:";
-  packetToSend += String(currentValue[0]);
-  packetToSend += String(currentValue[1]);
-  packetToSend += String(currentValue[2]);
-  packetToSend += String(currentValue[3]);
+  if(!profileCheck){
+    packetToSend += String(currentValue[0]);
+    packetToSend += String(currentValue[1]);
+    packetToSend += String(currentValue[2]);
+    packetToSend += String(currentValue[3]);
+  }
+  else{
+    packetToSend += String(checkValue[0]);
+    packetToSend += String(checkValue[1]);
+    packetToSend += String(checkValue[2]);
+    packetToSend += String(checkValue[3]);
+  }
 
-  if (start || USBCheck || softKillBool || abortBool) {//sends packet every 2 loops (200ms)
+  if (start || profileCheck || softKillBool || abortBool) {//sends packet every 2 loops (200ms)
     //   Serial.println(packetToSend);
     if (sendPacketCounter == 1) {
       Serial2.println(packetToSend);
