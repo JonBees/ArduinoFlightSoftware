@@ -146,7 +146,7 @@ bool fuel_dump :
     abort = false;            
     flight_computer_on = false;  
     flight_computer_reset = false;  
-    FO_U_dump = false;      
+    FO_U_dump = true;      
     take_off = false;        
     soft_kill = false;       
     FC_U_open = false;  
@@ -607,7 +607,7 @@ void stateEvaluation(health_packet& data){
       data.state.flight_computer_reset = true;
       break;
     case 'd':
-      data.state.FO_U_dump = true;
+      data.state.FO_U_dump = false;
       break;
     case 'o':
       data.state.take_off = true;
