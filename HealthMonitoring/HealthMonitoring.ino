@@ -137,6 +137,8 @@ bool FC_U_open :
   1;  //When true, opens valve to the ullage tank
 bool sddump : 
   1;
+bool fuel_dump : 
+  1; //when true, sets av5 open, av6 closed, fo-u closed, fc-u open, av1-4 50%
   flags() {
     safety = true;          
     AV5_M_open = false;    
@@ -149,6 +151,7 @@ bool sddump :
     soft_kill = false;       
     FC_U_open = false;  
     sddump = false;
+    fuel_dump = false;
   };
 };
 
@@ -238,7 +241,7 @@ void setup() {
   delay(100);
   digitalWrite(power_relay_digital_on,LOW);
   digitalWrite(power_relay_digital_off,LOW);
-  digitalWrite(FC_U, LOW);
+  digitalWrite(FC_U, HIGH); //these two make the solenoids click on powerup to ensure functionality. 
   digitalWrite(FO_U, HIGH);
 
   //temperature shield init.
@@ -332,6 +335,24 @@ void loop() {
     current_health_packet.state.FC_U_open = false;
     if (current_health_packet.stateString.indexOf('i') != -1) {
       current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('i'), 1);
+    }
+  }
+  else if(current_health_packet.state.fuel_dump){
+    current_health_packet.state.AV5_M_open = true;
+    if(current_health_packet.stateString.indexOf('t') == -1){
+      current_health_packet.stateString += String('t');
+    }
+    current_health_packet.state.AV6_M_open = false;
+    if(current_health_packet.stateString.indexOf('v') != -1){
+      current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('v'),1);
+    }
+    current_health_packet.state.FO_U_dump = true;
+    if (current_health_packet.stateString.indexOf('d') == -1) {
+      current_health_packet.stateString += String('d');
+    }
+    current_health_packet.state.FC_U_open = true;
+    if (current_health_packet.stateString.indexOf('i') == -1) {
+      current_health_packet.stateString += String('i');
     }
   }
 
@@ -521,6 +542,9 @@ void stateFunctionEvaluation(health_packet& data){
      } 
      */
   }
+  if(data.state.fuel_dump){
+    Serial2.write('b');
+  }
   if (data.state.take_off && !data.state_activated.safety && !data.state_activated.abort && !data.state_activated.soft_kill){// && !data.state_activated.abort){        //ensures take_off is not enable unless no abort is in effect
     // Take off on true
     //Serial2.write('o');
@@ -598,7 +622,7 @@ void stateEvaluation(health_packet& data){
       data.state.sddump = true;
       break;
     case 'b':
-      data.state.abort = true;
+      data.state.fuel_dump = true;
 
       break;
     default:

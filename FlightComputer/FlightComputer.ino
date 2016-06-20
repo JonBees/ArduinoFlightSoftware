@@ -22,7 +22,9 @@ int checkValue[] = {
   1000,1000,1000,1000};
 int abortValue[] = {
   2000,2000,2000,2000};
-int numbers[] = {
+int fuelDumpValue[] = {
+  1500,1500,1500,1500};
+int servoValueRead[] = {
   0,0,0,0};
 int softKill[] = {
   1000,1000,1000,1000};
@@ -38,6 +40,7 @@ boolean profileCheck = false;
 boolean start = false;
 boolean softKillBool = false;
 boolean abortBool = false;
+boolean fuelDump = false;
 int softKilledCount = 0;
 
 int sendPacketCounter = 0;
@@ -119,7 +122,10 @@ void loop()
       start = true;
       profileCheck = true;
       //Serial2.clearing();
-
+    }
+    if(inByte == 'b '){
+      start = false;
+      fuelDump = true;
     }
   }
 
@@ -133,8 +139,8 @@ void loop()
         for (int j = 0; j < MAX_PWM; j++){
           if (myFile.available()){
             char c = myFile.read();
-            numbers[j] = c - '0';
-            //Serial.print(numbers[j]);
+            servoValueRead[j] = c - '0';
+            //Serial.print(servoValueRead[j]);
             filePos++;
           }
           else{
@@ -142,7 +148,7 @@ void loop()
           }
         }
         //assign reads to four int
-        currentValue[i] = (numbers[0]*1000) + (numbers[1]*100) + (numbers[2]*10) + (numbers[3]);
+        currentValue[i] = (servoValueRead[0]*1000) + (servoValueRead[1]*100) + (servoValueRead[2]*10) + (servoValueRead[3]);
       }
     }
   }
@@ -159,6 +165,12 @@ void loop()
     }
   }
 
+  if(fuelDump){
+    for (int j = 0; j < MAX_PWM; j++){
+      currentValue[j] = fuelDumpValue[j];
+    }
+  }
+  
   if (softKillBool){//decreases the current servo values by SOFTKILLDECREMENT each loop until they reach 1000 (min position).
     for (int j = 0; j < MAX_PWM; j++){
       currentValue[j] = softKill[j] - SOFTKILLDECREMENT;
