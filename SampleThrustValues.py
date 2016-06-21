@@ -1,5 +1,8 @@
 import sys
 import math
+import os.path
+
+completeName = ""
 
 thrustNums = 4
 timeInc = 100
@@ -44,9 +47,11 @@ while shouldContinue:
             vals[i].append(itss[i] + int(math.floor(inc*(j+1))))
 
     if(first):
-        open("out.txt","w")
+        folder = "C:/Users/Lunar Lion/Desktop/FlightProfiles/"
+        completeName = os.path.join(folder, "newProfile.txt")   
+        open(completeName,"w")
 
-    with open("out.txt", "a") as outfile:
+    with open(completeName, "a") as outfile:
         for j in range(0, its):
             for i in range(0, thrustNums):
                 outfile.write("{}".format(vals[i][j]))
