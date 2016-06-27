@@ -197,6 +197,7 @@ long currentTime = 0;
 long loopTime = 0;
 long loopTimeCounter = 0;
 int relayTimer = 0;
+int dumpTimer = 0;
 
 int looplength = 200;
 
@@ -329,31 +330,38 @@ void loop() {
       current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('t'), 1);
     }
     current_health_packet.state.FO_U_dump = true;
-    if (current_health_packet.stateString.indexOf('d') == -1) {
-      current_health_packet.stateString += String('d');
+    if (current_health_packet.stateString.indexOf('d') != -1) {
+      current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('d'), 1);
     }
     current_health_packet.state.FC_U_open = false;
     if (current_health_packet.stateString.indexOf('i') != -1) {
       current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('i'), 1);
     }
   }
-  else if(current_health_packet.state.fuel_dump){
-    current_health_packet.state.AV5_M_open = true;
-    if(current_health_packet.stateString.indexOf('t') == -1){
-      current_health_packet.stateString += String('t');
+  
+  if(current_health_packet.state.fuel_dump){
+    if(dumpTimer == 0){
+      current_health_packet.state.AV5_M_open = true;
+      if(current_health_packet.stateString.indexOf('t') == -1){
+        current_health_packet.stateString += String('t');
+      }
+      current_health_packet.state.AV6_M_open = false;
+      if(current_health_packet.stateString.indexOf('v') != -1){
+        current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('v'),1);
+      }
     }
-    current_health_packet.state.AV6_M_open = false;
-    if(current_health_packet.stateString.indexOf('v') != -1){
-      current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('v'),1);
+    if(dumpTimer == 3){
+      current_health_packet.state.FO_U_dump = false;
+      if (current_health_packet.stateString.indexOf('d') == -1) {
+        current_health_packet.stateString += String('d');
+      }
+      current_health_packet.state.FC_U_open = true;
+      if (current_health_packet.stateString.indexOf('i') == -1) {
+        current_health_packet.stateString += String('i');
+      }
+      dumpTimer = -1;
     }
-    current_health_packet.state.FO_U_dump = true;
-    if (current_health_packet.stateString.indexOf('d') == -1) {
-      current_health_packet.stateString += String('d');
-    }
-    current_health_packet.state.FC_U_open = true;
-    if (current_health_packet.stateString.indexOf('i') == -1) {
-      current_health_packet.stateString += String('i');
-    }
+    dumpTimer++;
   }
 
   checkValves(current_health_packet);
@@ -502,16 +510,13 @@ void stateFunctionEvaluation(health_packet& data){
   //flight states
   if (data.state.abort){
     //abort sequence
-    //Serial2.write('a');
     Serial2.write('a');
   }
   if ((data.state.soft_kill)&& !data.state_activated.abort){       
     // True starts soft kill procedure
-    //Serial2.write('k');
     Serial2.write('k');
   }
   if (data.state.sddump && !data.state_activated.abort){
-    //Serial2.write('p');
     Serial2.write('p');
     /*
     while(data.state.sddump){//you've entered the sddump
@@ -623,6 +628,7 @@ void stateEvaluation(health_packet& data){
       break;
     case 'b':
       data.state.fuel_dump = true;
+      break;
 
       break;
     default:
