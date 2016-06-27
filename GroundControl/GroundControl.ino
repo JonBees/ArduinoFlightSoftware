@@ -22,6 +22,7 @@ void loop() {
 
   if(Serial.available()){
     digitalWrite(10, HIGH);
+    Serial.print(Serial.available());
     }
   if(Serial1.available()){
     digitalWrite(12, HIGH);
@@ -84,7 +85,7 @@ void loop() {
     //30
     time = millis() + 50;
     timeEval = millis();
-    while ((Serial.available()) && (!packetReceived) && (time >= timeEval) && ((timeEval-time) < 1000)) {
+    while ((Serial.available()) && (!packetReceived) && (time >= timeEval) && ((timeEval-time) < 1000)){
       timeEval = millis();
       char check = NULL;
       if (Serial.available())

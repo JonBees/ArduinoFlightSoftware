@@ -29,6 +29,10 @@ int servoValueRead[] = {
 int softKill[] = {
   1000,1000,1000,1000};
 
+int testValue[] = {
+2000,2000,2000,2000};
+
+
 int MAX_MOTORS = 4;
 int MAX_PWM = 4;
 long int filePos = 0;
@@ -152,6 +156,12 @@ void loop()
       }
     }
   }
+  
+  /*if(start){
+     for (int j = 0; j < MAX_PWM; j++){
+      currentValue[j] = testValue[j];
+    }
+  }*/
 
   if(profileCheck){
     for(int j=0; j<MAX_PWM; j++){
@@ -207,20 +217,23 @@ void loop()
     packetToSend += String(checkValue[3]);
   }
 
-  if (start || profileCheck || softKillBool || abortBool) {//sends packet every 2 loops (200ms)
+  
+
+  //make sure each loop is 100ms
+  while (loopTime < loopTimeCounter){
+    loopTime = millis();
+  }
+
+if (start || profileCheck || softKillBool || abortBool) {//sends packet every 2 loops (200ms)
     //   Serial.println(packetToSend);
     if (sendPacketCounter == 1) {
       Serial2.println(packetToSend);
+      Serial.println(packetToSend);
       sendPacketCounter = 0;
     }
     else {
       sendPacketCounter++;
     }
-  }
-
-  //make sure each loop is 100ms
-  while (loopTime < loopTimeCounter){
-    loopTime = millis();
   }
 
   loopTime = millis();

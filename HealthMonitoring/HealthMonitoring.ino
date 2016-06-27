@@ -368,7 +368,7 @@ void loop() {
 
   while (loopTime < loopTimeCounter && !((loopTime-loopTimeCounter) > looplength)){
     loopTime = millis();
-    delay(1);
+    //delay(1);
   }
   digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);//this resets the thermocouple shield to be called again. allowing us to run the program while the thermocouple shield computes the data.
 }
@@ -433,7 +433,7 @@ void checkMotors(health_packet& data){
           }
           if (failed){
             for (int i = 0; i < 4; i++){
-              data.motor_values[i] = 1000;
+              data.motor_values[i] = 0100;
             }
           }
           done = true;
@@ -443,7 +443,7 @@ void checkMotors(health_packet& data){
   }
   else{
     for (int i = 0; i < 4; i++){
-      data.motor_values[i] = 1000;
+      data.motor_values[i] = 0200;
     }
   }
 }
@@ -780,7 +780,7 @@ void adjustFanSpeed(){
     analogWrite(POWERBOX_FAN, 0);
   }
   else if(temp > 160){*/
-    analogWrite(POWERBOX_FAN, 130);
+    analogWrite(POWERBOX_FAN, 200);
   //}
 }
 
@@ -793,6 +793,7 @@ String createHealthPacket(health_packet& data)
   }
   outgoingPacket += String(data.pressure_values[6]);
   outgoingPacket += String(";t:");
+  //outgoingPacket += String(Serial1.available());
   for (int i = 0; i < 5; i++){
     outgoingPacket += String(data.temp_values[i]);
     outgoingPacket += String(",");
@@ -820,6 +821,7 @@ String createHealthPacket(health_packet& data)
 void sendHealthPacket(String& str){
   Serial1.println(str);
   Serial.println(str);
+  Serial.println(Serial1.available());
 }
 
 void SDcardWrite(String& str){
