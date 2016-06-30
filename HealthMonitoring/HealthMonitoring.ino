@@ -79,7 +79,7 @@ int abort_pressure_overages[] = {
   0,0,0,0,0,0,0};
 
 //Max Temperature Values
-
+//TCpw-1,2,3,4, TCp-1,2
 //Celsius Values
 /*double SOFTKILL_MAX_TEMPERATURE[] = {
   65.5,1093,65.5,1093,1093,1093};*/ 
@@ -107,10 +107,12 @@ int boxTempAbort = 0;
 
 //Voltage Sensor
 #define voltage_sensor_analog 7
-int MIN_VOLTAGE = 177;
-int MIN_VOLTAGE_ABORT = 5;
-int voltage_abort = 0; //5 corresponds to 5 cycles or 1s.
-
+int MIN_VOLTAGE = 487;//14.5v
+int MAX_VOLTAGE = 850;//17v
+int MIN_VOLTAGE_SOFTKILL = 25;//25 cycles -- 5s
+int MAX_VOLTAGE_ABORT = 5;//5 cycles -- 1s
+int voltage_softkill_underages = 0; 
+int voltage_abort_overages = 0;
 
 //Xbee input flags 
 struct flags
@@ -158,17 +160,19 @@ bool fuel_dump :
 struct craft
 {
 bool temperature_softkill : 
-  1; //temp softkill
+  1; 
 bool temperature_abort : 
-  1; //temp hardkill
+  1; 
 bool pressure_softkill : 
-  1; //pressure softkill
+  1; 
 bool pressure_abort : 
-  1; //pressure hardkill
-bool voltage : 
-  1;//voltage abort
+  1; 
+bool voltage_softkill : 
+  1;
+bool voltage_abort :
+  1;
 bool time : 
-  1; //time abort
+  1; 
 };
 
 
@@ -417,7 +421,7 @@ void checkMotors(health_packet& data){
           c = Serial2.read();
         if (c == ':'){ 
           int numbers[] = {
-            0,0,0,0                                                                                                                                                                                              };
+            0,0,0,0};
           for (int i = 0; i < 4; i++){
             for (int j = 0; j < 4; j++){
               if (Serial2.available()){
@@ -433,7 +437,7 @@ void checkMotors(health_packet& data){
           }
           if (failed){
             for (int i = 0; i < 4; i++){
-              data.motor_values[i] = 0100;
+              data.motor_values[i] = 3100;
             }
           }
           done = true;
@@ -443,7 +447,7 @@ void checkMotors(health_packet& data){
   }
   else{
     for (int i = 0; i < 4; i++){
-      data.motor_values[i] = 0200;
+      data.motor_values[i] = 3200;
     }
   }
 }
@@ -453,6 +457,7 @@ void errorFlagsEvaluation(health_packet& data){
   if (current_health_packet.errorflags.temperature_softkill){
     addFlagToString(current_health_packet);
     data.state.soft_kill = true;
+    Serial.println(" Temperature Softkill ");
     if (data.stateString.indexOf('k') == -1){
       data.stateString += String('k');
     }
@@ -460,6 +465,7 @@ void errorFlagsEvaluation(health_packet& data){
   if(current_health_packet.errorflags.temperature_abort){
     addFlagToString(current_health_packet);
     data.state.abort = true;
+    Serial.println(" Temperature Abort ");
     if (data.stateString.indexOf('a') == -1){
       data.stateString += String('a');
     }
@@ -467,6 +473,7 @@ void errorFlagsEvaluation(health_packet& data){
   if (current_health_packet.errorflags.pressure_softkill){
     addFlagToString(current_health_packet);
     data.state.soft_kill = true;
+    Serial.println(" Pressure Softkill ");
     if (data.stateString.indexOf('k') == -1){
       data.stateString += String('k');
     }
@@ -474,16 +481,23 @@ void errorFlagsEvaluation(health_packet& data){
   if(current_health_packet.errorflags.pressure_abort){
     addFlagToString(current_health_packet);
     data.state.abort = true;
+    Serial.println(" Pressure Abort ");
     if (data.stateString.indexOf('a') == -1){
       data.stateString += String('a');
     }
   }
-  if (current_health_packet.errorflags.voltage){
-    //first append craft abort
+  if(current_health_packet.errorflags.voltage_abort){
     addFlagToString(current_health_packet);
-    //voltage abort
-
+    data.state.abort = true;
+    Serial.println(" Voltage Abort ");
+    if (data.stateString.indexOf('a') == -1){
+      data.stateString += String('a');
+    }
+  }
+  if (current_health_packet.errorflags.voltage_softkill){
+    addFlagToString(current_health_packet);
     data.state.soft_kill = true;
+    Serial.println(" Voltage Softkill ");
     if (data.stateString.indexOf('k') == -1){
       data.stateString += String('k');
     }
@@ -491,6 +505,7 @@ void errorFlagsEvaluation(health_packet& data){
   if (current_health_packet.errorflags.time){
     //timeout abort
     data.state.abort = true;
+    Serial.println(" Time Abort ");
     if (data.stateString.indexOf('a') == -1){
       data.stateString += String('a');
     }
@@ -651,7 +666,8 @@ void resetErrorFlags(health_packet& data){
   data.errorflags.temperature_abort = false;
   data.errorflags.pressure_softkill = false;
   data.errorflags.pressure_abort = false;
-  data.errorflags.voltage = false;
+  data.errorflags.voltage_softkill = false;
+  data.errorflags.voltage_abort = false;
   data.errorflags.time = false;
 }
 
@@ -692,14 +708,23 @@ void readPressureTransducers(health_packet& data){
 void checkVoltage(health_packet& data){
   data.voltage = analogRead(voltage_sensor_analog);
   if (data.voltage < MIN_VOLTAGE){
-    voltage_abort++;
+    voltage_softkill_underages++;
   }
   else{
-    voltage_abort = 0;
+    voltage_softkill_underages = 0;
+  }
+  if(data.voltage > MAX_VOLTAGE){
+    voltage_abort_overages++;
+  }
+  else{
+    voltage_abort_overages = 0;
   }
 
-  if (voltage_abort >= MIN_VOLTAGE_ABORT) {
-    data.errorflags.voltage = true;
+  if(voltage_softkill_underages >= MIN_VOLTAGE_SOFTKILL) {
+    data.errorflags.voltage_softkill = true;
+  }
+  if(voltage_abort_overages >= MAX_VOLTAGE_ABORT) {
+    data.errorflags.voltage_abort = true;
   }
 }
 
