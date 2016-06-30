@@ -180,7 +180,7 @@ bool time :
 struct health_packet
 {
   int pressure_values[7];
-  double temp_values[6] = {40,50,60,70,80,90};
+  double temp_values[6] = {1200,1201,1202,1203,121,122};
   int voltage;
   unsigned int motor_values[4];
   unsigned long elapsed;
@@ -674,13 +674,13 @@ void resetErrorFlags(health_packet& data){
 //PresureTransducerRead
 void readPressureTransducers(health_packet& data){
 
-  data.pressure_values[0] = 201 /*analogRead(PT4_M)*/;
-  data.pressure_values[1] = 200 /*analogRead(PT1_M)*/;
-  data.pressure_values[2] = 199 /*analogRead(PT3_M)*/;
-  data.pressure_values[3] = 198 /*analogRead(PT1_U)*/;
-  data.pressure_values[4] = 197 /*analogRead(PT2_U)*/;
-  data.pressure_values[5] = 196 /*analogRead (PT2_M)*/;
-  data.pressure_values[6] = 195 /*analogRead (PT5_M)*/;
+  data.pressure_values[0] = 840 /*analogRead(PT4_M)*/;
+  data.pressure_values[1] = 841 /*analogRead(PT1_M)*/;
+  data.pressure_values[2] = 842 /*analogRead(PT3_M)*/;
+  data.pressure_values[3] = 1000 /*analogRead(PT1_U)*/;
+  data.pressure_values[4] = 844 /*analogRead(PT2_U)*/;
+  data.pressure_values[5] = 845 /*analogRead (PT2_M)*/;
+  data.pressure_values[6] = 846 /*analogRead (PT5_M)*/;
 
   for (int i=0;i<7;i++){
     if(data.pressure_values[i] > ABORT_MAX_PRESSURE[i]){

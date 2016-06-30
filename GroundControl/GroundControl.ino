@@ -22,7 +22,7 @@ void loop() {
 
   if(Serial.available()){
     digitalWrite(10, HIGH);
-    Serial.print(Serial.available());
+    //Serial.print(Serial.available());
     }
   if(Serial1.available()){
     digitalWrite(12, HIGH);
