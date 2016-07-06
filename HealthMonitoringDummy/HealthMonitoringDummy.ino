@@ -683,10 +683,10 @@ void readPressureTransducers(health_packet& data){
   data.pressure_values[6] = 846 /*analogRead (PT5_M)*/;
 
   for (int i=0;i<7;i++){
-    if(data.pressure_values[i] > ABORT_MAX_PRESSURE[i]){
+    if(data.pressure_values[i] > ((ABORT_MAX_PRESSURE[i]*1.27)-250)){
       abort_pressure_overages[i]++;
     }
-    else if (data.pressure_values[i] > SOFTKILL_MAX_PRESSURE[i]){
+    else if (data.pressure_values[i] > ((SOFTKILL_MAX_PRESSURE[i]*1.27)-250)){
       softkill_pressure_overages[i]++;
     }
     else{
