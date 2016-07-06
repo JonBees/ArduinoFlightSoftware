@@ -72,7 +72,7 @@ for (int j = 0; j < MAX_PWM; j++){//sets servos to initial values
 
   pinMode(53, OUTPUT);
   delay(100);
-  if (!SD.begin(53)){
+  /*if (!SD.begin(53)){
     Serial.println("initialization failed");
     start = false;
   }
@@ -83,7 +83,7 @@ for (int j = 0; j < MAX_PWM; j++){//sets servos to initial values
   //print out if file is unavailable
   if (!SD.exists("pwmcoord.txt")) {
     Serial.println("pwmcoord.txt is unavailable");
-  }
+  }*/
 }
 
 void loop()
@@ -148,7 +148,7 @@ void loop()
         for (int j = 0; j < MAX_PWM; j++){
           if (filePos < psLength){
             char c = profileString[filePos];
-            //servoValueRead[j] = c - '0';
+            servoValueRead[j] = c - '0';
             Serial.print(servoValueRead[j]);
             filePos++;
           }

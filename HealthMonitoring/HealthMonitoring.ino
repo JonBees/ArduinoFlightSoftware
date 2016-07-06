@@ -141,6 +141,8 @@ bool sddump :
   1;
 bool fuel_dump : 
   1; //when true, sets av5 open, av6 closed, fo-u closed, fc-u open, av1-4 50%
+bool fan_off :
+  1; //when true, overrides fan control and forces fan off
   flags() {
     safety = true;          
     AV5_M_open = false;    
@@ -154,6 +156,7 @@ bool fuel_dump :
     FC_U_open = false;  
     sddump = false;
     fuel_dump = false;
+    fan_off = false;
   };
 };
 
@@ -309,7 +312,7 @@ void loop() {
   SDcardWrite(outgoingPacket);
   sendHealthPacket(outgoingPacket);
   //Adjust fan speed based on power box's temperature
-  adjustFanSpeed();
+  adjustFanSpeed(current_health_packet);
 
 
   if (relayTriggered){
@@ -644,6 +647,8 @@ void stateEvaluation(health_packet& data){
     case 'b':
       data.state.fuel_dump = true;
       break;
+    case 'f':
+      data.state.fan_off = true;
 
       break;
     default:
@@ -795,18 +800,23 @@ void readThermocouples(health_packet& data)
   digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);//disables connection from TC board
 }
 
-void adjustFanSpeed(){
-  /*double temp = TC.intTemp(2);//gets temperature of internal thermocouple (in F)
-  int fanValue = (temp - 135)*8;//scales from 0 to 250
-  if(temp>135 && temp < 160){
-    analogWrite(POWERBOX_FAN, fanValue);
-  }
-  else if(temp < 135){
-    analogWrite(POWERBOX_FAN, 0);
-  }
-  else if(temp > 160){*/
-    analogWrite(POWERBOX_FAN, 200);
+void adjustFanSpeed(health_packet& data){
+  if(!data.state.fan_off){
+      /*double temp = TC.intTemp(2);//gets temperature of internal thermocouple (in F)
+    int fanValue = (temp - 135)*8;//scales from 0 to 250
+    if(temp>135 && temp < 160){
+      analogWrite(POWERBOX_FAN, fanValue);
+    }
+    else if(temp < 135){
+      analogWrite(POWERBOX_FAN, 0);
+    }
+    else if(temp > 160){*/
+      analogWrite(POWERBOX_FAN, 200);
   //}
+  }
+  else{
+    analogWrite(POWERBOX_FAN, 255);
+  }
 }
 
 String createHealthPacket(health_packet& data)
