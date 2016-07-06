@@ -345,18 +345,20 @@ void loop() {
     }
   }
   
-  if(current_health_packet.state.fuel_dump){
+   if(current_health_packet.state.fuel_dump){
     if(dumpTimer == 0){
       current_health_packet.state.AV5_M_open = true;
       if(current_health_packet.stateString.indexOf('t') == -1){
         current_health_packet.stateString += String('t');
       }
-      current_health_packet.state.AV6_M_open = false;
+    }
+    if(dumpTimer == 6){
+       current_health_packet.state.AV6_M_open = false;
       if(current_health_packet.stateString.indexOf('v') != -1){
         current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('v'),1);
       }
     }
-    if(dumpTimer == 3){
+    if(dumpTimer == 12){
       current_health_packet.state.FO_U_dump = false;
       if (current_health_packet.stateString.indexOf('d') == -1) {
         current_health_packet.stateString += String('d');
@@ -365,7 +367,6 @@ void loop() {
       if (current_health_packet.stateString.indexOf('i') == -1) {
         current_health_packet.stateString += String('i');
       }
-      dumpTimer = -1;
     }
     dumpTimer++;
   }
@@ -678,13 +679,13 @@ void resetErrorFlags(health_packet& data){
 //PresureTransducerRead
 void readPressureTransducers(health_packet& data){
 
-  data.pressure_values[0] = 840 /*analogRead(PT4_M)*/;
-  data.pressure_values[1] = 841 /*analogRead(PT1_M)*/;
-  data.pressure_values[2] = 842 /*analogRead(PT3_M)*/;
-  data.pressure_values[3] = 1000 /*analogRead(PT1_U)*/;
-  data.pressure_values[4] = 844 /*analogRead(PT2_U)*/;
-  data.pressure_values[5] = 845 /*analogRead (PT2_M)*/;
-  data.pressure_values[6] = 846 /*analogRead (PT5_M)*/;
+  data.pressure_values[0] = 300 /*analogRead(PT4_M)*/;
+  data.pressure_values[1] = 300 /*analogRead(PT1_M)*/;
+  data.pressure_values[2] = 300 /*analogRead(PT3_M)*/;
+  data.pressure_values[3] = 500 /*analogRead(PT1_U)*/;
+  data.pressure_values[4] = 300 /*analogRead(PT2_U)*/;
+  data.pressure_values[5] = 300 /*analogRead (PT2_M)*/;
+  data.pressure_values[6] = 300 /*analogRead (PT5_M)*/;
 
   for (int i=0;i<7;i++){
     if(data.pressure_values[i] > ((ABORT_MAX_PRESSURE[i]*1.27)-250)){
@@ -752,14 +753,21 @@ double readThermocouple(int index, byte& error)
   else if (error & 0x04){
     result = -3.0;
   }
-  return result;
+  if(loopTime < 20000){
+    return 100;
+  }
+  else{
+    return 201;
+  }
+  //return result;
 }
 
 void readThermocouples(health_packet& data)
 {
   digitalWrite(SD_CHIP_SELECT, HIGH);//disables connection to SD card while we're reading TC values
   digitalWrite(THERMOCOUPLE_CHIP_SELECT, LOW);//enables connection from TC board
-  /*byte dummy;
+  
+  byte dummy;
     int thermoCounterTemp = thermoCounter-1;
     if (thermoCounter == 7){
       boxTemp = readThermocouple(thermoCounter, dummy);
@@ -786,15 +794,17 @@ void readThermocouples(health_packet& data)
         softkill_temperature_overages[thermoCounterTemp] = 0;
         abort_temperature_overages[thermoCounterTemp] = 0;
       }
+      for(int i=0; i<6; i++){
+        if(abort_temperature_overages[i] >= MAX_ABORT_TEMPERATURE_OVERAGES[i]){
+          data.errorflags.temperature_abort = true;
+        }
+        else if (softkill_temperature_overages[i] >= MAX_SOFTKILL_TEMPERATURE_OVERAGES[i]){
+          data.errorflags.temperature_softkill = true;
+        }
+      }
 
-      if(abort_temperature_overages[thermoCounterTemp] >= MAX_ABORT_TEMPERATURE_OVERAGES[thermoCounterTemp]){
-        data.errorflags.temperature_abort = true;
-      }
-      else if (softkill_temperature_overages[thermoCounterTemp] >= MAX_SOFTKILL_TEMPERATURE_OVERAGES[thermoCounterTemp]){
-        data.errorflags.temperature_softkill = true;
-      }
       thermoCounter++;
-    }*/
+    }
   TC.setMUX(thermoCounter);
   digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);//disables connection from TC board
 }

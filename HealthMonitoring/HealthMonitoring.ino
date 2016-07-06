@@ -352,12 +352,14 @@ void loop() {
       if(current_health_packet.stateString.indexOf('t') == -1){
         current_health_packet.stateString += String('t');
       }
-      current_health_packet.state.AV6_M_open = false;
+    }
+    if(dumpTimer == 6){
+       current_health_packet.state.AV6_M_open = false;
       if(current_health_packet.stateString.indexOf('v') != -1){
         current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('v'),1);
       }
     }
-    if(dumpTimer == 3){
+    if(dumpTimer == 12){
       current_health_packet.state.FO_U_dump = false;
       if (current_health_packet.stateString.indexOf('d') == -1) {
         current_health_packet.stateString += String('d');
@@ -366,7 +368,6 @@ void loop() {
       if (current_health_packet.stateString.indexOf('i') == -1) {
         current_health_packet.stateString += String('i');
       }
-      dumpTimer = -1;
     }
     dumpTimer++;
   }
@@ -581,6 +582,7 @@ void stateFunctionEvaluation(health_packet& data){
     // On change, will reset computer
     //Serial2.write('r');
     Serial2.print('r');
+    dumpTimer = 0;
   }
 
   if (data.state.flight_computer_on && !data.state_activated.safety){  
@@ -760,6 +762,7 @@ void readThermocouples(health_packet& data)
 {
   digitalWrite(SD_CHIP_SELECT, HIGH);//disables connection to SD card while we're reading TC values
   digitalWrite(THERMOCOUPLE_CHIP_SELECT, LOW);//enables connection from TC board
+  
   byte dummy;
     int thermoCounterTemp = thermoCounter-1;
     if (thermoCounter == 7){
@@ -787,13 +790,15 @@ void readThermocouples(health_packet& data)
         softkill_temperature_overages[thermoCounterTemp] = 0;
         abort_temperature_overages[thermoCounterTemp] = 0;
       }
+      for(int i=0; i<6; i++){
+        if(abort_temperature_overages[i] >= MAX_ABORT_TEMPERATURE_OVERAGES[i]){
+          data.errorflags.temperature_abort = true;
+        }
+        else if (softkill_temperature_overages[i] >= MAX_SOFTKILL_TEMPERATURE_OVERAGES[i]){
+          data.errorflags.temperature_softkill = true;
+        }
+      }
 
-      if(abort_temperature_overages[thermoCounterTemp] >= MAX_ABORT_TEMPERATURE_OVERAGES[thermoCounterTemp]){
-        data.errorflags.temperature_abort = true;
-      }
-      else if (softkill_temperature_overages[thermoCounterTemp] >= MAX_SOFTKILL_TEMPERATURE_OVERAGES[thermoCounterTemp]){
-        data.errorflags.temperature_softkill = true;
-      }
       thermoCounter++;
     }
   TC.setMUX(thermoCounter);
@@ -884,7 +889,7 @@ void readFlags()
   boolean packetReceived = false;
   while (!packetReceived && (time >= timeEval)){
     timeEval = millis();
-    char check = NULL;
+    char check/* = NULL*/;
     if (Serial1.available()){
       check = Serial1.read();
     }
