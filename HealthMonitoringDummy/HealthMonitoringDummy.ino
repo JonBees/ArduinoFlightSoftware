@@ -228,7 +228,7 @@ void checkValves(health_packet& data);
 
 void setup() {
   Serial.begin(9600);//USB connection
-  Serial.begin(9600);//connection with XBee
+  Serial1.begin(9600);//connection with XBee
   Serial2.begin(9600);//connection with FlightComputer
   Serial3.begin(9600);//currently disconnected
   resetState();//reset bool states
@@ -437,6 +437,7 @@ void checkMotors(health_packet& data){
             }
             //assign reads to four int
             data.motor_values[i] = (numbers[0]*1000) + (numbers[1]*100) + (numbers[2]*10) + (numbers[3]);
+            Serial.println(data.motor_values[i]);
           }
           if (failed){
             for (int i = 0; i < 4; i++){
@@ -753,12 +754,12 @@ double readThermocouple(int index, byte& error)
   else if (error & 0x04){
     result = -3.0;
   }
-  if(loopTime < 20000){
+  //if(loopTime < 20000){
     return 100;
-  }
+  /*}
   else{
     return 201;
-  }
+  }*/
   //return result;
 }
 
@@ -863,7 +864,7 @@ String createHealthPacket(health_packet& data)
 }
 
 void sendHealthPacket(String& str){
-  Serial.println(str);
+  Serial1.println(str);
   //Serial.println(str);
   //Serial.println(Serial.available());
 }
@@ -894,17 +895,17 @@ void readFlags()
   while (!packetReceived && (time >= timeEval)){
     timeEval = millis();
     char check;
-    if (Serial.available()){
-      check = Serial.read();
+    if (Serial1.available()){
+      check = Serial1.read();
     }
     if (check == 'h'){
-      check = Serial.read();
+      check = Serial1.read();
       if (check == ':'){
         //here is our health packet
         String incomingString = "";
-        while(check != ';' && Serial.available() && (time >= timeEval)  && !((loopTime-loopTimeCounter) > looplength)){
+        while(check != ';' && Serial1.available() && (time >= timeEval)  && !((loopTime-loopTimeCounter) > looplength)){
           timeEval = millis();
-          check = Serial.read();
+          check = Serial1.read();
           if(check != ';'){
             incomingString +=check;
           } 
@@ -912,8 +913,8 @@ void readFlags()
         String checkSum = "";
         while(check != '|' && (time >= timeEval) && !((loopTime-loopTimeCounter) > looplength)){
           timeEval = millis();
-          if (Serial.available()){
-            check = Serial.read();
+          if (Serial1.available()){
+            check = Serial1.read();
             if (check != '|'){
               checkSum +=check;
             }
@@ -925,8 +926,8 @@ void readFlags()
           lastFlagReadTime = millis();
           packetReceived = true;
         }
-        while (Serial.available() && (time >= timeEval) && !((loopTime-loopTimeCounter) > looplength)){
-          Serial.read();
+        while (Serial1.available() && (time >= timeEval) && !((loopTime-loopTimeCounter) > looplength)){
+          Serial1.read();
           timeEval = millis();
         }
       }
