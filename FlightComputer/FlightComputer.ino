@@ -139,7 +139,7 @@ void loop()
   myFile = SD.open("PWMCOORD.TXT");
 
   //read file
-  /*if (start){
+  if (start){
     if (myFile){
       myFile.seek(filePos);
       for (int i = 0; i < MAX_MOTORS; i++){
@@ -158,7 +158,7 @@ void loop()
         currentValue[i] = (servoValueRead[0]*1000) + (servoValueRead[1]*100) + (servoValueRead[2]*10) + (servoValueRead[3]);
       }
     }
-  }*/
+  }
 
 /*if (start){
       for (int i = 0; i < MAX_MOTORS; i++){
@@ -177,11 +177,11 @@ void loop()
       }
   }*/
   
-  if(start){
+  /*if(start){
      for (int j = 0; j < MAX_PWM; j++){
       currentValue[j] = testValue[j];
     }
-  }
+  }*/
 
   if(profileCheck){
     for(int j=0; j<MAX_PWM; j++){
@@ -245,7 +245,7 @@ void loop()
   }
 
 //if (start || profileCheck || softKillBool || abortBool) {//sends packet every 2 loops (200ms)
-    if (sendPacketCounter == 1) {
+    if (sendPacketCounter == 3) {
       Serial2.println(packetToSend);
       Serial.println(packetToSend);
       sendPacketCounter = 0;

@@ -461,7 +461,7 @@ void checkMotors(health_packet& data){
           }
           if (failed){
             for (int i = 0; i < 4; i++){
-              data.motor_values[i] = 3100;
+              data.motor_values[i] = 1000;
             }
           }
           done = true;
@@ -471,7 +471,7 @@ void checkMotors(health_packet& data){
   }
   else{
     for (int i = 0; i < 4; i++){
-      data.motor_values[i] = 3200;
+      data.motor_values[i] = 1000;
     }
   }
 }
@@ -519,12 +519,12 @@ void errorFlagsEvaluation(health_packet& data){
     }
   }
   if (current_health_packet.errorflags.voltage_softkill){
-    addFlagToString(current_health_packet);
+    /*addFlagToString(current_health_packet);
     data.state.soft_kill = true;
     Serial.println(" Voltage Softkill ");
     if (data.stateString.indexOf('k') == -1){
       data.stateString += String('k');
-    }
+    }*/
   }
   if (current_health_packet.errorflags.time){
     //timeout abort
@@ -881,7 +881,7 @@ String createHealthPacket(health_packet& data)
 void sendHealthPacket(String& str){
   Serial1.println(str);
   Serial.println(str);
-  Serial.println(Serial1.available());
+  //Serial.println(Serial1.available());
 }
 
 void SDcardWrite(String& str){
