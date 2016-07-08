@@ -346,7 +346,7 @@ void loop() {
     }
   }
   
-  if(current_health_packet.state.fuel_dump){
+  /*if(current_health_packet.state.fuel_dump){
     dumpTimer++;
   }
   else{
@@ -375,7 +375,20 @@ void loop() {
         current_health_packet.stateString += String('i');
       }
     }
+  }*/
+
+  if(current_health_packet.state.fuel_dump){
+  if((dumpTimer/10)%2==0){
+     current_health_packet.state.AV5_M_open = true;
+     current_health_packet.state.AV6_M_open = true;
   }
+  else{
+    current_health_packet.state.AV5_M_open = false;
+    current_health_packet.state.AV6_M_open = false;
+  }
+    dumpTimer++;
+  }
+  
 
   checkValves(current_health_packet);
 
@@ -444,7 +457,7 @@ void checkMotors(health_packet& data){
             }
             //assign reads to four int
             data.motor_values[i] = (numbers[0]*1000) + (numbers[1]*100) + (numbers[2]*10) + (numbers[3]);
-            Serial.println(data.motor_values[i]);
+            //Serial.println(data.motor_values[i]);
           }
           if (failed){
             for (int i = 0; i < 4; i++){
@@ -468,7 +481,7 @@ void errorFlagsEvaluation(health_packet& data){
   if (current_health_packet.errorflags.temperature_softkill){
     addFlagToString(current_health_packet);
     data.state.soft_kill = true;
-    //Serial.println(" Temperature Softkill ");
+    Serial.println(" Temperature Softkill ");
     if (data.stateString.indexOf('k') == -1){
       data.stateString += String('k');
     }
@@ -476,7 +489,7 @@ void errorFlagsEvaluation(health_packet& data){
   if(current_health_packet.errorflags.temperature_abort){
     addFlagToString(current_health_packet);
     data.state.abort = true;
-    //Serial.println(" Temperature Abort ");
+    Serial.println(" Temperature Abort ");
     if (data.stateString.indexOf('a') == -1){
       data.stateString += String('a');
     }
@@ -484,7 +497,7 @@ void errorFlagsEvaluation(health_packet& data){
   if (current_health_packet.errorflags.pressure_softkill){
     addFlagToString(current_health_packet);
     data.state.soft_kill = true;
-    //Serial.println(" Pressure Softkill ");
+    Serial.println(" Pressure Softkill ");
     if (data.stateString.indexOf('k') == -1){
       data.stateString += String('k');
     }
@@ -492,7 +505,7 @@ void errorFlagsEvaluation(health_packet& data){
   if(current_health_packet.errorflags.pressure_abort){
     addFlagToString(current_health_packet);
     data.state.abort = true;
-    //Serial.println(" Pressure Abort ");
+    Serial.println(" Pressure Abort ");
     if (data.stateString.indexOf('a') == -1){
       data.stateString += String('a');
     }
@@ -500,7 +513,7 @@ void errorFlagsEvaluation(health_packet& data){
   if(current_health_packet.errorflags.voltage_abort){
     addFlagToString(current_health_packet);
     data.state.abort = true;
-    //Serial.println(" Voltage Abort ");
+    Serial.println(" Voltage Abort ");
     if (data.stateString.indexOf('a') == -1){
       data.stateString += String('a');
     }
@@ -508,7 +521,7 @@ void errorFlagsEvaluation(health_packet& data){
   if (current_health_packet.errorflags.voltage_softkill){
     addFlagToString(current_health_packet);
     data.state.soft_kill = true;
-    //Serial.println(" Voltage Softkill ");
+    Serial.println(" Voltage Softkill ");
     if (data.stateString.indexOf('k') == -1){
       data.stateString += String('k');
     }
@@ -516,7 +529,7 @@ void errorFlagsEvaluation(health_packet& data){
   if (current_health_packet.errorflags.time){
     //timeout abort
     data.state.abort = true;
-    //Serial.println(" Time Abort ");
+    Serial.println(" Time Abort ");
     if (data.stateString.indexOf('a') == -1){
       data.stateString += String('a');
     }
@@ -867,8 +880,8 @@ String createHealthPacket(health_packet& data)
 
 void sendHealthPacket(String& str){
   Serial1.println(str);
-  //Serial.println(str);
-  //Serial.println(Serial1.available());
+  Serial.println(str);
+  Serial.println(Serial1.available());
 }
 
 void SDcardWrite(String& str){
