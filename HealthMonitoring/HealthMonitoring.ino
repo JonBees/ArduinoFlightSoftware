@@ -346,7 +346,7 @@ void loop() {
     }
   }
   
-  /*if(current_health_packet.state.fuel_dump){
+  if(current_health_packet.state.fuel_dump){
     dumpTimer++;
   }
   else{
@@ -375,9 +375,9 @@ void loop() {
         current_health_packet.stateString += String('i');
       }
     }
-  }*/
+  }
 
-  if(current_health_packet.state.fuel_dump){
+  /*if(current_health_packet.state.fuel_dump){
   if((dumpTimer/10)%2==0){
      current_health_packet.state.AV5_M_open = true;
      current_health_packet.state.AV6_M_open = true;
@@ -387,7 +387,7 @@ void loop() {
     current_health_packet.state.AV6_M_open = false;
   }
     dumpTimer++;
-  }
+  }*/
   
 
   checkValves(current_health_packet);
