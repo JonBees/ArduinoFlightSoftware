@@ -249,8 +249,8 @@ void setup() {
   delay(100);
   digitalWrite(power_relay_digital_on,LOW);
   digitalWrite(power_relay_digital_off,LOW);
-  digitalWrite(FC_U, HIGH); //these two make the solenoids click on powerup to ensure functionality. 
-  digitalWrite(FO_U, HIGH);
+  //digitalWrite(FC_U, HIGH); //these two make the solenoids click on powerup to ensure functionality. 
+  //digitalWrite(FO_U, HIGH);
 
   //temperature shield init.
   TC.begin();
