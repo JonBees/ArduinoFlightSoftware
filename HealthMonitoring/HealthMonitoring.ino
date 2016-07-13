@@ -1,4 +1,3 @@
-
 /*
 Health Monitoring Sketch
  
@@ -143,6 +142,27 @@ bool fuel_dump :
   1; //when true, sets av5 open, av6 closed, fo-u closed, fc-u open, av1-4 50%
 bool fan_off :
   1; //when true, overrides fan control and forces fan off
+bool fp_0 :
+  1;//fp_0-9 are the flight profile selctors
+bool fp_1 :
+  1;
+bool fp_2 :
+  1;
+bool fp_3 :
+  1;
+bool fp_4 :
+  1;
+bool fp_5 :
+  1;
+bool fp_6 :
+  1;
+bool fp_7 :
+  1;
+bool fp_8 :
+  1;
+bool fp_9 :
+  1;
+
   flags() {
     safety = true;          
     AV5_M_open = false;    
@@ -157,6 +177,16 @@ bool fan_off :
     sddump = false;
     fuel_dump = false;
     fan_off = false;
+    fp_0 = false;
+    fp_1 = false;
+    fp_2 = false;
+    fp_3 = false;
+    fp_4 = false;
+    fp_5 = false;
+    fp_6 = false;
+    fp_7 = false;
+    fp_8 = false;
+    fp_9 = false;
   };
 };
 
@@ -226,6 +256,7 @@ void sendHealthPacket(String& str);
 void SDcardWrite(String& str);
 void checkValves(health_packet& data);
 
+int loops = 0;
 
 void setup() {
   Serial.begin(9600);//USB connection
@@ -292,8 +323,8 @@ void loop() {
   currentTime = millis();
   resetErrorFlags(current_health_packet);
 
-    //if no read check time 30 sec handshake process has failed. Turn on appropriate abort based on last health packet
-  if (lastFlagReadTime < (currentTime - 30000)){
+    //if no read check time 1m 30 sec handshake process has failed. Turn on appropriate abort based on last health packet
+  if (lastFlagReadTime < (currentTime - 90000)){
     current_health_packet.errorflags.time = true;
   }
 
@@ -305,6 +336,8 @@ void loop() {
   checkVoltage(current_health_packet);
   //check current errorflags
   errorFlagsEvaluation(current_health_packet);
+  //sets flight profile based on GCS
+  //setFlightProfile(current_health_packet);
   //check motors
   checkMotors(current_health_packet);
   //Send Health Packet, we don't send flag if time out... this will cause the device to freeze
@@ -327,6 +360,7 @@ void loop() {
 
   if (!current_health_packet.stateString.equals(lastStateString)){
     stateEvaluation(current_health_packet);
+    setFlightProfile(current_health_packet);
     stateFunctionEvaluation(current_health_packet);
   }
 
@@ -397,6 +431,8 @@ void loop() {
     //delay(1);
   }
   digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);//this resets the thermocouple shield to be called again. allowing us to run the program while the thermocouple shield computes the data.
+  Serial.println(loops);
+  loops++;
 }
 
 void checkValves(health_packet& data){
@@ -519,12 +555,12 @@ void errorFlagsEvaluation(health_packet& data){
     }
   }
   if (current_health_packet.errorflags.voltage_softkill){
-    /*addFlagToString(current_health_packet);
+    addFlagToString(current_health_packet);
     data.state.soft_kill = true;
     Serial.println(" Voltage Softkill ");
     if (data.stateString.indexOf('k') == -1){
       data.stateString += String('k');
-    }*/
+    }
   }
   if (current_health_packet.errorflags.time){
     //timeout abort
@@ -536,6 +572,10 @@ void errorFlagsEvaluation(health_packet& data){
   }
   if (data.state.soft_kill) {
     addFlagToString(current_health_packet);
+    Serial.println(" Softkill ");
+    if (data.stateString.indexOf('k') == -1){
+      data.stateString += String('k');
+    }
   }
 }
 void addFlagToString(health_packet& data){
@@ -591,7 +631,7 @@ void stateFunctionEvaluation(health_packet& data){
   }
   if (data.state.take_off && !data.state_activated.safety && !data.state_activated.abort && !data.state_activated.soft_kill){// && !data.state_activated.abort){        //ensures take_off is not enable unless no abort is in effect
     // Take off on true
-    //Serial2.write('o');
+    Serial.write('o');
     Serial2.write('o');
     data.state_activated.take_off = data.state.take_off;
   }
@@ -600,8 +640,8 @@ void stateFunctionEvaluation(health_packet& data){
   ///////////////////////////////////////////////////////////////////////////////////////////////
   if (data.state.flight_computer_reset && !data.state_activated.abort && !data.state_activated.safety){  
     // On change, will reset computer
-    //Serial2.write('r');
-    Serial2.print('r');
+    Serial.write('r');
+    Serial2.write('r');
     dumpTimer = 0;
   }
 
@@ -657,6 +697,36 @@ void stateEvaluation(health_packet& data){
     case 'o':
       data.state.take_off = true;
       break;
+    case '0':
+      data.state.fp_0 = true;
+      break;
+    case '1':
+      data.state.fp_1 = true;
+      break;
+    case '2':
+      data.state.fp_2 = true;
+      break;
+    case '3':
+      data.state.fp_3 = true;
+      break;
+    case '4':
+      data.state.fp_4 = true;
+      break;
+    case '5':
+      data.state.fp_5 = true;
+      break;
+    case '6': 
+      data.state.fp_6 = true;
+      break;
+    case '7':
+      data.state.fp_7 = true;
+      break;
+    case '8':
+      data.state.fp_8 = true;
+      break;
+    case '9':
+      data.state.fp_9 = true;
+      break;
     case 'k':
       data.state.soft_kill = true;
       break;
@@ -671,8 +741,9 @@ void stateEvaluation(health_packet& data){
       break;
     case 'f':
       data.state.fan_off = true;
-
       break;
+
+
     default:
       break;
     }
@@ -765,7 +836,7 @@ double readThermocouple(int index, byte& error)
 {
   double result, dummy;
 
-  TC.getTemp(result, dummy, 2, error); // ExternalTempDoubleVariable, InternalTempDoubleVariable, SCALE, ErrorByteVariable) --- SCALE: 0 for Celsius/Centigrade, 1 for Kelvin, 2 for Fahrenheit, and 3 for Rankine.
+  TC.getTemp(result, dummy, 2, error); // ExternalfTempDoubleVariable, InternalTempDoubleVariable, SCALE, ErrorByteVariable) --- SCALE: 0 for Celsius/Centigrade, 1 for Kelvin, 2 for Fahrenheit, and 3 for Rankine.
   if (error & 0x01){
     result = -1.0;
   } 
@@ -816,11 +887,21 @@ void readThermocouples(health_packet& data)
         }
         else if (softkill_temperature_overages[i] >= MAX_SOFTKILL_TEMPERATURE_OVERAGES[i]){
           data.errorflags.temperature_softkill = true;
+          if(i>=4){
+            data.state.FO_U_dump = true;
+            if (data.stateString.indexOf('d') != -1) {
+              data.stateString.remove(data.stateString.indexOf('d'), 1);
+            }
+            data.state.FC_U_open = false;
+            if (data.stateString.indexOf('i') != -1) {
+              data.stateString.remove(data.stateString.indexOf('i'), 1);
+            }
+          }
         }
       }
 
       thermoCounter++;
-    }
+    };
   TC.setMUX(thermoCounter);
   digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);//disables connection from TC board
 }
@@ -841,6 +922,49 @@ void adjustFanSpeed(health_packet& data){
   }
   else{
     analogWrite(POWERBOX_FAN, 255);
+  }
+}
+
+void setFlightProfile(health_packet& data){
+  if(data.state.fp_0){
+    Serial2.write('0');
+    Serial.println("0");
+  }
+  else if(data.state.fp_1){
+    Serial2.write('1');
+    Serial.println("1");
+  }
+  else if(data.state.fp_2){
+    Serial2.write('2');
+    Serial.println("2");
+  }
+  else if(data.state.fp_3){
+    Serial2.write('3');
+    Serial.println("3");
+  }
+  else if(data.state.fp_4){
+    Serial2.write('4');
+    Serial.println("4");
+  }
+  else if(data.state.fp_5){
+    Serial2.write('5');
+    Serial.println("5");
+  }
+  else if(data.state.fp_6){
+    Serial2.write('6');
+    Serial.println("6");
+  }
+  else if(data.state.fp_7){
+    Serial2.write('7');
+    Serial.println("7");
+  }
+  else if(data.state.fp_8){
+    Serial2.write('8');
+    Serial.println("8");
+  }
+  else if(data.state.fp_9){
+    Serial2.write('9');
+    Serial.println("9");
   }
 }
 
@@ -880,7 +1004,7 @@ String createHealthPacket(health_packet& data)
 
 void sendHealthPacket(String& str){
   Serial1.println(str);
-  Serial.println(str);
+  //Serial.println(str);
   //Serial.println(Serial1.available());
 }
 
@@ -949,3 +1073,4 @@ void readFlags()
     }
   }
 }
+
