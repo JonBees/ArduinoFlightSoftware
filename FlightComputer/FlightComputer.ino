@@ -24,12 +24,14 @@ int abortValue[] = {
   1500,1500,1500,1500};
 int fuelDumpValue[] = {
   1500,1500,1500,1500};
+int airBleedValue[] = {
+  1230,1375,1326,1410};
 int servoValueRead[] = {
   0,0,0,0};
 int softKill[] = {
   1000,1000,1000,1000};
 
-int testValue[] = {
+int openValue[] = {
 2000,2000,2000,2000};
 
 char profileString[] = "1020102010201020104010401040104010601060106010601080108010801080110011001100110011201120112011201140114011401140116011601160116011801180118011801200120012001200122012201220122012401240124012401260126012601260128012801280128013001300130013001320132013201320134013401340134013601360136013601380138013801380140014001400140014201420142014201440144014401440146014601460146014801480148014801500150015001500152015201520152015401540154015401560156015601560158015801580158016001600160016001620162016201620164016401640164016601660166016601680168016801680170017001700170017201720172017201740174017401740176017601760176017801780178017801800180018001800182018201820182018401840184018401860186018601860188018801880188019001900190019001920192019201920194019401940194019601960196019601980198019801980200020002000200019801980198019801960196019601960194019401940194019201920192019201900190019001900188018801880188018601860186018601840184018401840182018201820182018001800180018001780178017801780176017601760176017401740174017401720172017201720170017001700170016801680168016801660166016601660164016401640164016201620162016201600160016001600158015801580158015601560156015601540154015401540152015201520152015001500150015001480148014801480146014601460146014401440144014401420142014201420140014001400140013801380138013801360136013601360134013401340134013201320132013201300130013001300128012801280128012601260126012601240124012401240122012201220122012001200120012001180118011801180116011601160116011401140114011401120112011201120110011001100110010801080108010801060106010601060104010401040104010201020102010201000100010001000";
@@ -44,12 +46,21 @@ long MICRO_STEPS = 100;
 
 boolean profileCheck = false;
 boolean start = false;
+boolean fullOpen = false;
 boolean softKillBool = false;
 boolean abortBool = false;
 boolean fuelDump = false;
 int softKilledCount = 0;
 
+boolean profiles[] = {
+  false,false,false,false,false,false,false,false};
+String filenames[] = {
+  "PWMCOO~1.TXT","PWMCOO~2.TXT","PWMCOO~3.TXT","PWMCOO~4.TXT","PWMCOO~5.TXT","PWMCOO~6.TXT","PWMCOO~7.TXT","PWMCOO~9.TXT"};
+int profileSelection = 0;
+
 int sendPacketCounter = 0;
+long curTime;
+long lastConnection;
 
 void setup()
 {
@@ -79,27 +90,41 @@ for (int j = 0; j < MAX_PWM; j++){//sets servos to initial values
     Serial.println("initialized");
   }
 
-  //print out if file is unavailable
-  if (!SD.exists("pwmcoord.txt")) {
-    Serial.println("pwmcoord.txt is unavailable");
+  //print out which files are available
+  if(SD.exists("PWMCOO~1.TXT")){
+    Serial.println("there's a thing");
+  }
+
+  if (!SD.exists("PWMCOO~1.TXT")) {
+    Serial.println("PWMCOO~1.TXT is unavailable");
+  }
+  
+  for(int i=0; i<8; i++){
+    if (SD.exists(filenames[i])) {
+      Serial.print(filenames[i]);
+      Serial.println(" available.");
+      profiles[i] = true;
+    }
   }
 }
 
 void loop()
 {
-  //read Serial2 data to know if we need to abort.
-
+  //read Serial2 data to know if we need to abort.  
 
   if (Serial2.available()){
     char inByte = Serial2.read();
     Serial.write(inByte);
 
+    fullOpen = false;
+    
     if (inByte == 'r'){//reset filePos to beginning
       filePos = 0;
       softKillBool = false;
       abortBool = false;
       profileCheck = false;
       start = false;
+      fuelDump = false;
       //Serial.print("r");
     }
     if (inByte == 'a'){//abort
@@ -110,11 +135,52 @@ void loop()
       //myFile.close();
       //Serial2.clearing();
     }
+
+    if(inByte == '0'){
+        profileSelection = 0;
+        Serial.print("not operating");
+      }
+    if(inByte == '1' && profiles[0]){
+         profileSelection = 1;
+         Serial.print("opening 1");
+      }
+    if(inByte == '2' && profiles[1]){
+         profileSelection = 2;
+         Serial.print("opening 2");
+      }
+    if(inByte == '3' && profiles[2]){
+         profileSelection = 3;
+         Serial.print("opening 3");
+      }
+    if(inByte == '4' && profiles[3]){
+         profileSelection = 4;
+         Serial.print("opening 4");
+      }
+    if(inByte == '5' && profiles[4]){
+         profileSelection = 5;
+         Serial.print("opening 5");
+      }
+    if(inByte == '6' && profiles[5]){
+         profileSelection = 6;
+         Serial.print("opening 6");
+      }
+    if(inByte == '7' && profiles[6]){
+         profileSelection = 7;
+         Serial.print("opening 7");
+      }
+    if(inByte == '8' && profiles[7]){
+         profileSelection = 8;
+         Serial.print("opening 8");
+      }
+    if(inByte == '9'){
+        profileSelection = 9;
+        Serial.print("opening fully");
+      }
+    
     if (inByte == 'o'){//begin
       start = true;
       profileCheck = false;
       //Serial.print("o");
-      //Serial2.clearing();
     }
     if (inByte == 'k'){//softkill
       softKillBool = true;
@@ -134,9 +200,27 @@ void loop()
       start = false;
       fuelDump = true;  
     }
+    lastConnection = millis();
   }
 
-  myFile = SD.open("PWMCOORD.TXT");
+  curTime = millis();
+
+  if(curTime - lastConnection > 30000){
+    start = false;
+    softKillBool = false;
+    abortBool = true;
+  }
+
+  if(profileSelection == 0){
+    start = false;
+  }
+  else if(profileSelection > 0 && profileSelection < 9){
+    myFile = SD.open(filenames[profileSelection-1]);
+  }
+  else if(profileSelection == 9){
+    fullOpen = true;
+  }
+
 
   //read file
   if (start){
@@ -177,11 +261,11 @@ void loop()
       }
   }*/
   
-  /*if(start){
+  if(fullOpen){
      for (int j = 0; j < MAX_PWM; j++){
-      currentValue[j] = testValue[j];
+      currentValue[j] = openValue[j];
     }
-  }*/
+  }
 
   if(profileCheck){
     for(int j=0; j<MAX_PWM; j++){
@@ -266,3 +350,4 @@ void loop()
 
   myFile.close();
 }
+
