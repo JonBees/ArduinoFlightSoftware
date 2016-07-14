@@ -106,12 +106,15 @@ int boxTempAbort = 0;
 
 //Voltage Sensor
 #define voltage_sensor_analog 7
+int ABSMIN_VOLTAGE = 414//14v
 int MIN_VOLTAGE = 487;//14.5v
 int MAX_VOLTAGE = 850;//17v
 int MIN_VOLTAGE_SOFTKILL = 25;//25 cycles -- 5s
+int ABSMIN_VOLTAGE_ABORT = 5;
 int MAX_VOLTAGE_ABORT = 5;//5 cycles -- 1s
 int voltage_softkill_underages = 0; 
 int voltage_abort_overages = 0;
+int voltage_abort_underages = 0;
 
 //Xbee input flags 
 struct flags
@@ -257,6 +260,7 @@ void SDcardWrite(String& str);
 void checkValves(health_packet& data);
 
 int loops = 0;
+int voltageAbortLoops = 0;
 
 void setup() {
   Serial.begin(9600);//USB connection
@@ -816,13 +820,33 @@ void checkVoltage(health_packet& data){
   }
   else{
     voltage_abort_overages = 0;
+    voltageAbortLoops = 0;
   }
+  if(data.voltage < ABSMIN_VOLTAGE){
+    voltage_abort_underages++;
+  }
+  else{
+    voltage_abort_underages = 0;
+    voltageAbortLoops = 0;
+  }
+
 
   if(voltage_softkill_underages >= MIN_VOLTAGE_SOFTKILL) {
     data.errorflags.voltage_softkill = true;
   }
   if(voltage_abort_overages >= MAX_VOLTAGE_ABORT) {
     data.errorflags.voltage_abort = true;
+    voltageAbortLoops++;
+  }
+  if(voltage_abort_underages >= ABSMIN_VOLTAGE_ABORT){
+    data.errorflags.voltage_abort = true;
+    voltageAbortLoops++;
+  }
+
+  if(voltageAbortLoops > 15){
+    digitalWrite(power_relay_digital_off, HIGH);
+    digitalWrite(power_relay_digital_on, LOW);
+    relayTriggered = true;
   }
 }
 
