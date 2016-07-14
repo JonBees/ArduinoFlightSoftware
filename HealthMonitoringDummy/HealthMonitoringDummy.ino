@@ -437,7 +437,7 @@ void checkMotors(health_packet& data){
             }
             //assign reads to four int
             data.motor_values[i] = (numbers[0]*1000) + (numbers[1]*100) + (numbers[2]*10) + (numbers[3]);
-            Serial.println(data.motor_values[i]);
+            //Serial.println(data.motor_values[i]);
           }
           if (failed){
             for (int i = 0; i < 4; i++){
@@ -865,7 +865,7 @@ String createHealthPacket(health_packet& data)
 
 void sendHealthPacket(String& str){
   Serial1.println(str);
-  //Serial.println(str);
+  Serial.println(str);
   //Serial.println(Serial.available());
 }
 
