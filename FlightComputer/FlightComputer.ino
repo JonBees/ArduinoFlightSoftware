@@ -205,11 +205,11 @@ void loop()
 
   curTime = millis();
 
-  if(curTime - lastConnection > 30000){
+  /*if(curTime - lastConnection > 30000){
     start = false;
     softKillBool = false;
     abortBool = true;
-  }
+  }*/
 
   if(profileSelection == 0){
     start = false;
