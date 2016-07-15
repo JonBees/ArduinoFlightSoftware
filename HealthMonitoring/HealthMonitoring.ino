@@ -106,7 +106,7 @@ int boxTempAbort = 0;
 
 //Voltage Sensor
 #define voltage_sensor_analog 7
-int ABSMIN_VOLTAGE = 414//14v
+int ABSMIN_VOLTAGE = 414;//14v
 int MIN_VOLTAGE = 487;//14.5v
 int MAX_VOLTAGE = 850;//17v
 int MIN_VOLTAGE_SOFTKILL = 25;//25 cycles -- 5s
