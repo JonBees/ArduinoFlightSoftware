@@ -137,42 +137,52 @@ void loop()
     }
 
     if(inByte == '0'){
+        filePos = 0;
         profileSelection = 0;
         Serial.print("not operating");
       }
     if(inByte == '1' && profiles[0]){
+         filePos = 0;
          profileSelection = 1;
          Serial.print("opening 1");
       }
     if(inByte == '2' && profiles[1]){
+         filePos = 0;
          profileSelection = 2;
          Serial.print("opening 2");
       }
     if(inByte == '3' && profiles[2]){
+         filePos = 0;
          profileSelection = 3;
          Serial.print("opening 3");
       }
     if(inByte == '4' && profiles[3]){
+         filePos = 0;
          profileSelection = 4;
          Serial.print("opening 4");
       }
     if(inByte == '5' && profiles[4]){
+         filePos = 0;
          profileSelection = 5;
          Serial.print("opening 5");
       }
     if(inByte == '6' && profiles[5]){
+         filePos = 0;
          profileSelection = 6;
          Serial.print("opening 6");
       }
     if(inByte == '7' && profiles[6]){
+         filePos = 0;
          profileSelection = 7;
          Serial.print("opening 7");
       }
     if(inByte == '8' && profiles[7]){
+         filePos = 0;
          profileSelection = 8;
          Serial.print("opening 8");
       }
     if(inByte == '9'){
+        filePos = 0;
         profileSelection = 9;
         Serial.print("opening fully");
       }
@@ -205,11 +215,11 @@ void loop()
 
   curTime = millis();
 
-  /*if(curTime - lastConnection > 30000){
+  if(curTime - lastConnection > 30000){
     start = false;
     softKillBool = false;
     abortBool = true;
-  }*/
+  }
 
   if(profileSelection == 0){
     start = false;
@@ -332,6 +342,7 @@ void loop()
     if (sendPacketCounter == 3) {
       Serial2.println(packetToSend);
       Serial.println(packetToSend);
+      Serial.println(filePos);
       sendPacketCounter = 0;
     }
     else {

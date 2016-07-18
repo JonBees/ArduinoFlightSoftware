@@ -231,8 +231,10 @@ template <int N>
 class print_err;
 
 boolean relayTriggered = false;
+boolean FCCommandSent = false;
 
 long lastFlagReadTime = 0;
+long lastFCCommunication = 0;
 long currentTime = 0;
 long loopTime = 0;
 long loopTimeCounter = 0;
@@ -321,6 +323,7 @@ void setup() {
 
 
 void loop() {
+ FCCommandSent = false;
   loopTime = millis();
   loopTimeCounter = loopTime+looplength;
   readFlags(); //read input
@@ -330,6 +333,13 @@ void loop() {
     //if no read check time 1m 30 sec handshake process has failed. Turn on appropriate abort based on last health packet
   if (lastFlagReadTime < (currentTime - 90000)){
     current_health_packet.errorflags.time = true;
+  }
+  if(currentTime - lastFCCommunication > 30000){
+    current_health_packet.state.abort = true;
+    Serial.println(" Arduino Communication Abort ");
+    if (current_health_packet.stateString.indexOf('a') == -1){
+      current_health_packet.stateString += String('a');
+    }
   }
 
   //ThermoCouple check temp
@@ -413,6 +423,9 @@ void loop() {
         current_health_packet.stateString += String('i');
       }
     }
+    if(!FCCommandSent){
+      Serial2.write('-');
+    }
   }
 
   /*if(current_health_packet.state.fuel_dump){
@@ -474,6 +487,7 @@ void checkMotors(health_packet& data){
   boolean done = false;
   int loopCounterCheckMotor = 0;
   if(Serial2.available()){
+    lastFCCommunication = millis();
     while (Serial2.available() && loopCounterCheckMotor < 14 && !failed && !done){
       //motors are being read
       loopCounterCheckMotor++;
@@ -594,13 +608,16 @@ void stateFunctionEvaluation(health_packet& data){
   if (data.state.abort){
     //abort sequence
     Serial2.write('a');
+    FCCommandSent = true;
   }
   if ((data.state.soft_kill)&& !data.state_activated.abort){       
     // True starts soft kill procedure
     Serial2.write('k');
+    FCCommandSent = true;
   }
   if (data.state.sddump && !data.state_activated.abort){
     Serial2.write('p');
+    FCCommandSent = true;
     /*
     while(data.state.sddump){//you've entered the sddump
      //we are going to get all the data off the sd card
@@ -632,11 +649,13 @@ void stateFunctionEvaluation(health_packet& data){
   }
   if(data.state.fuel_dump){
     Serial2.write('b');
+    FCCommandSent = true;
   }
   if (data.state.take_off && !data.state_activated.safety && !data.state_activated.abort && !data.state_activated.soft_kill){// && !data.state_activated.abort){        //ensures take_off is not enable unless no abort is in effect
     // Take off on true
     Serial.write('o');
     Serial2.write('o');
+    FCCommandSent = true;
     data.state_activated.take_off = data.state.take_off;
   }
 
@@ -646,6 +665,7 @@ void stateFunctionEvaluation(health_packet& data){
     // On change, will reset computer
     Serial.write('r');
     Serial2.write('r');
+    FCCommandSent = true;
     dumpTimer = 0;
   }
 
@@ -953,42 +973,52 @@ void setFlightProfile(health_packet& data){
   if(data.state.fp_0){
     Serial2.write('0');
     Serial.println("0");
+    FCCommandSent = true;
   }
   else if(data.state.fp_1){
     Serial2.write('1');
     Serial.println("1");
+    FCCommandSent = true;
   }
   else if(data.state.fp_2){
     Serial2.write('2');
     Serial.println("2");
+    FCCommandSent = true;
   }
   else if(data.state.fp_3){
     Serial2.write('3');
     Serial.println("3");
+    FCCommandSent = true;
   }
   else if(data.state.fp_4){
     Serial2.write('4');
     Serial.println("4");
+    FCCommandSent = true;
   }
   else if(data.state.fp_5){
     Serial2.write('5');
     Serial.println("5");
+    FCCommandSent = true;
   }
   else if(data.state.fp_6){
     Serial2.write('6');
     Serial.println("6");
+    FCCommandSent = true;
   }
   else if(data.state.fp_7){
     Serial2.write('7');
     Serial.println("7");
+    FCCommandSent = true;
   }
   else if(data.state.fp_8){
     Serial2.write('8');
     Serial.println("8");
+    FCCommandSent = true;
   }
   else if(data.state.fp_9){
     Serial2.write('9');
     Serial.println("9");
+    FCCommandSent = true;
   }
 }
 
@@ -1028,7 +1058,7 @@ String createHealthPacket(health_packet& data)
 
 void sendHealthPacket(String& str){
   Serial1.println(str);
-  //Serial.println(str);
+  Serial.println(str);
   //Serial.println(Serial1.available());
 }
 
