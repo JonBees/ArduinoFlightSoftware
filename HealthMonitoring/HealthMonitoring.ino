@@ -346,7 +346,10 @@ void loop() {
   if (lastFlagReadTime < (currentTime - 90000)) {
     current_health_packet.errorflags.time = true;
   }
-  if (currentTime - lastFCCommunication > 30000) {
+  if(!current_health_packet.state.flight_computer_on){
+    lastFCCommunication = millis();
+  }
+  if (current_health_packet.state.flight_computer_on && currentTime - lastFCCommunication > 30000) {
     current_health_packet.state.abort = true;
     Serial.println(" Arduino Communication Abort ");
     if (current_health_packet.stateString.indexOf('a') == -1) {
@@ -844,7 +847,7 @@ void readPressureTransducers(health_packet& data) {
 
 //Voltage Sensor Read
 void checkVoltage(health_packet& data) {
-  data.voltage = 500;//analogRead(voltage_sensor_analog);
+  data.voltage = analogRead(voltage_sensor_analog);
   if (data.voltage < MIN_VOLTAGE) {
     voltage_softkill_underages++;
   }
