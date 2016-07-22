@@ -255,7 +255,6 @@ int relayTimer = 0;
 int dumpTimer = 0;
 
 
-
 health_packet current_health_packet;
 String lastStateString = "";
 
@@ -1044,7 +1043,7 @@ String createHealthPacket(health_packet& data)
   outgoingPacket += String(";h:");
   outgoingPacket += String(data.stateString);
   outgoingPacket += String(";s:");
-  outgoingPacket += String(loops);
+  //outgoingPacket += String(loops);
   outgoingPacket += String(";?");
   int packetLength = outgoingPacket.length() - 1;
   outgoingPacket += String(packetLength);
