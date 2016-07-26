@@ -251,9 +251,9 @@ long currentTime = 0;
 long loopStartTime = 0;
 long loopEndTime = 0;
 int looplength = 200;
+
 int relayTimer = 0;
 int dumpTimer = 0;
-
 
 health_packet current_health_packet;
 String lastStateString = "";
@@ -395,6 +395,12 @@ void loop() {
 
   if (current_health_packet.state.fuel_dump && !current_health_packet.state.soft_kill) {
     dumpTimer++;
+    digitalWrite(power_relay_digital_off, LOW);
+    digitalWrite(power_relay_digital_on, HIGH);
+    relayTriggered = true;
+
+    Serial2.write('b');
+    FCCommandSent = true;
   }
   else {
     dumpTimer = 0;
@@ -460,8 +466,8 @@ void loop() {
     digitalWrite(power_relay_digital_on, HIGH);
     relayTriggered = true;
 
-    /*Serial2.write('k');
-    FCCommandSent = true;*/
+    Serial2.write('k');
+    FCCommandSent = true;
   }
 
 
@@ -652,7 +658,8 @@ void stateFunctionEvaluation(health_packet& data) {
     Serial2.write('p');
     FCCommandSent = true;
   }
-  if (data.state.fuel_dump) {
+  if (data.state.fuel_dump /*&& dumpTimer == 10*/) {
+    Serial.write('b');
     Serial2.write('b');
     FCCommandSent = true;
   }
