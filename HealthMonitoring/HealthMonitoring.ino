@@ -343,68 +343,40 @@ void loop() {
   //reads characters from XBee(Serial1) and overwrites previous stateString
   readFlags(); 
   currentTime = millis();
-  /*Serial.print("Read Flags: ");
-  Serial.println(currentTime - loopStartTime);*/
-  
+
   //sets all error flags to false
   resetErrorFlags(current_health_packet);
-  /*currentTime = millis();
-  Serial.print("Reset Error Flags: ");
-  Serial.println(currentTime - loopStartTime);*/
-  
-  //aborts if no connection to GCS for 1min30sec
+
+  //if no read check time 1m 30 sec handshake process has failed. Turn on appropriate abort based on last health packet
   if (lastFlagReadTime < (currentTime - 90000)) {
     current_health_packet.errorflags.time = true;
   }
-  //ensures that arduino disconnect isn't tripped when flight computer is supposed to be off
   if(!current_health_packet.state.flight_computer_on){
     lastFCCommunication = millis();
   }
-  //aborts if no connection to flight control Arduino for 30s
   if (current_health_packet.state.flight_computer_on && (currentTime - lastFCCommunication) > 30000) {
     current_health_packet.state.abort = true;
     Serial.println(" Arduino Communication Abort ");
   }
-  /*currentTime = millis();
-  Serial.print("Checked Communication: ");
-  Serial.println(currentTime - loopStartTime);*/
-  
+
   //calls readThermocouple (which uses the MAX31855 library) on current thermocouple, aborts/softkills if necessary 
   readThermocouples(current_health_packet);
-  /*currentTime = millis();
-  Serial.print("Read Thermocouples: ");
-  Serial.println(currentTime - loopStartTime);*/
-  
   //analogReads from pressure transducer pins, aborts/softkills if necessary
   readPressureTransducers(current_health_packet);
-  /*currentTime = millis();
-  Serial.print("Read Pressure Transducers: ");
-  Serial.println(currentTime - loopStartTime);*/
-  
   //anlogReads from voltage pin, aborts/softkills if necessary
   checkVoltage(current_health_packet);
-  /*currentTime = millis();
-  Serial.print("Checked Voltage: ");
-  Serial.println(currentTime - loopStartTime);*/
-  
   //checks for soft/hardkills, adds an error flag to the statestring if any are enabled
   errorFlagsEvaluation(current_health_packet);
-  /*currentTime = millis();
-  Serial.print("Evaluated Error Flags: ");
-  Serial.println(currentTime - loopStartTime);*/
-
+  //sets flight profile based on GCS
+  //setFlightProfile(current_health_packet);
   //reads motor values from flight computer(Serial2) and adds them to the health packet
   checkMotors(current_health_packet);
-  /*currentTime = millis();
-  Serial.print("Got Motor States: ");
-  Serial.println(currentTime - loopStartTime);*/
-  
-  
+  //Send Health Packet, we don't send flag if time out... this will cause the device to freeze
+
   //Enables/disables fan based on LabVIEW button state
   adjustFanSpeed(current_health_packet);
-  //currentTime = millis();
 
-  //clears relay pins after 
+
   if (relayTriggered) {
     if (relayTimer == 2) {
       relayTriggered = false;
@@ -414,22 +386,21 @@ void loop() {
     }
     relayTimer++;
   }
-  
-  //currentTime = millis();
-  
-  
+
   if (!current_health_packet.stateString.equals(lastStateString)) {
     stateEvaluation(current_health_packet);
     setFlightProfile(current_health_packet);
     stateFunctionEvaluation(current_health_packet);
   }
 
-  /*currentTime = millis();
-  Serial.print("Completed State Evaluation: ");
-  Serial.println(currentTime - loopStartTime);*/
-  
   if (current_health_packet.state.fuel_dump && !current_health_packet.state.soft_kill) {
     dumpTimer++;
+    digitalWrite(power_relay_digital_off, LOW);
+    digitalWrite(power_relay_digital_on, HIGH);
+    relayTriggered = true;
+
+    Serial2.write('b');
+    FCCommandSent = true;
   }
   else {
     dumpTimer = 0;
@@ -457,8 +428,6 @@ void loop() {
         current_health_packet.stateString += String('i');
       }
     }
-    
-    //currentTime = millis();
   }
 
   //if abort, change valve states
@@ -466,7 +435,12 @@ void loop() {
     if (current_health_packet.stateString.indexOf('a') == -1) {
       current_health_packet.stateString += String('a');
     }
-    current_health_packet.state.flight_computer_on = true;
+
+    digitalWrite(power_relay_digital_off, LOW);
+    digitalWrite(power_relay_digital_on, HIGH);
+    relayTriggered = true;
+
+    
     current_health_packet.state.AV5_M_open = true;
     if (current_health_packet.stateString.indexOf('t') != -1) {
       current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('t'), 1);
@@ -479,43 +453,47 @@ void loop() {
     if (current_health_packet.stateString.indexOf('i') != -1) {
       current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('i'), 1);
     }
+
+    Serial2.write('a');
+    FCCommandSent = true;
   }
+  else if(current_health_packet.state.soft_kill){
+    Serial.println(" Softkill ");
+    if (current_health_packet.stateString.indexOf('k') == -1) {
+      current_health_packet.stateString += String('k');
+    }
+    digitalWrite(power_relay_digital_off, LOW);
+    digitalWrite(power_relay_digital_on, HIGH);
+    relayTriggered = true;
+
+    Serial2.write('k');
+    FCCommandSent = true;
+  }
+
 
   if (!FCCommandSent) {
     Serial2.write('-');
   }
 
+
+
+
   checkValves(current_health_packet);
-  /*currentTime = millis();
-  Serial.print("Checked Valves: ");
-  Serial.println(currentTime - loopStartTime);*/
 
-//Send Health Packet, we don't send flag if time out... this will cause the device to freeze
+
   String outgoingPacket = createHealthPacket(current_health_packet);
-  /*currentTime = millis();
-  Serial.print("Created Health Packet: ");
-  Serial.println(currentTime - loopStartTime);*/
-  
   SDcardWrite(outgoingPacket);
-  /*currentTime = millis();
-  Serial.print("Wrote to SD: ");
-  Serial.println(currentTime - loopStartTime);*/
-  
   sendHealthPacket(outgoingPacket);
-  /*currentTime = millis();
-  Serial.print("Sent Health Packet: ");
-  Serial.println(currentTime - loopStartTime);*/
 
 
-  digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);//this resets the thermocouple shield to be called again. allowing us to run the program while the thermocouple shield computes the data.
-  //Serial.println(loops);
   while (currentTime < loopEndTime) {
     currentTime = millis();
     //delay(1);
   }
-  currentTime= millis();
-  /*Serial.print("Finished: ");
-  Serial.println(currentTime - loopStartTime);*/
+  digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);//this resets the thermocouple shield to be called again. allowing us to run the program while the thermocouple shield computes the data.
+  //Serial.println(loops);
+  currentTime = millis();
+  Serial.println(currentTime - loopStartTime);
   loops++;
 }
 
@@ -656,13 +634,6 @@ void errorFlagsEvaluation(health_packet& data) {
       data.stateString += String('a');
     }
   }
-  if (data.state.soft_kill) {
-    addFlagToString(current_health_packet);
-    Serial.println(" Softkill ");
-    if (data.stateString.indexOf('k') == -1) {
-      data.stateString += String('k');
-    }
-  }
 }
 void addFlagToString(health_packet& data) {
   if (data.stateString.indexOf('e') == -1) {
@@ -687,7 +658,8 @@ void stateFunctionEvaluation(health_packet& data) {
     Serial2.write('p');
     FCCommandSent = true;
   }
-  if (data.state.fuel_dump) {
+  if (data.state.fuel_dump /*&& dumpTimer == 10*/) {
+    Serial.write('b');
     Serial2.write('b');
     FCCommandSent = true;
   }
@@ -920,8 +892,7 @@ double readThermocouple(int index, byte& error)
 {
   double result, dummy;
 
-  // ExternalTempDoubleVariable, InternalTempDoubleVariable, SCALE, ErrorByteVariable) --- SCALE: 0 for Celsius/Centigrade, 1 for Kelvin, 2 for Fahrenheit, and 3 for Rankine.
-  TC.getTemp(result, dummy, 2, error); 
+  TC.getTemp(result, dummy, 2, error); // ExternalfTempDoubleVariable, InternalTempDoubleVariable, SCALE, ErrorByteVariable) --- SCALE: 0 for Celsius/Centigrade, 1 for Kelvin, 2 for Fahrenheit, and 3 for Rankine.
   if (error & 0x01) {
     result = -1.0;
   }
@@ -986,7 +957,7 @@ void readThermocouples(health_packet& data)
     }
 
     thermoCounter++;
-  }
+  };
   TC.setMUX(thermoCounter);
   digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);//disables connection from TC board
 }
@@ -1089,7 +1060,7 @@ String createHealthPacket(health_packet& data)
 
 void sendHealthPacket(String& str) {
   Serial1.println(str);
-  //Serial.println(str);
+  Serial.println(str);
   //Serial.println(Serial1.available());
 }
 
@@ -1127,7 +1098,7 @@ void readFlags()
       if (check == ':') {
         //here is our health packet
         String incomingString = "";
-        while (check != ';' && Serial1.available() && (time >= timeEval)  && !((currentTime - loopEndTime) > looplength)) {
+        while (check != ';' && Serial1.available() && (time >= timeEval)  && !((loopStartTime - loopEndTime) > looplength)) {
           timeEval = millis();
           check = Serial1.read();
           if (check != ';') {
@@ -1135,7 +1106,7 @@ void readFlags()
           }
         }
         String checkSum = "";
-        while (check != '|' && (time >= timeEval) && !((currentTime - loopEndTime) > looplength)) {
+        while (check != '|' && (time >= timeEval) && !((loopStartTime - loopEndTime) > looplength)) {
           timeEval = millis();
           if (Serial1.available()) {
             check = Serial1.read();
@@ -1150,7 +1121,7 @@ void readFlags()
           lastFlagReadTime = millis();
           packetReceived = true;
         }
-        while (Serial1.available() && (time >= timeEval) && !((currentTime - loopEndTime) > looplength)) {
+        while (Serial1.available() && (time >= timeEval) && !((loopStartTime - loopEndTime) > looplength)) {
           Serial1.read();
           timeEval = millis();
         }
@@ -1158,3 +1129,4 @@ void readFlags()
     }
   }
 }
+
