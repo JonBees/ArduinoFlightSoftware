@@ -395,9 +395,9 @@ void loop() {
 
   if (current_health_packet.state.fuel_dump && !current_health_packet.state.soft_kill) {
     dumpTimer++;
-    /*digitalWrite(power_relay_digital_off, LOW);
+    digitalWrite(power_relay_digital_off, LOW);
     digitalWrite(power_relay_digital_on, HIGH);
-    relayTriggered = true;*/
+    relayTriggered = true;
 
     Serial2.write('b');
     FCCommandSent = true;
@@ -436,9 +436,9 @@ void loop() {
       current_health_packet.stateString += String('a');
     }
 
-    /*digitalWrite(power_relay_digital_off, LOW);
+    digitalWrite(power_relay_digital_off, LOW);
     digitalWrite(power_relay_digital_on, HIGH);
-    relayTriggered = true;*/
+    relayTriggered = true;
 
     
     current_health_packet.state.AV5_M_open = true;
@@ -462,9 +462,9 @@ void loop() {
     if (current_health_packet.stateString.indexOf('k') == -1) {
       current_health_packet.stateString += String('k');
     }
-    /*digitalWrite(power_relay_digital_off, LOW);
+    digitalWrite(power_relay_digital_off, LOW);
     digitalWrite(power_relay_digital_on, HIGH);
-    relayTriggered = true;*/
+    relayTriggered = true;
 
     Serial2.write('k');
     FCCommandSent = true;
