@@ -44,9 +44,9 @@ while shouldContinue:
             vals[i].append(fts[i])
 
     if(first):
-        open("out.txt","w")
+        open("out1.txt","w")
 
-    with open("out.txt", "a") as outfile:
+    with open("out1.txt", "a") as outfile:
         for j in range(0, its):
             for i in range(0, thrustNums):
                 outfile.write("{}".format(vals[i][j]))
