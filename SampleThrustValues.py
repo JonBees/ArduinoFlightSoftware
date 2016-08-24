@@ -47,11 +47,11 @@ while shouldContinue:
             vals[i].append(itss[i] + int(math.floor(inc*(j+1))))
 
     if(first):
-        folder = "C:/Users/Lunar Lion/Desktop/FlightProfiles/"
-        completeName = os.path.join(folder, "newProfile.txt")   
-        open(completeName,"w")
+        #folder = "C:/Users/Lunar Lion/Desktop/FlightProfiles/"
+        #completeName = os.path.join(folder, "newProfile.txt")   
+        open("out.txt","w")
 
-    with open(completeName, "a") as outfile:
+    with open("out.txt", "a") as outfile:
         for j in range(0, its):
             for i in range(0, thrustNums):
                 outfile.write("{}".format(vals[i][j]))

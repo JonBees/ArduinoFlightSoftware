@@ -8,6 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("pid.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("llrounded.ico")]
 
 

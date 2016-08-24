@@ -14,13 +14,18 @@ namespace GCS_3._0
     {
         SolidColorBrush nothing, warning, danger, safe;
         double sensedValue, maxSensedValue;
-        public Sensor(int type, int subtype, string name)
+        double multi, off;
+        public Sensor(int type, int subtype, string name, double multiplier, double offset)
         {
             Type = type;
             SubType = subtype;
             Name = name;
             sensedValue = 0;
             maxSensedValue = 0;
+
+            //Setting calibration values.
+            multi = multiplier;
+            off = offset;
 
             nothing = Brushes.Transparent;
             warning = Brushes.Yellow;
@@ -99,7 +104,8 @@ namespace GCS_3._0
         //Put calibrations here with swithc statement for each type of sensor.
         public void setValue(double val)
         {
-            sensedValue = val;
+            sensedValue = (multi * val) + off;
+
             if(sensedValue > maxSensedValue) maxSensedValue = sensedValue;
         }
 

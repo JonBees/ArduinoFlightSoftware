@@ -209,22 +209,22 @@ namespace GCS_3._0
             TCs = new List<Sensor>();
             voltage = new List<Sensor>();
 
-            PTs.Add(new Sensor(0, 0, "PT1-U"));
-            PTs.Add(new Sensor(0, 1, "PT2-U"));
-            PTs.Add(new Sensor(0, 1, "PT1-M"));
-            PTs.Add(new Sensor(0, 1, "PT2-M"));
-            PTs.Add(new Sensor(0, 1, "PT3-M"));
-            PTs.Add(new Sensor(0, 1, "PT4-M"));
-            PTs.Add(new Sensor(0, 1, "PT5-M"));
+            PTs.Add(new Sensor(0, 0, "PT1-U", 6.36, -1253));
+            PTs.Add(new Sensor(0, 1, "PT2-U", 1.274, -250.9));
+            PTs.Add(new Sensor(0, 1, "PT1-M", 1.264, -250.2));
+            PTs.Add(new Sensor(0, 1, "PT2-M", 1.267, -249.8));
+            PTs.Add(new Sensor(0, 1, "PT3-M", 1.277, -250.3));
+            PTs.Add(new Sensor(0, 1, "PT4-M", 1.264, -251.3));
+            PTs.Add(new Sensor(0, 1, "PT5-M", 1.277, -251));
 
-            TCs.Add(new Sensor(1, 1, "TCp1-M"));
-            TCs.Add(new Sensor(1, 1, "TCp2-M"));
-            TCs.Add(new Sensor(1, 0, "TCw1-E"));
-            TCs.Add(new Sensor(1, 0, "TCw2-E"));
-            TCs.Add(new Sensor(1, 0, "TCw3-E"));
-            TCs.Add(new Sensor(1, 0, "TCw4-E"));
+            TCs.Add(new Sensor(1, 1, "TCp1-M", 1, 0));
+            TCs.Add(new Sensor(1, 1, "TCp2-M", 1, 0));
+            TCs.Add(new Sensor(1, 0, "TCw1-E", 1, 0));
+            TCs.Add(new Sensor(1, 0, "TCw2-E", 1, 0));
+            TCs.Add(new Sensor(1, 0, "TCw3-E", 1, 0));
+            TCs.Add(new Sensor(1, 0, "TCw4-E", 1, 0));
 
-            voltage.Add(new Sensor(2, 0, "Voltage"));
+            voltage.Add(new Sensor(2, 0, "Voltage", 0.0069, 11.144));
 
             PTsensorTable.ItemsSource = PTs;
             TCsensorTable.ItemsSource = TCs;
