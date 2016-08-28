@@ -1,0 +1,36 @@
+﻿<Window x:Class="FlightProfileDesigner.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FlightProfileDesigner"
+        mc:Ignorable="d"
+        Title="Flight Profile Generator" Height="600" Width="400">
+    <Grid Background="CornflowerBlue">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="4*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="3">
+            <ScrollViewer.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add Step" Click="AddStep"/>
+                    <MenuItem Header="Remove Step" Click="RemoveStep"/>
+                </ContextMenu>
+            </ScrollViewer.ContextMenu>
+            <StackPanel x:Name="profileSteps"/>
+        </ScrollViewer>
+        <Button x:Name="submit" Margin="5" FontSize="20" Grid.Row="0" Grid.Column="0" Click="CreateProfile">Submit</Button>
+        <Button x:Name="clear" Margin="{Binding Path=Margin, ElementName=submit}" FontSize="{Binding Path=FontSize, ElementName=submit}" Grid.Row="0" Grid.Column="1" Click="ClearSteps">Clear All</Button>
+        <Button x:Name="reformat" Margin="{Binding Path=Margin, ElementName=submit}" FontSize="{Binding Path=FontSize, ElementName=submit}" Grid.Row="0" Grid.Column="2" Click="CreatePreview">
+            <TextBlock>
+                Save as <LineBreak/> Excel File
+            </TextBlock>
+        </Button>
+    </Grid>
+</Window>

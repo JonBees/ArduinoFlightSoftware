@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="FlightProfileDesigner.ProfileStep"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FlightProfileDesigner"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="400" Height="120"  x:Name="main" Margin="0,5">
+    <Grid Background="AliceBlue">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0">
+            <Label HorizontalContentAlignment="Center">Start Values (E1, E2, E3, E4)</Label>
+            <TextBox x:Name="startPWM" Margin="5,0"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0">
+            <Label HorizontalContentAlignment="Center">End Values (E1, E2, E3, E4)</Label>
+            <TextBox x:Name="endPWM" Margin="{Binding Path=Margin, ElementName=startPWM}"/>
+        </StackPanel>
+        <StackPanel Margin="5,0" Grid.Row="0" Grid.Column="1">
+            <CheckBox x:Name="sustainCheckBox" Margin="0,5" Checked="updateSustainBoolSCB" Unchecked="updateSustainBoolSCB">Sustain at End Value</CheckBox>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <Label HorizontalContentAlignment="Center">Sustain/Ramp Time Interval:</Label>
+            <TextBox x:Name="timePer" Margin="{Binding Path=Margin, ElementName=startPWM}" />
+        </StackPanel>
+    </Grid>
+</UserControl>
