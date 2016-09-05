@@ -957,10 +957,10 @@ void readThermocouples(health_packet& data)
 
 void setFanState(health_packet& data) {
   if (data.state.fan_off) {
-    digitalWrite(POWERBOX_FAN, LOW);
+    digitalWrite(POWERBOX_FAN_digital, LOW);
   }
   else {
-    digitalWrite(POWERBOX_FAN, HIGH);
+    digitalWrite(POWERBOX_FAN_digital, HIGH);
   }
 }
 
