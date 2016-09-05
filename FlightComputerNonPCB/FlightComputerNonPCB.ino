@@ -84,10 +84,10 @@ void setup()
 {
   Serial.begin(9600);//USB connection
   Serial2.begin(9600);//communication with HealthMonitoring Arduino
-  AV1.attach(3);
-  AV2.attach(4);
-  AV3.attach(5);
-  AV4.attach(6);
+  AV1.attach(6);
+  AV2.attach(5);
+  AV3.attach(4);
+  AV4.attach(3);
 
   //psLength = sizeof(profileString);
 

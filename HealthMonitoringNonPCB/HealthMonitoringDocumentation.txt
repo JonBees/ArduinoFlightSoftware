@@ -1,0 +1,119 @@
+HealthMonitoring: Runs on Puma's arduino with the XBee. 
+It aggregates the data from the pressure sensors, thermocouples, voltage sensor, etc. 
+It then sends this data over XBee to ground control and saves it to the SD card. 
+This sketch also controls and responds to the command flags from the ground control station.
+
+
+Serial connections:
+	-Serial: can connect via USB
+	-Serial1: XBee
+	-Serial2: FlightComputer
+	-Serial3: Disconnected, previously pixhawk
+
+	
+Functions (all return void unless otherwise noted):
+setup():
+	-begins serial connections
+	-sets servos to default values
+	-connects to thermocouple board
+	-connects to SD card and creates log file
+
+loop():	
+	-checks command flags. if no flags for 5 minutes, aborts
+	-gets sensor data
+	-sends & saves sensor data (as health packet)
+	-ensures that the power relay on and off pins stay deactivated
+	-runs stateEvaluation and stateFunctionEvaluation
+	-checks for abort and changes valve states accordingly
+
+valveChecks(health_packet&):
+	-checks states in health_packet and adjusts valves accordingly
+
+checkMotors(health_packet&):
+	-Gets currentValue from each of the valve servos, assigns it to health_packet's motor_values
+
+errorFlagsEvaluation(health_packet&):
+	-checks temperature, pressure, and voltage error flags and softkills if triggered
+	-checks time error flag and aborts if triggered
+	
+addFlagToString(health_packet&):
+	-adds 'e' (error flag) to the health packet
+
+stateFunctionEvaluation(health_packet&):
+	-checks states and sends command flags to flight computer
+	-turns power relay on or off based on state
+	-stores currently used states in the health packet's state_activated
+
+stateEvaluation(health_packet&):
+	-checks stateString for command flags, sets health packet's state values accordingly
+
+resetState():
+	-sets all state booleans to false
+
+resetErrorFlags(health_packet&):	
+	-sets error flags in the health_packet to false
+
+PressureTransducerRead(health_packet&):
+	-writes pressure transducer values to health_packet
+	-checks pressure values to see if any are above MAX_PRESSURE. 
+		if any pressure value is above max for 5 cycles (1s), sets pressure error flag
+
+voltage_sensor(health_packet&): 	
+	-writes voltage to health_packet
+	-checks voltage data to see if it is below MIN_VOLTAGE.
+		if the voltage is below min for 5 cycles (1s), sets voltage error flag
+
+initThermocoupleMonitor():
+	-begins communication with thermocouple board
+
+double readThermocouple(int index, byte& error):
+	-gives temperature of thermocouple at index
+	-returns error (as negative #) if one arises
+
+readThermocouples(health_packet&):
+	-reads thermocouples
+		if box thermocouple (7) is above 122 for 5 cycles (1s), sets temperature error flag
+		if any other thermocouple is above its MAX_TEMPERATURE for 5 cycles (1s), sets temperature error flag
+		
+adjustFanSpeed():
+	-reads thermocouple board's internal temperature
+	-sets pwm value of POWERBOX_FAN (0 to 255 duty cycle at 16Mhz)
+
+String createHealthPacket(health_packet&):	
+	-grabs values from health_packet and turns them into a string with format:
+		"p:"<pressure values>";t:"<temperature values>";v:"<voltage>";m:"<servo values>";h:"<state string>";s:"<loop time>";?"<packet length>"|"
+					
+sendHealthPacket(String&):
+	-sends health packet to XBee
+
+SDcardWrite(String&):
+	-Writes loop time, outgoing packet, and box temp to SD card
+
+readFlags():		
+	-checks for incoming flags from the Xbee
+		format: "h:"<command flags>';'<command string length>'|'
+
+		
+Input Flags (all default to false):
+	's' - safety: refuses to take off when false 
+	't' - tank_iso_open: fully opens isolation valve when true
+	'v' - dump_valve_open: fully opens fuel dump valve when true
+	'a','b' - abort: sends 'a' to flight computer, closes isolation valve, opens ullage_dump, closes ullage_main_tank
+	'z','c' - flight_computer_on: powers on the flight computer, sets relayTriggered to true
+	'r' - flight_computer_reset: if not aborting, sends 'r' to flight computer, sets softkillGlobal and abortGlobal to false
+	'd' - ullage_dump: sets FAIL_OPEN pin to LOW, opening ullage_dump
+	'y'(REMOVED) - pixhawk_enable: if not aborting, sends 'o' to PixHawk
+	'o' - take_off: if safety is true and abort & softkill are false, sends 'o' to flight computer
+	'k' - soft_kill: adds flag to current health packet (if triggered by onboard health event), sends 'k' to flight computer
+	'i' - ullage_main_tank: sets FAIL_CLOSED pin to HIGH, opening ullage_main_tank
+	'p' - sddump: if not aborting, sends 'p' to flight computer
+
+
+Libraries used:
+SPI - used for communication with thermocouples
+SD - used for saving data to SD card
+SoftwareSerial - used for communication with thermocouples
+String - used for XBee communication
+ctype - C library for dealing with characters
+MAX31855 - used for communicating with thermocouples
+Servo - used for dump valve operation

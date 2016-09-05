@@ -32,13 +32,11 @@
 #include <stdio.h>
 
 //Pinouts
-#define AV5_M 13
+#define AV5_M 12
 #define AV6_M 11
 #define FC_U 45
 #define FO_U 44
-#define FC2 42
-#define FC3 43
-#define POWERBOX_FAN_digital 7
+#define POWERBOX_FAN 52
 
 //Servo
 Servo AV5_M_servo;
@@ -50,6 +48,7 @@ File recordingFile;
 
 //Power Relay
 #define power_relay_digital_on 8
+#define power_relay_digital_off 10
 
 //Pressure Transducers
 #define PT4_M 0
@@ -60,18 +59,9 @@ File recordingFile;
 #define PT2_M 5
 #define PT5_M 6
 
-//other sensors
-#define sensor9_analog 9
-#define sensor8_analog 10
-#define sensor11_analog 11
-#define sensor10_analog 12
-
-#define power_error_digital 40
-
 //thermocouple
-#define THERMOCOUPLE1_CHIP_SELECT 24 //needs to be set to LOW when the Thermocouple shield is being used and HIGH otherwise.
-MAX31855 TC(THERMOCOUPLE1_CHIP_SELECT);
-#define THERMOCOUPLE2_CHIP_SELECT 25
+#define THERMOCOUPLE_CHIP_SELECT 24 //needs to be set to LOW when the Thermocouple shield is being used and HIGH otherwise.
+MAX31855 TC(THERMOCOUPLE_CHIP_SELECT);
 
 //Max Pressure Values
 int SOFTKILL_MAX_PRESSURE[] = {
@@ -125,10 +115,9 @@ int thermoCounter = 1;//we start at thermocouple 2 (zero indexed)
 double boxTemp = 0;
 int boxTempAbort = 0;
 
-#define current_sensor_analog 7
 
 //Voltage Sensor
-#define voltage_sensor_analog 8
+#define voltage_sensor_analog 7
 int ABSMIN_VOLTAGE = 414;//14v
 int MIN_VOLTAGE = 487;//14.5v
 int MAX_VOLTAGE = 850;//17v
@@ -147,7 +136,7 @@ bool safety :
 bool AV5_M_open :
   1;  // Isolation valve
 bool AV6_M_open :
-  1;  // Fuel load valve
+  1;  // Fuel dump valve
 bool abort :
   1;  // If true, abort
 bool flight_computer_on :
@@ -164,7 +153,7 @@ bool FC_U_open :
   1;  //When true, opens valve to the ullage tank
 bool profile_check :
   1;
-bool fuel_load_open :
+bool fuel_dump :
   1; //when true, sets av5 open, av6 closed, fo-u closed, fc-u open, av1-4 50%
 bool fan_off :
   1; //when true, overrides fan control and forces fan off
@@ -201,7 +190,7 @@ bool fp_9 :
     soft_kill = false;
     FC_U_open = false;
     profile_check = false;
-    fuel_load_open = false;
+    fuel_dump = false;
     fan_off = false;
     fp_0 = false;
     fp_1 = false;
@@ -253,7 +242,7 @@ struct health_packet
 template <int N>
 class print_err;
 
-//boolean relayTriggered = false;
+boolean relayTriggered = false;
 boolean FCCommandSent = false;
 
 long lastFlagReadTime = 0;
@@ -297,6 +286,7 @@ void setup() {
   AV5_M_servo.attach(AV5_M);
   AV6_M_servo.attach(AV6_M);
   pinMode(power_relay_digital_on, OUTPUT);
+  pinMode(power_relay_digital_off, OUTPUT);
   pinMode(FC_U, OUTPUT);
   pinMode(FO_U, OUTPUT);
 
@@ -304,7 +294,10 @@ void setup() {
   AV5_M_servo.writeMicroseconds(1000);
   AV6_M_servo.writeMicroseconds(1000);
   digitalWrite(power_relay_digital_on, LOW);
+  digitalWrite(power_relay_digital_off, HIGH);
   delay(100);
+  digitalWrite(power_relay_digital_on, LOW);
+  digitalWrite(power_relay_digital_off, LOW);
   //digitalWrite(FC_U, HIGH); //these two make the solenoids click on powerup to ensure functionality.
   //digitalWrite(FO_U, HIGH);
 
@@ -312,7 +305,7 @@ void setup() {
   TC.begin();
   TC.setMUX(thermoCounter);//call the thermocouple in the start up since this is going to be evaulated first loop.
   delayMicroseconds(50);
-  digitalWrite(THERMOCOUPLE1_CHIP_SELECT, HIGH);
+  digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);
   for (int i = 0; i < 6; i++) {
     current_health_packet.temp_values[i] = 0.00;
   }
@@ -384,14 +377,15 @@ void loop() {
   setFanState(current_health_packet);
 
 
-  /*if (relayTriggered) {
+  if (relayTriggered) {
     if (relayTimer == 2) {
       relayTriggered = false;
       relayTimer = 0;
       digitalWrite(power_relay_digital_on, LOW);
+      digitalWrite(power_relay_digital_off, LOW);
     }
     relayTimer++;
-  }*/
+  }
 
   if (!current_health_packet.stateString.equals(lastStateString)) {
     stateEvaluation(current_health_packet);
@@ -399,8 +393,11 @@ void loop() {
     stateFunctionEvaluation(current_health_packet);
   }
 
-  if (current_health_packet.state.fuel_load_open && !current_health_packet.state.soft_kill) {
+  if (current_health_packet.state.fuel_dump && !current_health_packet.state.soft_kill) {
     dumpTimer++;
+    /*digitalWrite(power_relay_digital_off, LOW);
+    digitalWrite(power_relay_digital_on, HIGH);
+    relayTriggered = true;*/
 
     Serial2.write('b');
     FCCommandSent = true;
@@ -439,6 +436,10 @@ void loop() {
       current_health_packet.stateString += String('a');
     }
 
+    /*digitalWrite(power_relay_digital_off, LOW);
+    digitalWrite(power_relay_digital_on, HIGH);
+    relayTriggered = true;*/
+
     
     current_health_packet.state.AV5_M_open = true;
     if (current_health_packet.stateString.indexOf('t') != -1) {
@@ -461,6 +462,9 @@ void loop() {
     if (current_health_packet.stateString.indexOf('k') == -1) {
       current_health_packet.stateString += String('k');
     }
+    /*digitalWrite(power_relay_digital_off, LOW);
+    digitalWrite(power_relay_digital_on, HIGH);
+    relayTriggered = true;*/
 
     Serial2.write('k');
     FCCommandSent = true;
@@ -486,7 +490,7 @@ void loop() {
     currentTime = millis();
     //delay(1);
   }
-  digitalWrite(THERMOCOUPLE1_CHIP_SELECT, HIGH);//this resets the thermocouple shield to be called again. allowing us to run the program while the thermocouple shield computes the data.
+  digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);//this resets the thermocouple shield to be called again. allowing us to run the program while the thermocouple shield computes the data.
   //Serial.println(loops);
   currentTime = millis();
   Serial.println(currentTime - loopStartTime);
@@ -502,7 +506,7 @@ void checkValves(health_packet& data) {
     AV5_M_servo.writeMicroseconds(1000);
   }
   if (data.state.AV6_M_open) {
-    // Fuel load valve
+    // Fuel dump valve
     AV6_M_servo.writeMicroseconds(2000);
   }
   else {
@@ -654,7 +658,7 @@ void stateFunctionEvaluation(health_packet& data) {
     Serial2.write('p');
     FCCommandSent = true;
   }
-  if (data.state.fuel_load_open /*&& dumpTimer == 10*/) {
+  if (data.state.fuel_dump /*&& dumpTimer == 10*/) {
     Serial.write('b');
     Serial2.write('b');
     FCCommandSent = true;
@@ -679,13 +683,15 @@ void stateFunctionEvaluation(health_packet& data) {
 
   if (data.state.flight_computer_on && !data.state_activated.safety) {
     // True means turn on the flight controller
+    digitalWrite(power_relay_digital_off, LOW);
     digitalWrite(power_relay_digital_on, HIGH);
-    //relayTriggered = true;
+    relayTriggered = true;
   }
   else {
     //make sure flight computer is off
     digitalWrite(power_relay_digital_on, LOW);
-    //relayTriggered = true;
+    digitalWrite(power_relay_digital_off, HIGH);
+    relayTriggered = true;
   }
 
   //store currently used state
@@ -767,7 +773,7 @@ void stateEvaluation(health_packet& data) {
         data.state.profile_check = true;
         break;
       case 'b':
-        data.state.fuel_load_open = true;
+        data.state.fuel_dump = true;
         break;
       case 'f':
         data.state.fan_off = true;
@@ -870,8 +876,9 @@ void checkVoltage(health_packet& data) {
   }
 
   if (voltageAbortLoops > 15) {
+    digitalWrite(power_relay_digital_off, HIGH);
     digitalWrite(power_relay_digital_on, LOW);
-    //relayTriggered = true;
+    relayTriggered = true;
   }
 }
 
@@ -901,7 +908,7 @@ double readThermocouple(int index, byte& error)
 void readThermocouples(health_packet& data)
 {
   digitalWrite(SD_CHIP_SELECT, HIGH);//disables connection to SD card while we're reading TC values
-  digitalWrite(THERMOCOUPLE1_CHIP_SELECT, LOW);//enables connection from TC board
+  digitalWrite(THERMOCOUPLE_CHIP_SELECT, LOW);//enables connection from TC board
 
   byte dummy;
   int thermoCounterTemp = thermoCounter - 1;
@@ -952,7 +959,7 @@ void readThermocouples(health_packet& data)
     thermoCounter++;
   };
   TC.setMUX(thermoCounter);
-  digitalWrite(THERMOCOUPLE1_CHIP_SELECT, HIGH);//disables connection from TC board
+  digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);//disables connection from TC board
 }
 
 void setFanState(health_packet& data) {
@@ -1058,7 +1065,7 @@ void sendHealthPacket(String& str) {
 }
 
 void SDcardWrite(String& str) {
-  digitalWrite(THERMOCOUPLE1_CHIP_SELECT, HIGH);
+  digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);
   digitalWrite(SD_CHIP_SELECT, LOW);
   File recordingFile = SD.open("datalog.txt", FILE_WRITE);
   delay(1);
