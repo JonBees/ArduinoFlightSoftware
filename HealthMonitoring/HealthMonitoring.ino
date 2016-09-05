@@ -36,7 +36,7 @@
 #define AV6_M 11
 #define FC_U 45
 #define FO_U 44
-#define POWERBOX_FAN 7
+#define POWERBOX_FAN 52
 
 //Servo
 Servo AV5_M_servo;
@@ -374,7 +374,7 @@ void loop() {
   //Send Health Packet, we don't send flag if time out... this will cause the device to freeze
 
   //Enables/disables fan based on LabVIEW button state
-  adjustFanSpeed(current_health_packet);
+  setFanState(current_health_packet);
 
 
   if (relayTriggered) {
@@ -962,12 +962,12 @@ void readThermocouples(health_packet& data)
   digitalWrite(THERMOCOUPLE_CHIP_SELECT, HIGH);//disables connection from TC board
 }
 
-void adjustFanSpeed(health_packet& data) {
-  if (!data.state.fan_off) {
-    analogWrite(POWERBOX_FAN, 200);
+void setFanState(health_packet& data) {
+  if (data.state.fan_off) {
+    digitalWrite(POWERBOX_FAN, LOW);
   }
   else {
-    analogWrite(POWERBOX_FAN, 255);
+    digitalWrite(POWERBOX_FAN, HIGH);
   }
 }
 
