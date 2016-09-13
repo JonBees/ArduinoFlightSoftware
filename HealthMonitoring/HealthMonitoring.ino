@@ -256,7 +256,7 @@ struct health_packet
 template <int N>
 class print_err;
 
-//boolean relayTriggered = false;
+boolean relayTriggered = false;
 boolean FCCommandSent = false;
 
 long lastFlagReadTime = 0;
@@ -266,7 +266,6 @@ long loopStartTime = 0;
 long loopEndTime = 0;
 int looplength = 200;
 
-int relayTimer = 0;
 int dumpTimer = 0;
 
 health_packet current_health_packet;
@@ -393,16 +392,6 @@ void loop() {
 
   //Enables/disables fan based on LabVIEW button state
   setFanState(current_health_packet);
-
-
-  /*if (relayTriggered) {
-    if (relayTimer == 2) {
-      relayTriggered = false;
-      relayTimer = 0;
-      digitalWrite(POWER_RELAY_DIGITAL, LOW);
-    }
-    relayTimer++;
-  }*/
 
   if (!current_health_packet.stateString.equals(lastStateString)) {
     stateEvaluation(current_health_packet);
@@ -675,7 +664,6 @@ void stateFunctionEvaluation(health_packet& data) {
     Serial2.write('b');
     FCCommandSent = true;
   }
-  if (data.state.take_off && !data.state_activated.safety && !data.state_activated.abort && !data.state_activated.soft_kill) { // && !data.state_activated.abort){        //ensures take_off is not enable unless no abort is in effect
     // Take off on true
     Serial.write('o');
     Serial2.write('o');
@@ -693,17 +681,17 @@ void stateFunctionEvaluation(health_packet& data) {
     dumpTimer = 0;
   }
 
-  if (data.state.flight_computer_on && !data.state_activated.safety) {
-    // True means turn on the flight controller
-    digitalWrite(POWER_RELAY_DIGITAL, HIGH);
-    //relayTriggered = true;
+  if (data.state.flight_computer_on && !data.state_activated.safety && !relayTriggered) { //send 1ms pulse to relay when packet sets FC to on but relay isn't triggerd
+    flipRelay();
+    relayTriggered = true;
   }
-  else {
-    //make sure flight computer is off
+  else if (!data.state.flight_computer_on && relayTriggered){ //turn off flight computer if the packet says to but it's still on
+    flipRelay();
+    relayTriggered = false;
+  }
+  else { //make sure the relay doesn't receive a flip command
     digitalWrite(POWER_RELAY_DIGITAL, LOW);
-    //relayTriggered = true;
   }
-
   //store currently used state
   data.state_activated = data.state;
 }
@@ -886,9 +874,9 @@ void checkVoltage(health_packet& data) {
     voltageAbortLoops++;
   }
 
-  if (voltageAbortLoops > 15) {
-    digitalWrite(POWER_RELAY_DIGITAL, LOW);
-    //relayTriggered = true;
+  if (voltageAbortLoops > 15 && relayTriggered) {
+      flipRelay();
+      relayTriggered = false;
   }
 }
 
@@ -983,6 +971,12 @@ void setFanState(health_packet& data) {
   else {
     digitalWrite(POWERBOX_FAN_DIGITAL, HIGH);
   }
+}
+
+void flipRelay(){
+  digitalWrite(POWER_RELAY_DIGITAL, HIGH);
+  delay(1);
+  digitalWrite(POWER_RELAY_DIGITAL, LOW);
 }
 
 void setFlightProfile(health_packet& data) {

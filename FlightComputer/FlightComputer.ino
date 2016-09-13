@@ -10,7 +10,7 @@ long millisLast = 0;
 int SOFTKILLDECREMENT = 10;
 
 //analog pin assignments
-#define Altimeter 0
+#define ALTIMETER_ANALOG 0
 #define sensor13 1
 #define sensor12 2
 #define sensor15 3
