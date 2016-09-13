@@ -664,6 +664,7 @@ void stateFunctionEvaluation(health_packet& data) {
     Serial2.write('b');
     FCCommandSent = true;
   }
+  if (data.state.take_off && !data.state_activated.safety && !data.state_activated.abort && !data.state_activated.soft_kill) { //ensures take_off is not enabled during an abort
     // Take off on true
     Serial.write('o');
     Serial2.write('o');
