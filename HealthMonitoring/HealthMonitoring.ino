@@ -8,7 +8,7 @@
 
   Output:
   Xbee Radio - Serial1
-  Micro SD Card -  52 to CLK
+  Micro SD Card - 52 to CLK
                   50 to MISO
                   51 to MOSI
                   53 to CS
@@ -131,7 +131,7 @@ int boxTempAbort = 0;
 #define voltage_sensor_analog 8
 int ABSMIN_VOLTAGE = 414;//14v
 int MIN_VOLTAGE = 487;//14.5v
-int MAX_VOLTAGE = 850;//17v
+int MAX_VOLTAGE = 1000;//850;//17v
 int MIN_VOLTAGE_SOFTKILL = 25;//25 cycles -- 5s
 int ABSMIN_VOLTAGE_ABORT = 5;
 int MAX_VOLTAGE_ABORT = 5;//5 cycles -- 1s
@@ -1050,8 +1050,8 @@ String createHealthPacket(health_packet& data)
   outgoingPacket += String(data.temp_values[5]);
   outgoingPacket += String(";v:");
   outgoingPacket += String(data.voltage);
-  outgoingPacket += String(",");
-  outgoingPacket += String(data.current);
+  /*outgoingPacket += String(",");
+  outgoingPacket += String(data.current);*/
   outgoingPacket += String(";m:");
   for (int i = 0; i < 3; i++) {
     outgoingPacket += String(data.motor_values[i]);
@@ -1083,7 +1083,7 @@ void SDcardWrite(String& str) {
   if (recordingFile) {
     recordingFile.print(loopStartTime);
     recordingFile.print("|");
-    recordingFile.print(str);
+    recordingFile.println(str);
     /*recordingFile.print("b:");
     recordingFile.println(boxTemp);*/
     recordingFile.close();
