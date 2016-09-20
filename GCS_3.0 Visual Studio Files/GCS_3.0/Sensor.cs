@@ -33,12 +33,18 @@ namespace GCS_3._0
             safe = Brushes.Green;
         }
 
-        //0 is pressure transducer, 1 is thermocouple, 2 is voltage sensor
+        //0 is pressure transducer, 1 is thermocouple, 2 is voltage sensor, 3 is current sensor
+        public enum Instrumentation: int { Transducer, Thermocouple, Voltmeter, Ammeter}
         private int Type { get; set; }
 
         //For PTs: 0 is tank, 1 represents all other PTs
+        public enum PressureTransducer { Tank, Other}
         //For TCs: 0 is engine, 1 is plumbing
+        public enum ThermoSensor {  Engine, Plumbing}
         //For Voltage: 0 is the only type
+        const double low_voltage_warning = 15.5, low_voltage_danger = 14.5, high_voltage_warning = 16.8, high_voltage_danger = 17.0;
+        //For the time being, only current at the battery terminals is being considered, so 0 will cover all subtypes.
+        const double over_current_warning = 30.0, over_current_danger = 40.0;
         private int SubType { get; set; }
         public string Name { get; private set; }
         public SolidColorBrush Status
@@ -47,23 +53,27 @@ namespace GCS_3._0
             {
                 switch (Type)
                 {
-                    case 0:
-                        if (SubType == 1 && sensedValue > 800 && sensedValue < 900) return warning;
-                        else if (SubType == 1 && sensedValue > 900) return danger;
+                    case (int)Instrumentation.Transducer:
+                        if (SubType == (int)PressureTransducer.Other && sensedValue > 800 && sensedValue < 900) return warning;
+                        else if (SubType == (int)PressureTransducer.Other && sensedValue > 900) return danger;
                         else return nothing;
-                    case 1:
-                        if (SubType == 0 && sensedValue > 1200 && sensedValue < 1400) return warning;
-                        else if (SubType == 1 && sensedValue > 120 && sensedValue < 140) return warning;
-                        else if (SubType == 0 && sensedValue > 1400) return danger;
-                        else if (SubType == 1 && sensedValue > 200) return danger;
+                    case (int)Instrumentation.Thermocouple:
+                        if (SubType == (int)ThermoSensor.Engine && sensedValue > 1200 && sensedValue < 1400) return warning;
+                        else if (SubType == (int)ThermoSensor.Plumbing && sensedValue > 120 && sensedValue < 140) return warning;
+                        else if (SubType == (int)ThermoSensor.Engine && sensedValue > 1400) return danger;
+                        else if (SubType == (int)ThermoSensor.Plumbing && sensedValue > 200) return danger;
                         else return nothing;
-                    case 2:
-                        if (sensedValue <= 14.5) return danger;
-                        else if (sensedValue > 14.5 && sensedValue <= 15.5) return warning;
-                        else if (sensedValue > 15.5 && sensedValue < 16.8) return safe;
-                        else if (sensedValue >= 16.8 && sensedValue < 17) return warning;
-                        else if (sensedValue >= 17.0) return danger;
-                        else return nothing;
+                    case (int)Instrumentation.Voltmeter:
+                        if (sensedValue <= low_voltage_danger) return danger;
+                        else if (sensedValue > low_voltage_danger && sensedValue <= low_voltage_warning) return warning;
+                        else if (sensedValue > low_voltage_warning && sensedValue < high_voltage_warning) return safe;
+                        else if (sensedValue >= high_voltage_warning && sensedValue < high_voltage_danger) return warning;
+                        else return danger; // the only remaining possibility is that the voltage is above the danger threshold
+                        // else return nothing; /* this is unreachable code */
+                    case (int)Instrumentation.Ammeter:
+                        if (sensedValue < over_current_warning) return safe;
+                        else if (sensedValue >= over_current_warning && sensedValue < over_current_danger) return warning;
+                        else return danger;
                 }
                 return nothing;
             }
@@ -74,12 +84,14 @@ namespace GCS_3._0
             {
                 switch(Type)
                 {
-                    case 0:
+                    case (int)Instrumentation.Transducer:
                         return sensedValue.ToString() + " psi";
-                    case 1:
+                    case (int)Instrumentation.Thermocouple:
                         return sensedValue.ToString() + " °F";
-                    case 2:
+                    case (int)Instrumentation.Voltmeter:
                         return sensedValue.ToString() + " V";
+                    case (int)Instrumentation.Ammeter:
+                        return sensedValue.ToString() + " A";
                 }
                 return "";
             }
@@ -90,18 +102,20 @@ namespace GCS_3._0
             {
                 switch (Type)
                 {
-                    case 0:
+                    case (int)Instrumentation.Transducer:
                         return maxSensedValue.ToString() + " psi";
-                    case 1:
+                    case (int)Instrumentation.Thermocouple:
                         return maxSensedValue.ToString() + " °F";
-                    case 2:
+                    case (int)Instrumentation.Voltmeter:
                         return maxSensedValue.ToString() + " V";
+                    case (int)Instrumentation.Ammeter:
+                        return maxSensedValue.ToString() + " A";
                 }
                 return "";
             }
         }
 
-        //Put calibrations here with swithc statement for each type of sensor.
+        //Put calibrations here with switch statement for each type of sensor.
         public void setValue(double val)
         {
             sensedValue = (multi * val) + off;

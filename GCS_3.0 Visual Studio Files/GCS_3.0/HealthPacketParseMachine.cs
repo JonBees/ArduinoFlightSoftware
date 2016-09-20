@@ -11,6 +11,7 @@ namespace GCS_3._0
     //3301|p:203,196,196,195,194,197,194;t:74.30,72.95,70.70,71.15,70.70,70.70;v:549;m:1000,1000,1000,1000;h:;s:;?102|b:-1.00
 
     //TO-DO: Must add calibrations and such.
+    //TO-DO: Add current reading to health packet
     class HealthPacketParseMachine
     {
         public HealthPacketParseMachine() { }
@@ -50,6 +51,12 @@ namespace GCS_3._0
             voltString = voltString.Split(';')[0];
 
             return Convert.ToDouble(voltString);
+        }
+
+        // This is a temporary dummy function until the appropriate function is written
+        public double getCurrent()
+        {
+            return 1.0;
         }
 
         public List<int> getServos()

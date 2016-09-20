@@ -140,6 +140,18 @@
                     <DataGridTextColumn Header="Max Value" Binding="{Binding MaxValue}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
+            <DataGrid x:Name="AmmeterTable" IsReadOnly="True" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Ammeter" Binding="{Binding Name}" Width="*"/>
+                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Background" Value="{Binding Status}"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
             <DataGrid x:Name="ServoValsTable" IsReadOnly="True" AutoGenerateColumns="False" 
                       AlternatingRowBackground="{Binding Path=AlternatingRowBackground, ElementName=PTsensorTable}">
                 <DataGrid.Columns>
