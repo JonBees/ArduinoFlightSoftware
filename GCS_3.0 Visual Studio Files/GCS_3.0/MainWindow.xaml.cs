@@ -31,7 +31,7 @@ namespace GCS_3._0
     {
         List<CommandButton> commandButtons;
         List<char> commandCharacters;
-        List<Sensor> PTs, TCs, voltage;
+        List<Sensor> PTs, TCs, voltage, ammeter;
         List<ServoMotor> thrustServos;
         SerialPort GCArduino;
         HealthPacketParseMachine packetParse;
@@ -208,27 +208,30 @@ namespace GCS_3._0
             PTs = new List<Sensor>();
             TCs = new List<Sensor>();
             voltage = new List<Sensor>();
+            ammeter = new List<Sensor>();
 
-            PTs.Add(new Sensor(0, 0, "PT1-U", 6.36, -1253));
-            PTs.Add(new Sensor(0, 1, "PT2-U", 1.274, -250.9));
-            PTs.Add(new Sensor(0, 1, "PT1-M", 1.264, -250.2));
-            PTs.Add(new Sensor(0, 1, "PT2-M", 1.267, -249.8));
-            PTs.Add(new Sensor(0, 1, "PT3-M", 1.277, -250.3));
-            PTs.Add(new Sensor(0, 1, "PT4-M", 1.264, -251.3));
-            PTs.Add(new Sensor(0, 1, "PT5-M", 1.277, -251));
+            PTs.Add(new Sensor((int)Sensor.Instrumentation.Transducer, (int)Sensor.PressureTransducer.Tank, "PT1-U", 6.36, -1253));
+            PTs.Add(new Sensor((int)Sensor.Instrumentation.Transducer, (int)Sensor.PressureTransducer.Other, "PT2-U", 1.274, -250.9));
+            PTs.Add(new Sensor((int)Sensor.Instrumentation.Transducer, (int)Sensor.PressureTransducer.Other, "PT1-M", 1.264, -250.2));
+            PTs.Add(new Sensor((int)Sensor.Instrumentation.Transducer, (int)Sensor.PressureTransducer.Other, "PT2-M", 1.267, -249.8));
+            PTs.Add(new Sensor((int)Sensor.Instrumentation.Transducer, (int)Sensor.PressureTransducer.Other, "PT3-M", 1.277, -250.3));
+            PTs.Add(new Sensor((int)Sensor.Instrumentation.Transducer, (int)Sensor.PressureTransducer.Other, "PT4-M", 1.264, -251.3));
+            PTs.Add(new Sensor((int)Sensor.Instrumentation.Transducer, (int)Sensor.PressureTransducer.Other, "PT5-M", 1.277, -251));
 
-            TCs.Add(new Sensor(1, 1, "TCp1-M", 1, 0));
-            TCs.Add(new Sensor(1, 1, "TCp2-M", 1, 0));
-            TCs.Add(new Sensor(1, 0, "TCw1-E", 1, 0));
-            TCs.Add(new Sensor(1, 0, "TCw2-E", 1, 0));
-            TCs.Add(new Sensor(1, 0, "TCw3-E", 1, 0));
-            TCs.Add(new Sensor(1, 0, "TCw4-E", 1, 0));
+            TCs.Add(new Sensor((int)Sensor.Instrumentation.Thermocouple, (int)Sensor.ThermoSensor.Plumbing, "TCp1-M", 1.0, 0.0));
+            TCs.Add(new Sensor((int)Sensor.Instrumentation.Thermocouple, (int)Sensor.ThermoSensor.Plumbing, "TCp2-M", 1.0, 0.0));
+            TCs.Add(new Sensor((int)Sensor.Instrumentation.Thermocouple, (int)Sensor.ThermoSensor.Engine, "TCw1-E", 1.0, 0.0));
+            TCs.Add(new Sensor((int)Sensor.Instrumentation.Thermocouple, (int)Sensor.ThermoSensor.Engine, "TCw2-E", 1.0, 0.0));
+            TCs.Add(new Sensor((int)Sensor.Instrumentation.Thermocouple, (int)Sensor.ThermoSensor.Engine, "TCw3-E", 1.0, 0.0));
+            TCs.Add(new Sensor((int)Sensor.Instrumentation.Thermocouple, (int)Sensor.ThermoSensor.Engine, "TCw4-E", 1.0, 0.0));
 
-            voltage.Add(new Sensor(2, 0, "Voltage", 0.0069, 11.144));
+            voltage.Add(new Sensor((int)Sensor.Instrumentation.Voltmeter, 0, "Voltage", 0.0069, 11.144));
+            ammeter.Add(new Sensor((int)Sensor.Instrumentation.Ammeter, 0, "Current", 1.0, 0.0));
 
             PTsensorTable.ItemsSource = PTs;
             TCsensorTable.ItemsSource = TCs;
             VoltageSensorTable.ItemsSource = voltage;
+            AmmeterTable.ItemsSource = ammeter;
         }
 
         void setupServos()
@@ -335,14 +338,17 @@ namespace GCS_3._0
 
             voltage[0].setValue(packetParse.getVoltage());
 
+            ammeter[0].setValue(packetParse.getCurrent());
             //Refresh datagrid.
             PTsensorTable.ItemsSource = null;
             TCsensorTable.ItemsSource = null;
             VoltageSensorTable.ItemsSource = null;
+            AmmeterTable.ItemsSource = null;
 
             PTsensorTable.ItemsSource = PTs;
             TCsensorTable.ItemsSource = TCs;
             VoltageSensorTable.ItemsSource = voltage;
+            AmmeterTable.ItemsSource = ammeter;
         }
 
         void updateServoData()
@@ -391,6 +397,7 @@ namespace GCS_3._0
             foreach (Sensor pt in PTs) { dataWriter.Write(pt.getValue_Double().ToString() + ","); }
             foreach (Sensor tc in TCs) { dataWriter.Write(tc.getValue_Double().ToString() + ","); }
             foreach (Sensor vol in voltage) { dataWriter.Write(vol.getValue_Double().ToString() + ","); }
+            foreach (Sensor am in ammeter) { dataWriter.Write(am.getValue_Double().ToString() + ","); }
             foreach (ServoMotor sm in thrustServos) { dataWriter.Write(sm.PWM + ","); }
             dataWriter.Write(confirmedFlags + "\n");
         }
