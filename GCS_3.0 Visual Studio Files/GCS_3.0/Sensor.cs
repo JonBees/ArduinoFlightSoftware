@@ -43,6 +43,10 @@ namespace GCS_3._0
         public enum ThermoSensor {  Engine, Plumbing}
         //For Voltage: 0 is the only type
         const double low_voltage_warning = 15.5, low_voltage_danger = 14.5, high_voltage_warning = 16.8, high_voltage_danger = 17.0;
+        const double overpressure_warning = 800.0, overpressure_danger = 900;
+        const double engine_overheat_warning = 1200.0, engine_overheat_danger = 1400.0;
+        const double plumbing_overheat_warning = 120.0, plumbing_overheat_danger = 200.0;
+
         //For the time being, only current at the battery terminals is being considered, so 0 will cover all subtypes.
         const double over_current_warning = 30.0, over_current_danger = 40.0;
         private int SubType { get; set; }
@@ -54,14 +58,14 @@ namespace GCS_3._0
                 switch (Type)
                 {
                     case (int)Instrumentation.Transducer:
-                        if (SubType == (int)PressureTransducer.Other && sensedValue > 800 && sensedValue < 900) return warning;
-                        else if (SubType == (int)PressureTransducer.Other && sensedValue > 900) return danger;
+                        if (SubType == (int)PressureTransducer.Other && sensedValue > overpressure_warning && sensedValue < overpressure_danger) return warning;
+                        else if (SubType == (int)PressureTransducer.Other && sensedValue > overpressure_danger) return danger;
                         else return nothing;
                     case (int)Instrumentation.Thermocouple:
-                        if (SubType == (int)ThermoSensor.Engine && sensedValue > 1200 && sensedValue < 1400) return warning;
-                        else if (SubType == (int)ThermoSensor.Plumbing && sensedValue > 120 && sensedValue < 140) return warning;
-                        else if (SubType == (int)ThermoSensor.Engine && sensedValue > 1400) return danger;
-                        else if (SubType == (int)ThermoSensor.Plumbing && sensedValue > 200) return danger;
+                        if (SubType == (int)ThermoSensor.Engine && sensedValue > engine_overheat_warning && sensedValue < engine_overheat_danger) return warning;
+                        else if (SubType == (int)ThermoSensor.Plumbing && sensedValue > plumbing_overheat_warning && sensedValue < plumbing_overheat_danger) return warning;
+                        else if (SubType == (int)ThermoSensor.Engine && sensedValue > engine_overheat_danger) return danger;
+                        else if (SubType == (int)ThermoSensor.Plumbing && sensedValue > plumbing_overheat_danger) return danger;
                         else return nothing;
                     case (int)Instrumentation.Voltmeter:
                         if (sensedValue <= low_voltage_danger) return danger;
