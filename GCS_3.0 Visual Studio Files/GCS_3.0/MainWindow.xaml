@@ -100,7 +100,7 @@
         </StackPanel>
         <Grid Grid.Column="4" Grid.RowSpan="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="1*" /> 
+                <RowDefinition Height="1*" />
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="1*" />
@@ -123,9 +123,8 @@
                 <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <Grid.Background>
-                <ImageBrush ImageSource="new_PID.png" />
-            <!-- .ColumnSpan="9" Grid.RowSpan="11" Source="new_PID.png" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/> -->
+            <Grid.Background> 
+                <ImageBrush ImageSource="new_PID.png" />   
             </Grid.Background>
             <Label Grid.Column="0" Grid.Row="1" Content="PR2-U" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="16" />
             <Label Grid.Column="1" Grid.Row="0" Content="FO-U" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="16" />
