@@ -68,6 +68,7 @@ File recordingFile;
 
 #define POWER_ERROR_DIGITAL 40
 
+
 //thermocouple
 #define THERMOCOUPLE1_CHIP_SELECT 24 //needs to be set to LOW when the Thermocouple shield is being used and HIGH otherwise.
 MAX31855 TC(THERMOCOUPLE1_CHIP_SELECT);
@@ -126,6 +127,7 @@ double boxTemp = 0;
 int boxTempAbort = 0;
 
 #define CURRENT_SENSOR_ANALOG 7
+
 
 //Voltage Sensor
 #define voltage_sensor_analog 8
@@ -243,7 +245,7 @@ struct health_packet
   int pressure_values[7];
   double temp_values[6];
   int voltage;
-  int current;
+  //int current;
   unsigned int motor_values[4];
   unsigned long elapsed;
   flags state;
@@ -281,7 +283,7 @@ void stateEvaluation(health_packet& data);
 void resetErrorFlags(health_packet& data);
 void readPressureTransducers(health_packet& data);
 void checkVoltage(health_packet& data);
-void checkCurrent(health_packet& data);
+//void checkCurrent(health_packet& data);
 void readThermocouples(health_packet& data);
 void sendHealthPacket(String& str);
 void SDcardWrite(String& str);
@@ -300,6 +302,9 @@ void setup() {
   AV5_M_servo.attach(AV5_M);
   AV6_M_servo.attach(AV6_M);
   pinMode(POWER_RELAY_DIGITAL, OUTPUT);
+
+  pinMode(THERMOCOUPLE2_CHIP_SELECT, OUTPUT);
+  digitalWrite(THERMOCOUPLE2_CHIP_SELECT, HIGH);
   pinMode(FC_U, OUTPUT);
   pinMode(FO_U, OUTPUT);
 
@@ -381,7 +386,7 @@ void loop() {
   readPressureTransducers(current_health_packet);
   //anlogReads from voltage pin, aborts/softkills if necessary
   checkVoltage(current_health_packet);
-  checkCurrent(current_health_packet);
+  //checkCurrent(current_health_packet);
   //checks for soft/hardkills, adds an error flag to the statestring if any are enabled
   errorFlagsEvaluation(current_health_packet);
   //sets flight profile based on GCS
@@ -391,7 +396,8 @@ void loop() {
   //Send Health Packet, we don't send flag if time out... this will cause the device to freeze
 
   //Enables/disables fan based on LabVIEW button state
-  setFanState(current_health_packet);
+  //setFanState(current_health_packet);
+
 
   if (!current_health_packet.stateString.equals(lastStateString)) {
     stateEvaluation(current_health_packet);
@@ -881,9 +887,9 @@ void checkVoltage(health_packet& data) {
   }
 }
 
-void checkCurrent(health_packet& data){
+/*void checkCurrent(health_packet& data){
   data.current = analogRead(CURRENT_SENSOR_ANALOG);
-}
+}*/
 
 //ThermoCouple Read
 void initThermocoupleMonitor()
@@ -979,6 +985,7 @@ void flipRelay(){
   delay(1);
   digitalWrite(POWER_RELAY_DIGITAL, LOW);
 }
+
 
 void setFlightProfile(health_packet& data) {
   if (data.state.fp_0) {
