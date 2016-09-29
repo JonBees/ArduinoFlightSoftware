@@ -218,7 +218,7 @@ bool fp_9 :
   };
 };
 
-struct craft
+struct errors
 {
 bool temperature_softkill :
   1;
@@ -238,6 +238,7 @@ bool power :
   1;
 };
 
+bool write_success = false;
 
 // Data structure for XBee health packet
 struct health_packet
@@ -250,7 +251,7 @@ struct health_packet
   unsigned long elapsed;
   flags state;
   flags state_activated;
-  craft errorflags;
+  errors errorflags;
   String stateString;
 };
 
@@ -347,6 +348,7 @@ void setup() {
   recordingFile = SD.open("datalog.txt");
   recordingFile.close();
 
+  write_success = true;
   Serial.println("file created");
 }
 
@@ -581,7 +583,7 @@ void checkMotors(health_packet& data) {
 void errorFlagsEvaluation(health_packet& data) {
 
   if (current_health_packet.errorflags.temperature_softkill) {
-    addFlagToString(current_health_packet);
+    addFlagToString(current_health_packet, 'u');
     data.state.soft_kill = true;
     Serial.println(" Temperature Softkill ");
     if (data.stateString.indexOf('k') == -1) {
@@ -589,7 +591,7 @@ void errorFlagsEvaluation(health_packet& data) {
     }
   }
   if (current_health_packet.errorflags.temperature_abort) {
-    addFlagToString(current_health_packet);
+    addFlagToString(current_health_packet, 'u');
     data.state.abort = true;
     Serial.println(" Temperature Abort ");
     if (data.stateString.indexOf('a') == -1) {
@@ -597,7 +599,7 @@ void errorFlagsEvaluation(health_packet& data) {
     }
   }
   if (current_health_packet.errorflags.pressure_softkill) {
-    addFlagToString(current_health_packet);
+    addFlagToString(current_health_packet, 'n');
     data.state.soft_kill = true;
     Serial.println(" Pressure Softkill ");
     if (data.stateString.indexOf('k') == -1) {
@@ -605,7 +607,7 @@ void errorFlagsEvaluation(health_packet& data) {
     }
   }
   if (current_health_packet.errorflags.pressure_abort) {
-    addFlagToString(current_health_packet);
+    addFlagToString(current_health_packet, 'n');
     data.state.abort = true;
     Serial.println(" Pressure Abort ");
     if (data.stateString.indexOf('a') == -1) {
@@ -613,7 +615,7 @@ void errorFlagsEvaluation(health_packet& data) {
     }
   }
   if (current_health_packet.errorflags.voltage_abort) {
-    addFlagToString(current_health_packet);
+    addFlagToString(current_health_packet, 'g');
     data.state.abort = true;
     Serial.println(" Voltage Abort ");
     if (data.stateString.indexOf('a') == -1) {
@@ -621,7 +623,7 @@ void errorFlagsEvaluation(health_packet& data) {
     }
   }
   if (current_health_packet.errorflags.voltage_softkill) {
-    addFlagToString(current_health_packet);
+    addFlagToString(current_health_packet, 'g');
     data.state.soft_kill = true;
     Serial.println(" Voltage Softkill ");
     if (data.stateString.indexOf('k') == -1) {
@@ -629,7 +631,7 @@ void errorFlagsEvaluation(health_packet& data) {
     }
   }
   if (current_health_packet.errorflags.time) {
-    addFlagToString(current_health_packet);
+    addFlagToString(current_health_packet, 'x');
     //timeout abort
     data.state.abort = true;
     Serial.println(" Time Abort ");
@@ -638,14 +640,21 @@ void errorFlagsEvaluation(health_packet& data) {
     }
   }
   if(current_health_packet.errorflags.power){
-    addFlagToString(current_health_packet);
+    addFlagToString(current_health_packet, 'j');
     Serial.println(" Power Error ");
   }
-}
-void addFlagToString(health_packet& data) {
-  if (data.stateString.indexOf('e') == -1) {
-    data.stateString += String('e');
+  if(!write_success){
+    addFlagToString(current_health_packet, 'w');
+    Serial.println(" Failed to write to SD ");
   }
+}
+void addFlagToString(health_packet& data, char flagchar) {
+  if(data.stateString.indexOf(flagchar) == -1){
+    data.stateString += String(flagchar);
+  }
+  /*if (data.stateString.indexOf('e') == -1) {
+    data.stateString += String('e');
+  }*/
 }
 
 void stateFunctionEvaluation(health_packet& data) {
