@@ -131,12 +131,12 @@ int boxTempAbort = 0;
 
 //Voltage Sensor
 #define voltage_sensor_analog 8
-int ABSMIN_VOLTAGE = 414;//14v
-int MIN_VOLTAGE = 487;//14.5v
-int MAX_VOLTAGE = 1000;//850;//17v
-int MIN_VOLTAGE_SOFTKILL = 25;//25 cycles -- 5s
+int ABSMIN_VOLTAGE = 758; // 14 V
+int MIN_VOLTAGE = 786; // 14.5 V
+int MAX_VOLTAGE = 924; // 17 V
+int MIN_VOLTAGE_SOFTKILL = 25; // 25 cycles -- 5s
 int ABSMIN_VOLTAGE_ABORT = 5;
-int MAX_VOLTAGE_ABORT = 5;//5 cycles -- 1s
+int MAX_VOLTAGE_ABORT = 5; // 5 cycles -- 1s
 int voltage_softkill_underages = 0;
 int voltage_abort_overages = 0;
 int voltage_abort_underages = 0;
@@ -283,7 +283,7 @@ void resetState();
 void stateEvaluation(health_packet& data);
 void resetErrorFlags(health_packet& data);
 void readPressureTransducers(health_packet& data);
-void checkVoltage(health_packet& data);
+void (health_packet& data);
 //void checkCurrent(health_packet& data);
 void readThermocouples(health_packet& data);
 void sendHealthPacket(String& str);
