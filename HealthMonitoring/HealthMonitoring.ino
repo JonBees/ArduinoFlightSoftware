@@ -234,6 +234,8 @@ bool voltage_abort :
   1;
 bool time :
   1;
+bool fc_time :
+  1;
 bool power :
   1;
 };
@@ -246,7 +248,7 @@ struct health_packet
   int pressure_values[7];
   double temp_values[6];
   int voltage;
-  //int current;
+  int current;
   unsigned int motor_values[4];
   unsigned long elapsed;
   flags state;
@@ -284,7 +286,7 @@ void stateEvaluation(health_packet& data);
 void resetErrorFlags(health_packet& data);
 void readPressureTransducers(health_packet& data);
 void readVoltage(health_packet& data);
-//void checkCurrent(health_packet& data);
+void checkCurrent(health_packet& data);
 void readThermocouples(health_packet& data);
 void sendHealthPacket(String& str);
 void SDcardWrite(String& str);
@@ -331,9 +333,11 @@ void setup() {
   //SD card initiation
   pinMode(SD_CHIP_SELECT, OUTPUT);
 
+  digitalWrite(SD_CHIP_SELECT,LOW);
   //SD card feedback - apparently necessary for initialization
   if (!SD.begin(SD_CHIP_SELECT)) {
     Serial.println("initialization failed!");
+    digitalWrite(SD_CHIP_SELECT,HIGH);
     return;
   }
   else {
@@ -350,6 +354,7 @@ void setup() {
 
   write_success = true;
   Serial.println("file created");
+  digitalWrite(SD_CHIP_SELECT,HIGH);
 }
 
 
@@ -374,8 +379,7 @@ void loop() {
     lastFCCommunication = millis();
   }
   if (current_health_packet.state.flight_computer_on && (currentTime - lastFCCommunication) > 30000) {
-    current_health_packet.state.abort = true;
-    Serial.println(" Arduino Communication Abort ");
+    current_health_packet.errorflags.fc_time = true;
   }
 
   if(digitalRead(POWER_ERROR_DIGITAL) == HIGH){
@@ -388,7 +392,7 @@ void loop() {
   readPressureTransducers(current_health_packet);
   //anlogReads from voltage pin, aborts/softkills if necessary
   checkVoltage(current_health_packet);
-  //checkCurrent(current_health_packet);
+  checkCurrent(current_health_packet);
   //checks for soft/hardkills, adds an error flag to the statestring if any are enabled
   errorFlagsEvaluation(current_health_packet);
   //sets flight profile based on GCS
@@ -635,6 +639,14 @@ void errorFlagsEvaluation(health_packet& data) {
     //timeout abort
     data.state.abort = true;
     Serial.println(" Time Abort ");
+    if (data.stateString.indexOf('a') == -1) {
+      data.stateString += String('a');
+    }
+  }
+  if(current_health_packet.errorflags.fc_time){
+    addFlagToString(current_health_packet, 'q');
+    data.state.abort = true;
+    Serial.println(" Arduino Communication Abort");
     if (data.stateString.indexOf('a') == -1) {
       data.stateString += String('a');
     }
@@ -896,9 +908,9 @@ void checkVoltage(health_packet& data) {
   }
 }
 
-/*void checkCurrent(health_packet& data){
+void checkCurrent(health_packet& data){
   data.current = analogRead(CURRENT_SENSOR_ANALOG);
-}*/
+}
 
 //ThermoCouple Read
 void initThermocoupleMonitor()
@@ -1066,8 +1078,8 @@ String createHealthPacket(health_packet& data)
   outgoingPacket += String(data.temp_values[5]);
   outgoingPacket += String(";v:");
   outgoingPacket += String(data.voltage);
-  /*outgoingPacket += String(",");
-  outgoingPacket += String(data.current);*/
+  outgoingPacket += String(",");
+  outgoingPacket += String(data.current);
   outgoingPacket += String(";m:");
   for (int i = 0; i < 3; i++) {
     outgoingPacket += String(data.motor_values[i]);
