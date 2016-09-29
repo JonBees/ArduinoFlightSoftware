@@ -283,7 +283,7 @@ void resetState();
 void stateEvaluation(health_packet& data);
 void resetErrorFlags(health_packet& data);
 void readPressureTransducers(health_packet& data);
-void (health_packet& data);
+void readVoltage(health_packet& data);
 //void checkCurrent(health_packet& data);
 void readThermocouples(health_packet& data);
 void sendHealthPacket(String& str);
