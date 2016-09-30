@@ -943,7 +943,7 @@ void readThermocouples(health_packet& data)
   byte dummy;
   int thermoCounterTemp = thermoCounter - 1;
   if (thermoCounter == 7) {
-    boxTemp = readThermocouple(thermoCounter, dummy);
+    /*boxTemp = readThermocouple(thermoCounter, dummy);
     if (boxTemp >= 165) {
       boxTempAbort++;
     }
@@ -952,7 +952,7 @@ void readThermocouples(health_packet& data)
     }
     if (boxTempAbort >= 5) {
       data.errorflags.temperature_softkill = true;
-    }
+    }*/
     thermoCounter = 1;
   }
   else {
