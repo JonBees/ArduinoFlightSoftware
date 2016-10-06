@@ -27,7 +27,6 @@
     for more information.
     -   ```
         static const int FOO_BAR = 42;
-
         #define TIME 50```
 -   Classes, structures and type definitions should use TitleCase
     -   ```
