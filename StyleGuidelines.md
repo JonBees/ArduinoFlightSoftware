@@ -23,8 +23,8 @@
     separating words. As an aside, #define is preferable in C for constants
     since the const keyword really means readonly, but static constants are
     preferred in everything else. Refer to 
-    <http://stackoverflow.com/questions/1674032/static-const-vs-define-vs-enum>
-    for more information.
+    <a href="http://stackoverflow.com/questions/1674032/static-const-vs-define-vs-enum">
+    this stack exchange post</a> for more information.
     
     ```
     static const int FOO_BAR = 42;
@@ -37,7 +37,7 @@
     struct JimmyJohnsSandwich {
         bool delivered_quickly;
         double cost;
-        }
+    }
     ```
     
 -   Local variables should be lowercase, including instantiations of a 
@@ -48,13 +48,13 @@
     JimmyJohnsSandwich number_10 = {
         .delivered_quickly = true,
         .cost = 3.50
-        };
+    };
     ```
     
 -   Pointers and references should be placed next to the type, not the variable
     name.
 
-    ```int\* foo = 0xDEADBEEF;```
+    ```int* foo = 0xDEADBEEF;```
     
 -   Enums should be named using TitleCase, and their members should be named 
     with snaking ALL_CAPS.
@@ -65,7 +65,7 @@
         SOUTH,
         EAST,
         WEST
-        }
+    }
     ```
     
 -   Functions names should be all lowercase.
@@ -73,7 +73,7 @@
     ```
     int fiddle_doodad(int& diddly_bopper)
     {
-        \* code goes here \*
+        /* code goes here */
     }
     ```
 
@@ -109,7 +109,7 @@
 
     ```int j = i % 5 + 2; /* Good */```
     
-    ```int k=j\*9/(i-10); /* Bad */```
+    ```int k=j*9/(i-10); /* Bad */```
     
 -   Don't put a space immediatley after an opening parenthesis or between the
     last term and the closing parenthesis.
@@ -127,7 +127,7 @@
             printf!("i has appeared %d times.\n", i + 1);
         }
         return 0;
-        }
+    }
     ```
     
 -   Line length should be limited to 120 characters. It's acceptable to 
