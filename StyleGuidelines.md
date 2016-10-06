@@ -25,51 +25,76 @@
     preferred in everything else. Refer to 
     <http://stackoverflow.com/questions/1674032/static-const-vs-define-vs-enum>
     for more information.
-    -   ```static const int FOO_BAR
+    -   ```
+        static const int FOO_BAR = 42;
+
         #define TIME 50```
 -   Classes, structures and type definitions should use TitleCase
-    -   ```struct JimmyJohnsSandwich {
-          bool delivered_quickly;
-          double cost;
+    -   ```
+        struct JimmyJohnsSandwich {
+
+            bool delivered_quickly;
+	  
+            double cost;
+	  
         }```
 -   Local variables should be lowercase, including instantiations of a 
     class/struct. The exception to this rule is that named components (i.e. 
     FO-U, AV5-M, et cetera) will retain their case as you would write them.
-    -   ```JimmyJohnsSandwich number_10 = {
-          .delivered_quickly = true,
-          .cost = 3.50
+    -   ```
+        JimmyJohnsSandwich number_10 = {
+	  
+            .delivered_quickly = true,
+	  
+            .cost = 3.50
+	  
         };```
 -   Pointers and references should be placed next to the type, not the variable
     name.
     -   ```int\* foo = 0xDEADBEEF;```
 -   Enums should be named using TitleCase, and their members should be named 
     with snaking ALL_CAPS.
-    -   ```enum CardinalDirections {
-          NORTH,
-          SOUTH,
-          EAST,
-          WEST
+    -   ```
+        enum CardinalDirections {
+	
+            NORTH,
+	    
+            SOUTH,
+	    
+            EAST,
+	    
+            WEST
+	    
         }```
 -   Functions names should be all lowercase.
-    -   ```int fiddle_doodad(int& diddly_bopper)
+    -   ```
+        int fiddle_doodad(int& diddly_bopper)
+	
         {
-          *\* code goes here \**
+	
+            *\* code goes here \**
+	    
         }```
 
 ## Bracketing Conventions<a id="orgheadline2"></a>
 
 -   For function declarations, always place the opening bracket on a newline.
-    -   ```void empty_platitude(void)
+    -   ```
+        void empty_platitude(void)
         {
-          printf("Keep up the good work!\n");
+            printf("Keep up the good work!\n");
         }```
 -   For literally everything else, the opening bracket goes on the same line.
 -   For conditional statements, always, always, ALWAYS use brackets, every
     single time.
-    -   ```if (qux) {   *\* Good \**
+    -   ```
+        if (qux) {   *\* Good \**
+	
             baz += 2;
+	    
         }
         if (SOME_CONSTANT == quux)
+	
             baz = baz/2 + 7; *\* NO! BAD! \**```
 
 ## White Space<a id="orgheadline3"></a>
@@ -86,12 +111,19 @@
 -   Commas follow the preceding term with no whitespace between, and are 
     followed either by a space or a new line.
 -   Always use 4 spaces of indentation.
-    -   ```int main(void)
+    -   ```
+        int main(void)
+	
         {
+	
             for(int i = 0; i < 10; i++) {
+	    
                 printf!("i has appeared %d times.\n", i + 1);
+		
             }
+	    
             return 0;
+	    
          }```
 -   Line length should be limited to 120 characters. It's acceptable to 
     write a few more characters than 120. 
@@ -103,22 +135,27 @@
 ## Comments<a id="orgheadline4"></a>
 
 -   Always use block style (*\* \**) comments, do not use single line (//) comments
-    -   ```/\* Superior
-        
-        -   commenting
-        -   style
-        
-        \*/```
-        
+    -   ```
+        \* Superior
+	
+         * commenting
+	 
+         *  style
+	 
+         */```
         ```// Don't do this```
 -   Short comments on the same line as code are acceptable as long as they
     don't take up too much space. Make sure to put an adequate amount of space
     between them and the code, and if more than 1 appears to make them start on
     the same column.
-    -   ```*\* Brazenly stolen example from NASAs C Style Guidelines \** 
-              double ieee_r[];          *\* array of IEEE real\*8 values \**
-              unsigned char ibm_r[];    *\* string of IBM real\*8 values \**
-              int count;                *\* number of real\*8 values     \**```
+    -   ```
+        \* Brazenly stolen example from NASAs C Style Guidelines \**
+	
+        double ieee_r[];          \* array of IEEE real*8 values \*
+	
+        unsigned char ibm_r[];    \* string of IBM real*8 values \*
+	
+        int count;                \* number of real*8 values     \*```
 -   Each file should state its name, briefly state its purpose, and list files 
     which undergo I/O operations in the file prolog.
 -   Functions should also have prologs which state the general purpose of the
