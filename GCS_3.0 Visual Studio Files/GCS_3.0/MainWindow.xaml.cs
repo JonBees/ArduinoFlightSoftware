@@ -61,7 +61,7 @@ namespace GCS_3._0
             InitializeComponent();
 
             commandButtons = new List<CommandButton>() { PrimSafeButton, FullPowerButton, TakeoffButton, SimButton,
-                ResetButton, SoftkillButton, HardkillButton, DumpFuelButton, FanShutButton, FOUButton, FCUButton, AV5Button, AV6Button};
+							 ResetButton, SoftkillButton, HardkillButton, DumpFuelButton, FanShutButton, FOUButton, FCUButton, AV5Button, AV6Button};
             commandCharacters = new List<char>() { 's', 'z', 'o', 'p', 'r', 'k', 'a', 'b', 'f', 'd', 'i', 't', 'v' };
 
             setupSensors();
@@ -107,7 +107,7 @@ namespace GCS_3._0
                     if (Array.IndexOf(conChs, 'e') != -1 && craftAbort == false)
                     {
                         MessageBox.Show("The craft has entered a softkill/hardkill state. FO-U, FC-U, AV5-M, and AV6-M can still be actuated if needed. Avoid sending commands which do not actuate the valves.",
-                        "Craft Status", MessageBoxButton.OK, MessageBoxImage.Stop);
+					"Craft Status", MessageBoxButton.OK, MessageBoxImage.Stop);
                         craftAbort = true;
                     }
                     else if (Array.IndexOf(conChs, 'e') == -1) craftAbort = false;
@@ -237,12 +237,12 @@ namespace GCS_3._0
         void setupServos()
         {
             thrustServos = new List<ServoMotor>()
-            {
-                new ServoMotor("AV1-M", 1000),
-                new ServoMotor("AV2-M", 1000),
-                new ServoMotor("AV3-M", 1000),
-                new ServoMotor("AV4-M", 1000)
-            };
+		{
+		    new ServoMotor("AV1-M", 1000),
+		    new ServoMotor("AV2-M", 1000),
+		    new ServoMotor("AV3-M", 1000),
+		    new ServoMotor("AV4-M", 1000)
+		};
 
             ServoValsTable.ItemsSource = thrustServos;
         }
@@ -275,12 +275,12 @@ namespace GCS_3._0
             int index = addChar ? 2 : commandFlags.IndexOf(s);
 
             /*If the character is to be removed from the command string and the string to be removed is in fact in the command string,
-            then remove the character.*/
+	      then remove the character.*/
             if(index != -1) commandFlags = addChar ? commandFlags.Insert(index, s) :
-                commandFlags.Substring(0, index) + commandFlags.Substring(index + 1, commandFlags.Length - index - 1);
+				commandFlags.Substring(0, index) + commandFlags.Substring(index + 1, commandFlags.Length - index - 1);
 
             /*This code snippet causes the profile number to come before the 'o' character. To have it come after, this snippet can be moved
-            to the beginning of this function.*/
+	      to the beginning of this function.*/
             if (s.Equals("o") || s.Equals("p"))
             {
                 if (addChar)
@@ -307,16 +307,40 @@ namespace GCS_3._0
         void updateSensorData()
         {
             List<double> pressures = packetParse.getPressures();
-            PTs[5].setValue(pressures[0]);
-            PTs[2].setValue(pressures[1]);
-            PTs[4].setValue(pressures[2]);
             PTs[0].setValue(pressures[3]);
-            PTs[1].setValue(pressures[4]);
-            PTs[3].setValue(pressures[5]);
+	        PTs[1].setValue(pressures[4]);
+            PTs[2].setValue(pressures[1]);
+	        PTs[3].setValue(pressures[5]);
+            PTs[4].setValue(pressures[2]);
+            PTs[5].setValue(pressures[0]);
             PTs[6].setValue(pressures[6]);
 
+            UI_PT1_U.Text = pressures[3].ToString();
+	        UI_PT2_U.Text = pressures[4].ToString();
+	        UI_PT1_M.Text = pressures[1].ToString();
+	        UI_PT2_M.Text = pressures[5].ToString();
+	        UI_PT3_M.Text = pressures[2].ToString();
+	        UI_PT4_M.Text = pressures[0].ToString();    
+    	    UI_PT5_M.Text = pressures[6].ToString();
+
             List<double> temperatures = packetParse.getTemperatures();
-            for (int i = 0; i < TCs.Count; i++) TCs[i].setValue(i < 2 ? temperatures[i + 4] : temperatures[i - 2]);
+            /*  Don't be clever like this! Maintain readability and don't do fancy tricks to save a few lines. */
+            /* for (int i = 0; i < TCs.Count; i++) TCs[i].setValue(i < 2 ? temperatures[i + 4] : temperatures[i - 2]); */
+            /* Why aren't the TCs and PTs indexed more logically? */
+            TCs[0].setValue(temperatures[4]);
+            TCs[1].setValue(temperatures[5]);
+            TCs[2].setValue(temperatures[0]);
+            TCs[3].setValue(temperatures[1]);
+            TCs[4].setValue(temperatures[2]);
+            TCs[5].setValue(temperatures[3]);
+
+    	    UI_TCP1_M.Text = temperatures[4].ToString();
+	        UI_TCP2_M.Text = temperatures[5].ToString();
+	        UI_TCW1_E.Text = temperatures[0].ToString();
+    	    UI_TCW2_E.Text = temperatures[1].ToString();
+	        UI_TCW3_E.Text = temperatures[2].ToString();
+	        UI_TCW4_E.Text = temperatures[3].ToString();
+	    
             //Setting statuses of thermocouple indicators.
             foreach(Sensor s in TCs)
             {
@@ -337,18 +361,18 @@ namespace GCS_3._0
             }
 
             voltage[0].setValue(packetParse.getVoltage());
-
             ammeter[0].setValue(packetParse.getCurrent());
-            //Refresh datagrid.
+            /* Refresh datagrid and textblocks */
             PTsensorTable.ItemsSource = null;
             TCsensorTable.ItemsSource = null;
             VoltageSensorTable.ItemsSource = null;
             AmmeterTable.ItemsSource = null;
-
+            
             PTsensorTable.ItemsSource = PTs;
             TCsensorTable.ItemsSource = TCs;
             VoltageSensorTable.ItemsSource = voltage;
             AmmeterTable.ItemsSource = ammeter;
+             
         }
 
         void updateServoData()
@@ -375,7 +399,7 @@ namespace GCS_3._0
                 catch(System.IO.IOException)
                 {
                     MessageBox.Show("The test file is being used by another program. Close the file and try again. Otherwise, enter a new filename.",
-                        "Data File Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+				    "Data File Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return false;
                 }
 
