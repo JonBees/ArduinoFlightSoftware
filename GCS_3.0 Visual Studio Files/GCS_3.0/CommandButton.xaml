@@ -6,5 +6,5 @@
              xmlns:local="clr-namespace:GCS_3._0"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Height="50" x:Name="button" MouseLeftButtonUp="Command" IsMouseDirectlyOverChanged="MouseOverEffect" />
+    <Grid Height="50" x:Name="button" MouseLeftButtonUp="Command" IsMouseDirectlyOverChanged="mouse_over_effect" />
 </UserControl>

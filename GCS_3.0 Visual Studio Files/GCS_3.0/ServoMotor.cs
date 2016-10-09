@@ -8,16 +8,16 @@ namespace GCS_3._0
 {
     class ServoMotor
     {
-        int pwmVal;
-        public ServoMotor(string name, int initPWM)
+        int pwm_val;
+        public ServoMotor(string servo_name, int init_pwm)
         {
-            Name = name;
-            pwmVal = initPWM;
+            name = servo_name;
+            pwm_val = init_pwm;
         }
 
-        public string Name { get; private set; }
-        public string PWM { get { return pwmVal.ToString(); } }
+        public string name { get; private set; }
+        public string pwm { get { return pwm_val.ToString(); } }
 
-        public void setValue(int val) { pwmVal = val; }
+        public void set_value(int val) { pwm_val = val; }
     }
 }

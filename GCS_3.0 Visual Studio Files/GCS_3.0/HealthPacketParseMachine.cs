@@ -5,36 +5,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/* Sample health packet recieved from craft for reference:
+ * 3301|p:203,196,196,195,194,197,194;t:74.30,72.95,70.70,71.15,70.70,70.70;v:549,849;m:1000,1000,1000,1000;h:;s:;?102|b:-1.00
+ */
+
 namespace GCS_3._0
 {
-    //Sample health packet recieved from craft for reference:
-    //3301|p:203,196,196,195,194,197,194;t:74.30,72.95,70.70,71.15,70.70,70.70;v:549;m:1000,1000,1000,1000;h:;s:;?102|b:-1.00
 
-    //TO-DO: Must add calibrations and such.
-    //TO-DO: Add current reading to health packet
+    /* TO-DO: Must add calibrations and such.
+     * TO-DO: Add current reading to health packet */
     class HealthPacketParseMachine
     {
         public HealthPacketParseMachine() { }
 
-        public string Packet { get; set; }
+        public string packet { get; set; }
 
-        public List<double> getPressures()
+        public List<double> get_pressures()
         {
-            int startIndex = Packet.IndexOf('p') + 2;
-            string pressString = Packet.Substring(startIndex);
-            pressString = pressString.Split(';')[0];
+            int start_idx = packet.IndexOf('p') + 2;
+            string raw_pres = packet.Substring(start_idx);
+            raw_pres = raw_pres.Split(';')[0];
 
             List<double> pressures = new List<double>();
-            string[] presses = pressString.Split(',');
+            string[] presses = raw_pres.Split(',');
             foreach(string s in presses) { pressures.Add(Convert.ToDouble(s.Trim())); }
 
             return pressures;
         }
 
-        public List<double> getTemperatures()
+        public List<double> get_temperatures()
         {
-            int startIndex = Packet.IndexOf('t') + 2;
-            string tempString = Packet.Substring(startIndex);
+            int start_idx = packet.IndexOf('t') + 2;
+            string tempString = packet.Substring(start_idx);
             tempString = tempString.Split(';')[0];
 
             List<double> temperatures = new List<double>();
@@ -44,25 +46,29 @@ namespace GCS_3._0
             return temperatures;
         }
 
-        public double getVoltage()
+        public double get_voltage()
         {
-            int startIndex = Packet.IndexOf('v') + 2;
-            string voltString = Packet.Substring(startIndex);
-            voltString = voltString.Split(';')[0];
+            int start_idx = packet.IndexOf('v') + 2;
+            string voltString = packet.Substring(start_idx);
+            voltString = voltString.Split(',')[0];
 
             return Convert.ToDouble(voltString);
         }
 
         // This is a temporary dummy function until the appropriate function is written
-        public double getCurrent()
+        public double get_current()
         {
-            return 1.0;
+            int start_idx = packet.IndexOf('v') + 2;
+            string raw_current = packet.Substring(start_idx);
+            raw_current = raw_current.Split(';')[0];
+
+            return Convert.ToDouble(raw_current);
         }
 
-        public List<int> getServos()
+        public List<int> get_servos()
         {
-            int startIndex = Packet.IndexOf('m') + 2;
-            string servString = Packet.Substring(startIndex);
+            int start_idx = packet.IndexOf('m') + 2;
+            string servString = packet.Substring(start_idx);
             servString = servString.Split(';')[0];
 
             List<int> servos = new List<int>();
@@ -72,12 +78,12 @@ namespace GCS_3._0
             return servos;
         }
 
-        public string getCraftState()
+        public string get_craft_state()
         {
             string state = "";
             try
             {
-                state = Packet.Substring(Packet.IndexOf('h'));
+                state = packet.Substring(packet.IndexOf('h'));
                 state = state.Remove(state.LastIndexOf('s'));
             }
             catch { }

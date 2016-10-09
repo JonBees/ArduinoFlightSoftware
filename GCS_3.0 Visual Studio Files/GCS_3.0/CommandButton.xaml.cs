@@ -20,40 +20,42 @@ namespace GCS_3._0
     /// </summary>
     public partial class CommandButton : UserControl
     {
-        SolidColorBrush darkRed, darkGreen, green, red;
-        string buttonName;
-        bool mustConfirm;
+        SolidColorBrush dark_red, dark_green, green, red;
+        string button_name;
+        bool must_confirm;
+        
         public CommandButton()
         {
-            darkGreen = new SolidColorBrush(Color.FromArgb(255, 0, 180, 0));
-            darkRed = new SolidColorBrush(Color.FromArgb(255, 180, 0, 0));
+            dark_green = new SolidColorBrush(Color.FromArgb(255, 0, 180, 0));
+            dark_red = new SolidColorBrush(Color.FromArgb(255, 180, 0, 0));
             red = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0));
             green = new SolidColorBrush(Color.FromArgb(255, 0, 255, 0));
 
             InitializeComponent();
 
-            mustConfirm = false;
+            must_confirm = false;
         }
 
-        //This method MUST be called during initialization of the GCS interface, otherwise the command buttons will not function.
-        public void continueSetup(string butName, bool defOn, bool confirmation, char comCh)
+        /* This method MUST be called during initialization of the GCS interface, 
+         * otherwise the command buttons will not function. */
+        public void continue_setup(string new_button_name, bool def_on, bool confirmation, char comm_ch)
         {
-            IsActive = false;
+            is_active = false;
 
-            DefaultOn = defOn;
-            IsGreen = DefaultOn ? true : false;
-            button.Background = IsGreen ? darkGreen : darkRed;
-            mustConfirm = confirmation;
+            default_on = def_on;
+            is_green = default_on ? true : false;
+            button.Background = is_green ? dark_green : dark_red;
+            must_confirm = confirmation;
 
-            CommandCharacter = comCh.ToString();
+            command_character = comm_ch.ToString();
 
-            buttonName = butName;
+            button_name = new_button_name;
         }
 
-        public string CommandCharacter { get; private set; }
-        public bool IsActive { get; private set; }
+        public string command_character { get; private set; }
+        public bool is_active { get; private set; }
 
-        private void MouseOverEffect(object sender, DependencyPropertyChangedEventArgs e)
+        private void mouse_over_effect(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (button.IsMouseDirectlyOver)
             {
@@ -69,69 +71,70 @@ namespace GCS_3._0
             else button.Children.Clear();
         }
 
-        public bool Waiting { get; set; }
-        public bool DefaultOn { get; private set; }
-        private bool IsGreen { get; set; }
+        public bool waiting { get; set; }
+        public bool default_on { get; private set; }
+        private bool is_green { get; set; }
 
         private void Command(object sender, MouseButtonEventArgs e)
         {
-            MessageBoxResult userConfirm;
+            MessageBoxResult user_confirmation;
 
             //If the confirmation message is enabled for the button, present it. Otherwise, continue to the toggling of the button.
-            if (mustConfirm)
-            {
-                string onOrOff = IsGreen ? "off" : "on";
-                userConfirm = MessageBox.Show("Are you sure you want to toggle " + buttonName + " " + onOrOff + "?", "Confirmation",
-                MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (must_confirm) {
+                string onOrOff = is_green ? "off" : "on";
+                user_confirmation = MessageBox.Show("Are you sure you want to toggle " + button_name + " " +
+                                                    onOrOff + "?", "Confirmation", MessageBoxButton.YesNo,
+                                                    MessageBoxImage.Question);
+            } else {
+                user_confirmation = MessageBoxResult.Yes;
             }
-            else userConfirm = MessageBoxResult.Yes;
 
-            if (userConfirm == MessageBoxResult.Yes)
+            if (MessageBoxResult.Yes == user_confirmation)
             {
-                IsActive = IsActive ? false : true;
+                is_active = is_active ? false : true;
 
                 MainWindow main = (MainWindow)Application.Current.MainWindow;
-                main.changeCommandString(this, CommandCharacter, IsActive);
+                main.changeCommandString(this, command_character, is_active);
 
-                button.Background = IsGreen ? darkRed : darkGreen;
-                IsGreen = IsGreen ? false : true;
+                button.Background = is_green ? dark_red : dark_green;
+                is_green = is_green ? false : true;
             }
         }
 
-        public void ToggleEnabled(bool enab)
+        public void toggle_enabled(bool enab)
         {
             button.IsEnabled = enab;
             button.Opacity = enab ? 1 : 0.3;
 
             if(!enab)
             {
-                IsActive = false;
+                is_active = false;
 
                 MainWindow main = (MainWindow)Application.Current.MainWindow;
-                main.changeCommandString(this, CommandCharacter, false);
+                main.changeCommandString(this, command_character, false);
 
-                button.Background = DefaultOn ? darkGreen : darkRed;
-                IsGreen = DefaultOn ? true : false;
+                button.Background = default_on ? dark_green : dark_red;
+                is_green = default_on ? true : false;
             }
         }
 
-        public void setConfirmedState(bool active)
+        public void set_confirmed_state(bool active)
         {
-            if (!Waiting)
+            if (!waiting)
             {
-                IsActive = active;
+                is_active = active;
 
-                if (IsActive)
+                if (is_active)
                 {
-                    button.Background = DefaultOn ? red : green;
-                    if (DefaultOn) IsGreen = false;
-                    else IsGreen = true;
+                    button.Background = default_on ? red : green;
+                    if (default_on) is_green = false;
+                    else is_green = true;
                 }
                 else
                 {
-                    button.Background = DefaultOn ? green : red;
-                    if (DefaultOn) IsGreen = true;
-                    else IsGreen = false;
+                    button.Background = default_on ? green : red;
+                    if (default_on) is_green = true;
+                    else is_green = false;
                 }
             }
         }
