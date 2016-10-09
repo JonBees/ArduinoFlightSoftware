@@ -94,13 +94,13 @@ int abort_pressure_overages[] = {
   0, 0, 0, 0, 0, 0, 0
 };
 
-//Max Temperature Values
-//TCpw-1,2,3,4, TCp-1,2
-//Celsius Values
-/*double SOFTKILL_MAX_TEMPERATURE[] = {
-  65.5,1093,65.5,1093,1093,1093};*/
+/* Max Temperature Values
+ * TCpw-1,2,3,4, TCp-1,2
+ * Celsius Values
+ * double SOFTKILL_MAX_TEMPERATURE[] = {
+ * 65.5,1093,65.5,1093,1093,1093};*/
 
-//Fahrenheit Values
+/*Fahrenheit Values */
 double SOFTKILL_MAX_TEMPERATURE[] = {
   1400, 1400, 1400, 1400, 140, 140
 };
@@ -109,8 +109,8 @@ double ABORT_MAX_TEMPERATURE[] = {
 };
 
 int MAX_SOFTKILL_TEMPERATURE_OVERAGES[] = {
-  5, 5, 5, 5, 5, 5
-};//5 corresponds to 5 readings of the thermocouples. 1s
+  5, 5, 5, 5, 5, 5 /*5 corresponds to 5 readings of the thermocouples. 6s */
+};
 int softkill_temperature_overages[] = {
   0, 0, 0, 0, 0, 0
 };
@@ -142,69 +142,59 @@ int voltage_abort_overages = 0;
 int voltage_abort_underages = 0;
 
 //Xbee input flags
-struct flags
-{
-bool safety :
-  1;  // When true, disallow takeoff
-bool AV5_M_open :
-  1;  // Isolation valve
-bool AV6_M_open :
-  1;  // Fuel load valve
-bool abort :
-  1;  // If true, abort
-bool flight_computer_on :
-  1;  // When true, turn on power relay
-bool flight_computer_reset :
-  1;  // When true, reset flight computer
-bool FO_U_dump :
-  1;  // When true, opens the valve to dump ullage
-bool take_off :
-  1;  // When true, (and safety is false) begins takeoff
-bool soft_kill :
-  1;  // True starts soft kill procedure
-bool FC_U_open :
-  1;  //When true, opens valve to the ullage tank
-bool profile_check :
-  1;
-bool fuel_load_open :
-  1; //when true, sets av5 open, av6 closed, fo-u closed, fc-u open, av1-4 50%
-bool fan_off :
-  1; //when true, overrides fan control and forces fan off
-bool fp_0 :
-  1;//fp_0-9 are the flight profile selctors
-bool fp_1 :
-  1;
-bool fp_2 :
-  1;
-bool fp_3 :
-  1;
-bool fp_4 :
-  1;
-bool fp_5 :
-  1;
-bool fp_6 :
-  1;
-bool fp_7 :
-  1;
-bool fp_8 :
-  1;
-bool fp_9 :
-  1;
+struct flags { 
+  bool safety : 1;  // When true, disallow takeoff
+  
+  bool AV5_M_open : 1;  // Isolation valve
+  bool AV6_M_open : 1;  // Fuel load valve
+  
+  bool abort : 1;  // If true, abort
+  
+  bool flight_computer_on :  1;  // When true, turn on power relay
+  bool flight_computer_reset :  1;  // When true, reset flight computer
+  
+  bool FO_U_dump :  1;  // When true, opens the valve to dump ullage
+  bool take_off :  1;  // When true, (and safety is false) begins takeoff
+  bool soft_kill :  1;  // True starts soft kill procedure
+  bool FC_U_open :  1;  //When true, opens valve to the ullage tank
+  
+  bool profile_check :  1;
+  bool fuel_load_open :  1; //when true, sets av5 open, av6 closed, fo-u closed, fc-u open, av1-4 50%
+
+  bool fan_off :  1; //when true, overrides fan control and forces fan off
+  
+  bool fp_0 :  1;//fp_0-9 are the flight profile selctors
+  bool fp_1 :  1;
+  bool fp_2 :  1;
+  bool fp_3 :  1;
+  bool fp_4 :  1;
+  bool fp_5 :  1;
+  bool fp_6 :  1;
+  bool fp_7 :  1;
+  bool fp_8 :  1;
+  bool fp_9 :  1;
 
   flags() {
     safety = true;
+    
     AV5_M_open = false;
     AV6_M_open = false;
+    
     abort = false;
+    
     flight_computer_on = false;
     flight_computer_reset = false;
+    
     FO_U_dump = true;
     take_off = false;
     soft_kill = false;
     FC_U_open = false;
+
     profile_check = false;
     fuel_load_open = false;
+    
     fan_off = false;
+    
     fp_0 = false;
     fp_1 = false;
     fp_2 = false;
@@ -218,26 +208,16 @@ bool fp_9 :
   };
 };
 
-struct errors
-{
-bool temperature_softkill :
-  1;
-bool temperature_abort :
-  1;
-bool pressure_softkill :
-  1;
-bool pressure_abort :
-  1;
-bool voltage_softkill :
-  1;
-bool voltage_abort :
-  1;
-bool time :
-  1;
-bool fc_time :
-  1;
-bool power :
-  1;
+struct errors {
+  bool temperature_softkill : 1;
+  bool temperature_abort :  1;
+  bool pressure_softkill :  1;
+  bool pressure_abort :  1;
+  bool voltage_softkill :  1;
+  bool voltage_abort :  1;
+  bool time :  1;
+  bool fc_time :  1;
+  bool power :  1;
 };
 
 bool write_success = false;
@@ -447,29 +427,35 @@ void loop() {
 
   //if abort, change valve states
   if (current_health_packet.state.abort) {
+
     if (current_health_packet.stateString.indexOf('a') == -1) {
       current_health_packet.stateString += String('a');
     }
-
     
     current_health_packet.state.AV5_M_open = true;
+    
     if (current_health_packet.stateString.indexOf('t') != -1) {
       current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('t'), 1);
     }
+    
     current_health_packet.state.FO_U_dump = true;
+    
     if (current_health_packet.stateString.indexOf('d') != -1) {
       current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('d'), 1);
     }
+    
     current_health_packet.state.FC_U_open = false;
+    
     if (current_health_packet.stateString.indexOf('i') != -1) {
       current_health_packet.stateString.remove(current_health_packet.stateString.indexOf('i'), 1);
     }
 
     Serial2.write('a');
     FCCommandSent = true;
-  }
-  else if(current_health_packet.state.soft_kill){
+    
+  } else if(current_health_packet.state.soft_kill){
     Serial.println(" Softkill ");
+    
     if (current_health_packet.stateString.indexOf('k') == -1) {
       current_health_packet.stateString += String('k');
     }
@@ -478,16 +464,11 @@ void loop() {
     FCCommandSent = true;
   }
 
-
   if (!FCCommandSent) {
     Serial2.write('-');
   }
 
-
-
-
   checkValves(current_health_packet);
-
 
   String outgoingPacket = createHealthPacket(current_health_packet);
   SDcardWrite(outgoingPacket);
