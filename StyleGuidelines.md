@@ -1,18 +1,19 @@
 <div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#orgheadline6">1. Lunar Lions Programming Style Guide For C and C-like Languages</a>
-<ul>
-<li><a href="#orgheadline1">1.1. Naming Conventions</a></li>
-<li><a href="#orgheadline2">1.2. Bracketing Conventions</a></li>
-<li><a href="#orgheadline3">1.3. White Space</a></li>
-<li><a href="#orgheadline4">1.4. Comments</a></li>
-<li><a href="#orgheadline5">1.5. Structure of a file</a></li>
-</ul>
-</li>
-</ul>
-</div>
+  <h2>Table of Contents</h2>  
+  <div id="text-table-of-contents">
+    <ul>
+      <li><a href="#orgheadline6">1. Lunar Lions Programming Style Guide For C and C-like Languages</a>
+      <ul>
+        <li><a href="#orgheadline1">1.1. Naming Conventions</a></li>
+        <li><a href="#orgheadline2">1.2. Bracketing Conventions</a></li>
+        <li><a href="#conditionals">1.3  Conditionals</a></li>
+        <li><a href="#orgheadline3">1.4. White Space</a></li>
+        <li><a href="#orgheadline4">1.5. Comments</a></li>
+        <li><a href="#orgheadline5">1.6. Structure of a file</a></li>
+      </ul>
+      </li>
+    </ul>
+  </div>
 </div>
 
 # Lunar Lions Programming Style Guide For C and C-like Languages<a id="orgheadline6"></a>
@@ -99,6 +100,30 @@
     if (SOME_CONSTANT == quux)
         baz = baz/2 + 7; /* NO! BAD! */
     ```
+    
+## Conditionals<a id="conditionals"></a>
+
+-  As stated above, always use brackets with conditional statements.
+
+-  When comparing for equality, put constants and literals on the lefthand side.
+
+   ```
+   if (3 == bar) {
+      printf("fizzle");
+   }
+   ```
+
+-  If a conditional statement has more than one predicate, put each predicate
+   on its own line.
+   
+   ```
+   if (predicate1 &&
+       predicate2 ||
+       predicate3) {
+
+       return ALART;
+   }
+   ```
 
 ## White Space<a id="orgheadline3"></a>
 
