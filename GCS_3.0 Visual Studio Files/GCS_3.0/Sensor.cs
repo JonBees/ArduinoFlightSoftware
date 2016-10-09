@@ -13,19 +13,19 @@ namespace GCS_3._0
     class Sensor 
     {
         SolidColorBrush nothing, warning, danger, safe;
-        double sensedValue, maxSensedValue;
+        double raw_value, max_raw_value;
         double multi, off;
-        public Sensor(int type, int subtype, string name, double multiplier, double offset)
+        public Sensor(int sensor_type, int sensor_subtype, string sensor_name, double sensor_scalar, double sensor_offset)
         {
-            Type = type;
-            SubType = subtype;
-            Name = name;
-            sensedValue = 0;
-            maxSensedValue = 0;
+            type = sensor_type;
+            subtype = sensor_subtype;
+            name = sensor_name;
+            raw_value = 0;
+            max_raw_value = 0;
 
-            //Setting calibration values.
-            multi = multiplier;
-            off = offset;
+            /* Setting calibration values. */
+            multi = sensor_scalar;
+            off = sensor_offset;
 
             nothing = Brushes.Transparent;
             warning = Brushes.Yellow;
@@ -33,103 +33,168 @@ namespace GCS_3._0
             safe = Brushes.Green;
         }
 
-        //0 is pressure transducer, 1 is thermocouple, 2 is voltage sensor, 3 is current sensor
-        public enum Instrumentation: int { Transducer, Thermocouple, Voltmeter, Ammeter}
-        private int Type { get; set; }
+        public enum Instrumentation: int {
+            TRANSDUCER,   
+            THERMOCOUPLE, 
+            VOLTMETER,    
+            AMMETER
+        }
+        
+        private int type { get; set; }
 
-        //For PTs: 0 is tank, 1 represents all other PTs
-        public enum PressureTransducer { Tank, Other}
-        //For TCs: 0 is engine, 1 is plumbing
-        public enum ThermoSensor {  Engine, Plumbing}
-        //For Voltage: 0 is the only type
-        const double low_voltage_warning = 15.5, low_voltage_danger = 14.5, high_voltage_warning = 16.8, high_voltage_danger = 17.0;
-        const double overpressure_warning = 800.0, overpressure_danger = 900;
-        const double engine_overheat_warning = 1200.0, engine_overheat_danger = 1400.0;
-        const double plumbing_overheat_warning = 120.0, plumbing_overheat_danger = 200.0;
+        public enum PressureTransducer: int {
+            TANK,
+            OTHER
+        }
+        public enum ThermoSensor: int {
+            ENGINE,
+            PLUMBING
+        }
+
+        const double LOW_VOLTAGE_WARNING = 15.5, LOW_VOLTAGE_DANGER = 14.5, HIGH_VOLTAGE_WARNING = 16.8, HIGH_VOLTAGE_DANGER = 17.0;
+        const double OVERPRESSURE_WARNING = 800.0, OVERPRESSURE_DANGER = 900;
+        const double ENGINE_OVERHEAT_WARNING = 1200.0, ENGINE_OVERHEAT_DANGER = 1400.0;
+        const double PLUMBING_OVERRHEAT_WARNING = 120.0, PLUMBING_OVERHEAT_DANGER = 200.0;
 
         //For the time being, only current at the battery terminals is being considered, so 0 will cover all subtypes.
-        const double over_current_warning = 30.0, over_current_danger = 40.0;
-        private int SubType { get; set; }
-        public string Name { get; private set; }
+        const double OVER_CURRENT_WARNING = 30.0, OVER_CURRENT_DANGER = 40.0;
+        private int subtype { get; set; }
+        public string name { get; private set; }
         public SolidColorBrush Status
         {
             get
             {
-                switch (Type)
+                switch (type)
                 {
-                    case (int)Instrumentation.Transducer:
-                        if (SubType == (int)PressureTransducer.Other && sensedValue > overpressure_warning && sensedValue < overpressure_danger) return warning;
-                        else if (SubType == (int)PressureTransducer.Other && sensedValue > overpressure_danger) return danger;
-                        else return nothing;
-                    case (int)Instrumentation.Thermocouple:
-                        if (SubType == (int)ThermoSensor.Engine && sensedValue > engine_overheat_warning && sensedValue < engine_overheat_danger) return warning;
-                        else if (SubType == (int)ThermoSensor.Plumbing && sensedValue > plumbing_overheat_warning && sensedValue < plumbing_overheat_danger) return warning;
-                        else if (SubType == (int)ThermoSensor.Engine && sensedValue > engine_overheat_danger) return danger;
-                        else if (SubType == (int)ThermoSensor.Plumbing && sensedValue > plumbing_overheat_danger) return danger;
-                        else return nothing;
-                    case (int)Instrumentation.Voltmeter:
-                        if (sensedValue <= low_voltage_danger) return danger;
-                        else if (sensedValue > low_voltage_danger && sensedValue <= low_voltage_warning) return warning;
-                        else if (sensedValue > low_voltage_warning && sensedValue < high_voltage_warning) return safe;
-                        else if (sensedValue >= high_voltage_warning && sensedValue < high_voltage_danger) return warning;
-                        else return danger; // the only remaining possibility is that the voltage is above the danger threshold
-                        // else return nothing; /* this is unreachable code */
-                    case (int)Instrumentation.Ammeter:
-                        if (sensedValue < over_current_warning) return safe;
-                        else if (sensedValue >= over_current_warning && sensedValue < over_current_danger) return warning;
-                        else return danger;
+                    case (int)Instrumentation.TRANSDUCER:
+                        if ((int)PressureTransducer.OTHER == subtype &&
+                            raw_value > OVERPRESSURE_WARNING &&
+                            raw_value < OVERPRESSURE_DANGER) {
+                            
+                            return warning;
+                            
+                        } else if ((int)PressureTransducer.OTHER == subtype &&
+                                   raw_value > OVERPRESSURE_DANGER) {
+                            
+                            return danger;
+                            
+                        } else {
+                            return nothing;                            
+                        }
+                    case (int)Instrumentation.THERMOCOUPLE:
+                        if ((int)ThermoSensor.ENGINE == subtype &&
+                            raw_value > ENGINE_OVERHEAT_WARNING &&
+                            raw_value < ENGINE_OVERHEAT_DANGER) {
+                            
+                            return warning;
+                            
+                        } else if (subtype == (int)ThermoSensor.PLUMBING &&
+                                   raw_value > PLUMBING_OVERRHEAT_WARNING &&
+                                   raw_value < PLUMBING_OVERHEAT_DANGER) {
+                            
+                            return warning;
+                            
+                        } else if (subtype == (int)ThermoSensor.ENGINE &&
+                                   raw_value > ENGINE_OVERHEAT_DANGER) {
+                            
+                            return danger;
+                            
+                        } else if (subtype == (int)ThermoSensor.PLUMBING &&
+                                   raw_value > PLUMBING_OVERHEAT_DANGER) {
+                            
+                            return danger;
+                            
+                        } else {
+                            return nothing;
+                        }
+                    case (int)Instrumentation.VOLTMETER:
+                        if (raw_value <= LOW_VOLTAGE_DANGER) {
+
+                            return danger;
+                            
+                        } else if (raw_value > LOW_VOLTAGE_DANGER &&
+                                   raw_value <= LOW_VOLTAGE_WARNING) {
+
+                            return warning;
+                            
+                        } else if (raw_value > LOW_VOLTAGE_WARNING &&
+                                   raw_value < HIGH_VOLTAGE_WARNING) {
+
+                            return safe;
+                            
+                        } else if (raw_value >= HIGH_VOLTAGE_WARNING &&
+                                   raw_value < HIGH_VOLTAGE_DANGER) {
+
+                            return warning;
+                            
+                        } else {
+                            return danger; /* only remaining possibility is that voltage > danger threshold */
+                        }
+                    case (int)Instrumentation.AMMETER:
+                        if (raw_value < OVER_CURRENT_WARNING) {
+
+                            return safe;
+                            
+                        } else if (raw_value >= OVER_CURRENT_WARNING &&
+                                   raw_value < OVER_CURRENT_DANGER) {
+
+                            return warning;
+                            
+                        } else {
+                            return danger;
+                        }
                 }
                 return nothing;
             }
         }
-        public string Value
+        public string value
         {
             get
             {
-                switch(Type)
+                switch(type)
                 {
-                    case (int)Instrumentation.Transducer:
-                        return sensedValue.ToString() + " psi";
-                    case (int)Instrumentation.Thermocouple:
-                        return sensedValue.ToString() + " °F";
-                    case (int)Instrumentation.Voltmeter:
-                        return sensedValue.ToString() + " V";
-                    case (int)Instrumentation.Ammeter:
-                        return sensedValue.ToString() + " A";
+                    case (int)Instrumentation.TRANSDUCER:
+                        return raw_value.ToString() + " psi";
+                    case (int)Instrumentation.THERMOCOUPLE:
+                        return raw_value.ToString() + " °F";
+                    case (int)Instrumentation.VOLTMETER:
+                        return raw_value.ToString() + " V";
+                    case (int)Instrumentation.AMMETER:
+                        return raw_value.ToString() + " A";
                 }
                 return "";
             }
         }
-        public string MaxValue
+        public string max_value
         {
             get
             {
-                switch (Type)
+                switch (type)
                 {
-                    case (int)Instrumentation.Transducer:
-                        return maxSensedValue.ToString() + " psi";
-                    case (int)Instrumentation.Thermocouple:
-                        return maxSensedValue.ToString() + " °F";
-                    case (int)Instrumentation.Voltmeter:
-                        return maxSensedValue.ToString() + " V";
-                    case (int)Instrumentation.Ammeter:
-                        return maxSensedValue.ToString() + " A";
+                    case (int)Instrumentation.TRANSDUCER:
+                        return max_raw_value.ToString() + " psi";
+                    case (int)Instrumentation.THERMOCOUPLE:
+                        return max_raw_value.ToString() + " °F";
+                    case (int)Instrumentation.VOLTMETER:
+                        return max_raw_value.ToString() + " V";
+                    case (int)Instrumentation.AMMETER:
+                        return max_raw_value.ToString() + " A";
                 }
                 return "";
             }
         }
 
         //Put calibrations here with switch statement for each type of sensor.
-        public void setValue(double val)
+        public void set_value(double val)
         {
-            sensedValue = (multi * val) + off;
+            raw_value = (multi * val) + off;
 
-            if(sensedValue > maxSensedValue) maxSensedValue = sensedValue;
+            if(raw_value > max_raw_value) max_raw_value = raw_value;
         }
 
-        public double getValue_Double()
+        public double get_raw_value()
         {
-            return sensedValue;
+            return raw_value;
         }
     }
 }

@@ -33,11 +33,12 @@ namespace GCS_3._0
 
         private void Toggle(object sender, MouseButtonEventArgs e)
         {
-            IsActive = IsActive ? false : true;
+            /* IsActive = IsActive ? false : true; */
+	    IsActive = !IsActive;
             button.Background = IsActive ? green : red;
 
             MainWindow main = (MainWindow)Application.Current.MainWindow;
-            main.ToggleTakeoffEnabled(!IsActive);
+            main.toggle_takeoff_enabled(!IsActive);
         }
 
         private void MouseOverEffect(object sender, DependencyPropertyChangedEventArgs e)

@@ -1,292 +1,413 @@
-﻿<Window x:Class="GCS_3._0.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GCS_3._0"
-        mc:Ignorable="d"
-        Title="Ground Control Station - Version 3.0" Height="{x:Static SystemParameters.PrimaryScreenHeight}" 
-        Width="{x:Static SystemParameters.PrimaryScreenWidth}" WindowState="Maximized" x:Name="MainInterface">
-    <Grid Background="LightSteelBlue">
+﻿<Window x:Class = "GCS_3._0.MainWindow"
+        xmlns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x = "http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d = "http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc = "http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local = "clr-namespace:GCS_3._0"
+        mc:Ignorable = "d"
+        Title = "Ground Control Station - Version 3.0" Height = "{x:Static SystemParameters.PrimaryScreenHeight}" 
+        Width = "{x:Static SystemParameters.PrimaryScreenWidth}" WindowState = "Maximized" x:Name = "MainInterface">
+  
+    <Grid Background = "LightSteelBlue">
+	  
         <Grid.RowDefinitions>
-            <RowDefinition Height="3.6*"/>
-            <RowDefinition Height="1.4*"/>
+			<RowDefinition Height = "3.6*"/>
+            <RowDefinition Height = "1.4*"/>
         </Grid.RowDefinitions>
+		
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Name="Column1" Width="0.55*"/>
-            <ColumnDefinition Width="{Binding Path=Width, ElementName=Column1}"/>
-            <ColumnDefinition Width="{Binding Path=Width, ElementName=Column1}"/>
-            <ColumnDefinition Width="{Binding Path=Width, ElementName=Column1}"/>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="1.2*"/>
+            <ColumnDefinition Name = "Column1" Width = "0.55*"/>
+            <ColumnDefinition Width = "{Binding Path = Width, ElementName = Column1}"/>
+            <ColumnDefinition Width = "{Binding Path = Width, ElementName = Column1}"/>
+            <ColumnDefinition Width = "{Binding Path = Width, ElementName = Column1}"/>
+            <ColumnDefinition Width = "3*"/>
+            <ColumnDefinition Width = "1.2*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0" Margin="5,0" Name="Stack1">
-            <Label Name="PrimSafeLabel" HorizontalContentAlignment="Center">Primary Safety</Label>
-            <local:CommandButton x:Name="PrimSafeButton" Height="50"/>
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">Full Power</Label>
-            <local:CommandButton x:Name="FullPowerButton" />
+		
+        <StackPanel Grid.Column = "0" Margin = "5,0" Name = "Stack1">
+            <Label Name = "PrimSafeLabel" HorizontalContentAlignment = "Center">Primary Safety</Label>
+            <local:CommandButton x:Name = "PrimSafeButton" Height = "50"/>
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+											   ElementName = PrimSafeLabel}">Full Power</Label>
+            <local:CommandButton x:Name = "FullPowerButton" />
         </StackPanel>
-        <StackPanel Grid.Column="1" Margin="{Binding Path=Margin, ElementName=Stack1}">
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">Secondary Safety</Label>
-            <local:SecSafetyButton x:Name="SecSafeButton"/>
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">Profile Selector</Label>
-            <Grid Height="50">
+		
+        <StackPanel Grid.Column = "1" Margin = "{Binding Path = Margin, ElementName = Stack1}">
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+											   ElementName = PrimSafeLabel}">Secondary Safety</Label>
+            <local:SecSafetyButton x:Name = "SecSafeButton"/>
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+											   ElementName = PrimSafeLabel}">Profile Selector</Label>
+            <Grid Height = "50">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="2.5*"/>
+                    <ColumnDefinition Width = "2.5*"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button Name="profDec" Grid.Column="0" Click="DecrementProfileNumber">-</Button>
-                <TextBox x:Name="selProf" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Text="0"/>
-                <Button Name="profInc"  Grid.Column="2" Click="IncrementProfileNumber">+</Button>
+                <Button Name = "profDec" Grid.Column = "0" Click = "decrement_profile_number">
+                  -
+                </Button>
+                <TextBox x:Name = "selProf" Grid.Column = "1" HorizontalContentAlignment = "Center"
+						 VerticalContentAlignment = "Center" Text = "0"/>
+                <Button Name = "profInc"  Grid.Column = "2" Click = "increment_profile_number">
+                  +
+                </Button>
             </Grid>
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">Takeoff</Label>
-            <local:CommandButton x:Name="TakeoffButton" />
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">Simulate</Label>
-            <local:CommandButton x:Name="SimButton" />
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">Reset FC</Label>
-            <local:CommandButton x:Name="ResetButton" />
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+											   ElementName = PrimSafeLabel}">Takeoff</Label>
+            <local:CommandButton x:Name = "TakeoffButton" />
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+											   ElementName  =  PrimSafeLabel}">Simulate</Label>
+            <local:CommandButton x:Name = "SimButton" />
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+												 ElementName = PrimSafeLabel}">Reset FC</Label>
+            <local:CommandButton x:Name = "ResetButton" />
         </StackPanel>
-        <StackPanel Grid.Column="2" Margin="{Binding Path=Margin, ElementName=Stack1}">
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">Softkill</Label>
-            <local:CommandButton x:Name="SoftkillButton" />
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">Hardkill</Label>
-            <local:CommandButton x:Name="HardkillButton" />
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">Dump Fuel</Label>
-            <local:CommandButton x:Name="DumpFuelButton" />
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">Fan Shutdown</Label>
-            <local:CommandButton x:Name="FanShutButton" />
+		
+        <StackPanel Grid.Column = "2" Margin = "{Binding Path = Margin, ElementName = Stack1}">
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+												 ElementName = PrimSafeLabel}">Softkill</Label>
+            <local:CommandButton x:Name = "SoftkillButton" />
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+												 ElementName = PrimSafeLabel}">Hardkill</Label>
+            <local:CommandButton x:Name = "HardkillButton" />
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+												 ElementName = PrimSafeLabel}">Dump Fuel</Label>
+            <local:CommandButton x:Name = "DumpFuelButton" />
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+												 ElementName = PrimSafeLabel}">Fan Shutdown</Label>
+            <local:CommandButton x:Name = "FanShutButton" />
         </StackPanel>
-        <StackPanel Grid.Column="0" Grid.Row="1" Margin="{Binding Path=Margin, ElementName=Stack1}">
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">Commanded State</Label>
-            <TextBox x:Name="commandedStateBox" IsReadOnly="True"/>
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">Craft State</Label>
-            <TextBox x:Name="recievedStateBox" IsReadOnly="True"/>
+		
+        <StackPanel Grid.Column = "0" Grid.Row = "1" Margin = "{Binding Path = Margin, ElementName = Stack1}">
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+												 ElementName = PrimSafeLabel}">Commanded State</Label>
+            <TextBox x:Name = "commandedStateBox" IsReadOnly = "True"/>
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+												 ElementName = PrimSafeLabel}">Craft State</Label>
+            <TextBox x:Name = "recievedStateBox" IsReadOnly = "True"/>
         </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="1" Margin="{Binding Path=Margin, ElementName=Stack1}" Grid.ColumnSpan="2">
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">Thermocouple Status Indicators</Label>
-            <Grid x:Name="TCInds" Height="70">
+		
+        <StackPanel Grid.Column = "1" Grid.Row = "1" Margin = "{Binding Path = Margin,
+															   ElementName = Stack1}" Grid.ColumnSpan = "2">
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+												 ElementName = PrimSafeLabel}">Thermocouple Status Indicators</Label>
+            <Grid x:Name = "TCInds" Height = "70">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
+				
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <TextBox Name="TCp1Ind" IsReadOnly="True" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="3" Grid.Column="0" Grid.Row="0">TCp-1</TextBox>
-                <TextBox IsReadOnly="{Binding Path=IsReadOnly,ElementName=TCp1Ind}" HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=TCp1Ind}"
-			 VerticalContentAlignment="{Binding Path=VerticalContentAlignment, ElementName=TCp1Ind}" Margin="{Binding Path=Margin, ElementName=TCp1Ind}" Grid.Column="1" Grid.Row="0">TCp-2</TextBox>
-                <TextBox IsReadOnly="{Binding Path=IsReadOnly,ElementName=TCp1Ind}" HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=TCp1Ind}"
-			 VerticalContentAlignment="{Binding Path=VerticalContentAlignment, ElementName=TCp1Ind}" Margin="{Binding Path=Margin, ElementName=TCp1Ind}" Grid.Column="2" Grid.Row="0">TCw-1</TextBox>
-                <TextBox IsReadOnly="{Binding Path=IsReadOnly,ElementName=TCp1Ind}" HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=TCp1Ind}"
-			 VerticalContentAlignment="{Binding Path=VerticalContentAlignment, ElementName=TCp1Ind}" Margin="{Binding Path=Margin, ElementName=TCp1Ind}" Grid.Column="0" Grid.Row="1">TCw-2</TextBox>
-                <TextBox IsReadOnly="{Binding Path=IsReadOnly,ElementName=TCp1Ind}" HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=TCp1Ind}"
-			 VerticalContentAlignment="{Binding Path=VerticalContentAlignment, ElementName=TCp1Ind}" Margin="{Binding Path=Margin, ElementName=TCp1Ind}" Grid.Column="1" Grid.Row="1">TCw-3</TextBox>
-                <TextBox IsReadOnly="{Binding Path=IsReadOnly,ElementName=TCp1Ind}" HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=TCp1Ind}"
-			 VerticalContentAlignment="{Binding Path=VerticalContentAlignment, ElementName=TCp1Ind}" Margin="{Binding Path=Margin, ElementName=TCp1Ind}" Grid.Column="2" Grid.Row="1">TCw-4</TextBox>
+				
+                <TextBox Name = "TCp1Ind" IsReadOnly = "True" HorizontalContentAlignment = "Center"
+						 VerticalContentAlignment = "Center" Margin = "3" Grid.Column = "0" Grid.Row = "0"
+						 Text = "TCp-1" />
+
+                <TextBox IsReadOnly = "{Binding Path = IsReadOnly,ElementName = TCp1Ind}"
+						 HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment, ElementName = TCp1Ind}"
+						 VerticalContentAlignment = "{Binding Path = VerticalContentAlignment, ElementName = TCp1Ind}"
+						 Margin = "{Binding Path = Margin, ElementName = TCp1Ind}" Grid.Column = "1" Grid.Row = "0"
+						 Text = "TCp-2" />
+
+                <TextBox IsReadOnly = "{Binding Path = IsReadOnly,ElementName = TCp1Ind}"
+						 HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment, ElementName = TCp1Ind}"
+						 VerticalContentAlignment = "{Binding Path = VerticalContentAlignment, ElementName = TCp1Ind}"
+						 Margin = "{Binding Path = Margin, ElementName = TCp1Ind}" Grid.Column = "2" Grid.Row = "0"
+						 Text = "TCw-1" />
+				
+                <TextBox IsReadOnly = "{Binding Path = IsReadOnly,ElementName = TCp1Ind}"
+						 HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment, ElementName = TCp1Ind}"
+						 VerticalContentAlignment = "{Binding Path = VerticalContentAlignment, ElementName = TCp1Ind}"
+						 Margin = "{Binding Path = Margin, ElementName = TCp1Ind}" Grid.Column = "0" Grid.Row = "1"
+						 Text = "TCw-2" />
+				
+                <TextBox IsReadOnly = "{Binding Path = IsReadOnly,ElementName = TCp1Ind}"
+						 HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment, ElementName = TCp1Ind}"
+						 VerticalContentAlignment = "{Binding Path = VerticalContentAlignment, ElementName = TCp1Ind}"
+						 Margin = "{Binding Path = Margin, ElementName = TCp1Ind}" Grid.Column = "1" Grid.Row = "1"
+						 Text = "TCw-3" />
+				
+                <TextBox IsReadOnly = "{Binding Path = IsReadOnly,ElementName = TCp1Ind}"
+						 HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment, ElementName = TCp1Ind}"
+						 VerticalContentAlignment = "{Binding Path = VerticalContentAlignment, ElementName = TCp1Ind}"
+						 Margin = "{Binding Path = Margin, ElementName = TCp1Ind}" Grid.Column = "2" Grid.Row = "1"
+						 Text = "TCw-4" />
             </Grid>
         </StackPanel>
-        <StackPanel Grid.Column="3" Grid.Row="0" Margin="{Binding Path=Margin,ElementName=Stack1}">
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">FO-U</Label>
-            <local:CommandButton x:Name="FOUButton" />
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">FC-U</Label>
-            <local:CommandButton x:Name="FCUButton" />
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">AV5-M</Label>
-            <local:CommandButton x:Name="AV5Button" />
-            <Label HorizontalContentAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">AV6-M</Label>
-            <local:CommandButton x:Name="AV6Button" />
+
+        <StackPanel Grid.Column = "3" Grid.Row = "0" Margin = "{Binding Path = Margin, ElementName = Stack1}">
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+												 ElementName = PrimSafeLabel}" Content = "FO-U" />
+            <local:CommandButton x:Name = "FOUButton" />
+			
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+												 ElementName = PrimSafeLabel}" Content = "FC-U" />
+            <local:CommandButton x:Name = "FCUButton" />
+			
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+												 ElementName = PrimSafeLabel}" Content = "AV5-M" />
+            <local:CommandButton x:Name = "AV5Button" />
+			
+            <Label HorizontalContentAlignment = "{Binding Path = HorizontalContentAlignment,
+												 ElementName = PrimSafeLabel}" Content = "AV6-M" />
+            <local:CommandButton x:Name = "AV6Button" />
         </StackPanel>
-        <StackPanel Grid.Column="6" Grid.Row="1" Margin="{Binding Path=Margin, ElementName=Stack1}">
-            <Button Name="StartButton" Height="{Binding Path=Height, ElementName=QuitButton}"  Margin="{Binding Path=Margin, ElementName=QuitButton}" Click="CommenceTesting">Begin Test</Button>
-            <Button Margin="{Binding Path=Margin, ElementName=QuitButton}" Height="{Binding Path=Height, ElementName=QuitButton}" Click="EndTesting">Stop Test</Button>
-            <Button Name="QuitButton" Height="40" Click="QuitInterface" Margin="0,5">Quit Interface</Button>
+		
+        <StackPanel Grid.Column = "6" Grid.Row = "1" Margin = "{Binding Path = Margin, ElementName = Stack1}">
+            <Button Name = "StartButton" Height = "{Binding Path = Height, ElementName = QuitButton}"
+					Margin = "{Binding Path = Margin, ElementName = QuitButton}"
+					Click = "commence_testing">
+				Begin Test
+			</Button>
+
+            <Button Margin = "{Binding Path = Margin, ElementName = QuitButton}"
+					Height = "{Binding Path = Height, ElementName = QuitButton}" Click = "end_testing">
+				Stop Test
+			</Button>
+			
+            <Button Name = "QuitButton" Height = "40" Click = "quit_interface" Margin = "0,5">
+				Quit Interface
+			</Button>
         </StackPanel>
-        <Grid Grid.Column="4" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="0,0,360,0">
+		
+        <Grid Grid.Column = "4" Grid.RowSpan = "2" Grid.ColumnSpan = "2" Margin = "0,0,360,0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
+                <RowDefinition Height = "1*" />
+                <RowDefinition Height = "1*" />
+                <RowDefinition Height = "1*" />
+                <RowDefinition Height = "1*" />
+                <RowDefinition Height = "1*" />
+                <RowDefinition Height = "1*" />
+                <RowDefinition Height = "1*" />
+                <RowDefinition Height = "1*" />
+                <RowDefinition Height = "1*" />
+                <RowDefinition Height = "1*" />
+                <RowDefinition Height = "1*" />
             </Grid.RowDefinitions>
+			
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width = "1*" />
+                <ColumnDefinition Width = "1*" />
+                <ColumnDefinition Width = "1*" />
+                <ColumnDefinition Width = "1*" />
+                <ColumnDefinition Width = "1*" />
+                <ColumnDefinition Width = "1*" />
+                <ColumnDefinition Width = "1*" />
+                <ColumnDefinition Width = "1*" />
+                <ColumnDefinition Width = "1*" />
             </Grid.ColumnDefinitions>
-<<<<<<< HEAD
+			
             <Grid.Background> 
-                <ImageBrush ImageSource="new_PID.png" />   
-=======
-            <Grid.Background>
-                <ImageBrush ImageSource="new_PID.png" />
->>>>>>> newdiagram
+                <ImageBrush ImageSource = "new_PID.png" />
             </Grid.Background>
-            <TextBlock Grid.Row="0" Grid.Column="1" Text="FO-U"   HorizontalAlignment="Left"    VerticalAlignment="Center" FontSize="16" Name="UI_FO_U" />
-            <StackPanel Grid.Row="0" Grid.Column="2"  HorizontalAlignment="Right"   VerticalAlignment="Top">
-                <TextBlock Text="PT2-U" FontSize="16" />
-                <TextBlock Name="UI_PT2_U" FontSize="16" Background="Aqua" />
+			
+            <TextBlock Grid.Row = "0" Grid.Column = "1" Text = "FO-U" HorizontalAlignment = "Left"
+					   VerticalAlignment = "Center" FontSize = "16" Name = "UI_FO_U" />
+
+            <StackPanel Grid.Row = "0" Grid.Column = "2"  HorizontalAlignment = "Right" VerticalAlignment = "Top">
+                <TextBlock Text = "PT2-U" FontSize = "16" />
+                <TextBlock Name = "UI_PT2_U" FontSize = "16" Background = "Aqua" />
             </StackPanel>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="PR2-U"  HorizontalAlignment="Left"    VerticalAlignment="Center" FontSize="16" Name="UI_PR2_U" Margin="10,0,0,0"/>
-            <TextBlock Grid.Row="1" Grid.Column="3" Text="CV-U"   HorizontalAlignment="Right"   VerticalAlignment="Top"    FontSize="16" Name="UI_CV_U" Margin="0,0,10,0"/>
-            <TextBlock Grid.Row="1" Grid.Column="5" Text="PF-U"   HorizontalAlignment="Center"  VerticalAlignment="Center" FontSize="16" Name="UI_PF_U" />
+			
+            <TextBlock Grid.Row = "1" Grid.Column = "0" Text = "PR2-U"  HorizontalAlignment = "Left"
+					   VerticalAlignment = "Center" FontSize = "16" Name = "UI_PR2_U" Margin = "10,0,0,0"/>
+			
+            <TextBlock Grid.Row = "1" Grid.Column = "3" Text = "CV-U"   HorizontalAlignment = "Right"
+					   VerticalAlignment = "Top"    FontSize = "16" Name = "UI_CV_U" Margin = "0,0,10,0"/>
+			
+            <TextBlock Grid.Row = "1" Grid.Column = "5" Text = "PF-U"   HorizontalAlignment = "Center"
+					   VerticalAlignment = "Center" FontSize = "16" Name = "UI_PF_U" />
 
-            <TextBlock Grid.Row="2" Grid.Column="7" Text="FC-U"   HorizontalAlignment="Center"  VerticalAlignment="Top"    FontSize="16" Name="UI_FC_U" />
-            <TextBlock Grid.Row="2" Grid.Column="8" Text="PR1-U"  HorizontalAlignment="Right"   VerticalAlignment="Center" FontSize="16" Name="UI_PR1_U" Margin="0,0,10,0"/>
+            <TextBlock Grid.Row = "2" Grid.Column = "7" Text = "FC-U"   HorizontalAlignment = "Center"
+					   VerticalAlignment = "Top"    FontSize = "16" Name = "UI_FC_U" />
 
-            <TextBlock Grid.Row="3" Grid.Column="1" Text="H2O2"   HorizontalAlignment="Center"  VerticalAlignment="Center" FontSize="24" Name="UI_H2O2" Grid.ColumnSpan="2" Grid.RowSpan="2" />
-            <TextBlock Grid.Row="3" Grid.Column="8" Text="RG-U"   HorizontalAlignment="Center"  VerticalAlignment="Bottom" FontSize="16" Name="UI_RG_U" />
+			<TextBlock Grid.Row = "2" Grid.Column = "8" Text = "PR1-U"  HorizontalAlignment = "Right"
+					   VerticalAlignment = "Center" FontSize = "16" Name = "UI_PR1_U" Margin = "0,0,10,0"/>
 
-            <StackPanel Grid.Row="4" Grid.Column="6" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <TextBlock Text="PT1-U"  FontSize="16" />
-                <TextBlock Name="UI_PT1_U" FontSize="16" Background="Aqua" />
+            <TextBlock Grid.Row = "3" Grid.Column = "1" Text = "H2O2"   HorizontalAlignment = "Center"
+					   VerticalAlignment = "Center" FontSize = "24" Name = "UI_H2O2" Grid.ColumnSpan = "2"
+					   Grid.RowSpan = "2" />
+
+            <TextBlock Grid.Row = "3" Grid.Column = "8" Text = "RG-U"   HorizontalAlignment = "Center"
+					   VerticalAlignment = "Bottom" FontSize = "16" Name = "UI_RG_U" />
+
+            <StackPanel Grid.Row = "4" Grid.Column = "6" HorizontalAlignment = "Left" VerticalAlignment = "Top">
+                <TextBlock Text = "PT1-U"  FontSize = "16" />
+                <TextBlock Name = "UI_PT1_U" FontSize = "16" Background = "Aqua" />
             </StackPanel>
-            <TextBlock Grid.Row="4" Grid.Column="8" Text="HV-U"   HorizontalAlignment="Center"  VerticalAlignment="Bottom" FontSize="16" Name="UI_HV_U" />
+			
+            <TextBlock Grid.Row = "4" Grid.Column = "8" Text = "HV-U"   HorizontalAlignment = "Center"
+					   VerticalAlignment = "Bottom" FontSize = "16" Name = "UI_HV_U" />
 
-            <TextBlock Grid.Row="5" Grid.Column="8" Text="BV-U"   HorizontalAlignment="Center"  VerticalAlignment="Center" FontSize="16" Name="UI_BV_U" />
+            <TextBlock Grid.Row = "5" Grid.Column = "8" Text = "BV-U"   HorizontalAlignment = "Center"
+					   VerticalAlignment = "Center" FontSize = "16" Name = "UI_BV_U" />
 
-            <TextBlock Grid.Row="6" Grid.Column="0" Text="AV6-M"  HorizontalAlignment="Left"    VerticalAlignment="Center" FontSize="16" Name="UI_AV6_M" Margin="10,0,0,0" />
-            <TextBlock Grid.Row="6" Grid.Column="3" Text="AV5-M"  HorizontalAlignment="Left"    VerticalAlignment="Center" FontSize="16" Name="UI_AV5_M"/>
+            <TextBlock Grid.Row = "6" Grid.Column = "0" Text = "AV6-M"  HorizontalAlignment = "Left"
+					   VerticalAlignment = "Center" FontSize = "16" Name = "UI_AV6_M" Margin = "10,0,0,0" />
+            <TextBlock Grid.Row = "6" Grid.Column = "3" Text = "AV5-M"  HorizontalAlignment = "Left"
+					   VerticalAlignment = "Center" FontSize = "16" Name = "UI_AV5_M"/>
 
-            <StackPanel Grid.Row="6" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top">
-                <TextBlock Text="TCP2-M" FontSize="16" />
-                <TextBlock Name="UI_TCP2_M" FontSize="16" Background="Aqua" />
-            </StackPanel>
-
-            <TextBlock Grid.Row="6" Grid.Column="7" Text="GN2"    HorizontalAlignment="Center"  VerticalAlignment="Center" FontSize="24" Name="UI_GN2" Grid.RowSpan="2" />
-
-            <StackPanel Grid.Row="7" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center" >
-                <TextBlock Text="PT5-M"  FontSize="16" />
-                <TextBlock FontSize="16" Name="UI_PT5_M" Background="Aqua" />
-            </StackPanel>
-            <StackPanel Grid.Row="7" Grid.Column="5" HorizontalAlignment="Right"   VerticalAlignment="Center" >
-                <TextBlock Text="TCP1-M" FontSize="16" />
-                <TextBlock FontSize="16" Name="UI_TCP1_M" Background="Aqua" />
-            </StackPanel>
-
-
-            <TextBlock Grid.Row="8" Grid.Column="1" Text="AV1-M"  HorizontalAlignment="Left"    VerticalAlignment="Center" FontSize="16" Name="UI_AV1_M" />
-            <TextBlock Grid.Row="8" Grid.Column="3" Text="AV2-M"  HorizontalAlignment="Left"    VerticalAlignment="Center" FontSize="16" Name="UI_AV2_M" />
-            <TextBlock Grid.Row="8" Grid.Column="6" Text="AV3-M"  HorizontalAlignment="Left"    VerticalAlignment="Center" FontSize="16" Name="UI_AV3_M" />
-            <TextBlock Grid.Row="8" Grid.Column="7" Text="AV4-M"  HorizontalAlignment="Right"   VerticalAlignment="Center" FontSize="16" Name="UI_AV4_M" />
-
-            <StackPanel Grid.Row="8" Grid.Column="4" HorizontalAlignment="Center"  VerticalAlignment="Center" >
-                <TextBlock Text="PR-M"  FontSize="16" />
-                <TextBlock FontSize="16" Name="UI_PR_M" Background="Aqua" />
-            </StackPanel>
-
-            <StackPanel Grid.Row="9" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0">
-                <TextBlock Text="PT1-M" FontSize="16" />
-                <TextBlock Name="UI_PT1_M" FontSize="16" Background="Aqua" />
-            </StackPanel>
-            <StackPanel Grid.Row="9" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0">
-                <TextBlock Text="PT2-M" FontSize="16" />
-                <TextBlock Name="UI_PT2_M" FontSize="16" Background="Aqua" />
-            </StackPanel>
-            <StackPanel Grid.Row="9" Grid.Column="5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0">
-                <TextBlock Text="PT3-M" FontSize="16" />
-                <TextBlock Name="UI_PT3_M" FontSize="16" Background="Aqua" />
-            </StackPanel>
-            <StackPanel Grid.Row="9" Grid.Column="7" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0">
-                <TextBlock Text="PT4-M" FontSize="16" />
-                <TextBlock Name="UI_PT4_M" FontSize="16" Background="Aqua" />
+            <StackPanel Grid.Row = "6" Grid.Column = "1" HorizontalAlignment = "Center" VerticalAlignment = "Top">
+                <TextBlock Text = "TCP2-M" FontSize = "16" />
+                <TextBlock Name = "UI_TCP2_M" FontSize = "16" Background = "Aqua" />
             </StackPanel>
 
-            <StackPanel Grid.Row="10" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0">
-                <TextBlock Text="TCw1-E" FontSize="16" />
-                <TextBlock Name="UI_TCW1_E" FontSize="16" Background="Aqua" />
+            <TextBlock Grid.Row = "6" Grid.Column = "7" Text = "GN2"    HorizontalAlignment = "Center"
+					   VerticalAlignment = "Center" FontSize = "24" Name = "UI_GN2" Grid.RowSpan = "2" />
+
+            <StackPanel Grid.Row = "7" Grid.Column = "3" HorizontalAlignment = "Left" VerticalAlignment = "Center" >
+                <TextBlock Text = "PT5-M"  FontSize = "16" />
+                <TextBlock FontSize = "16" Name = "UI_PT5_M" Background = "Aqua" />
             </StackPanel>
-            <StackPanel Grid.Row="10" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0">
-                <TextBlock Text="TCw2-E" FontSize="16" />
-                <TextBlock Name="UI_TCW2_E" FontSize="16" Background="Aqua" />
+			
+            <StackPanel Grid.Row = "7" Grid.Column = "5" HorizontalAlignment = "Right"   VerticalAlignment = "Center" >
+                <TextBlock Text = "TCP1-M" FontSize = "16" />
+                <TextBlock FontSize = "16" Name = "UI_TCP1_M" Background = "Aqua" />
             </StackPanel>
-            <StackPanel Grid.Row="10" Grid.Column="5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0">
-                <TextBlock Text="TCw3-E" FontSize="16" />
-                <TextBlock Name="UI_TCW3_E" FontSize="16" Background="Aqua" />
+
+
+            <TextBlock Grid.Row = "8" Grid.Column = "1" Text = "AV1-M"  HorizontalAlignment = "Left"
+					   VerticalAlignment = "Center" FontSize = "16" Name = "UI_AV1_M" />
+			
+            <TextBlock Grid.Row = "8" Grid.Column = "3" Text = "AV2-M"  HorizontalAlignment = "Left"
+					   VerticalAlignment = "Center" FontSize = "16" Name = "UI_AV2_M" />
+			
+            <TextBlock Grid.Row = "8" Grid.Column = "6" Text = "AV3-M"  HorizontalAlignment = "Left"
+					   VerticalAlignment = "Center" FontSize = "16" Name = "UI_AV3_M" />
+			
+            <TextBlock Grid.Row = "8" Grid.Column = "7" Text = "AV4-M"  HorizontalAlignment = "Right"
+					   VerticalAlignment = "Center" FontSize = "16" Name = "UI_AV4_M" />
+
+            <StackPanel Grid.Row = "8" Grid.Column = "4" HorizontalAlignment = "Center"  VerticalAlignment = "Center" >
+                <TextBlock Text = "PR-M"  FontSize = "16" />
+                <TextBlock FontSize = "16" Name = "UI_PR_M" Background = "Aqua" />
             </StackPanel>
-            <StackPanel Grid.Row="10" Grid.Column="7" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0">
-                <TextBlock Text="TCw4-E" FontSize="16" />
-                <TextBlock Name="UI_TCW4_E" FontSize="16" Background="Aqua" />
+
+            <StackPanel Grid.Row = "9" Grid.Column = "0" HorizontalAlignment = "Left" VerticalAlignment = "Top"
+						Margin = "10,0,0,0">
+                <TextBlock Text = "PT1-M" FontSize = "16" />
+                <TextBlock Name = "UI_PT1_M" FontSize = "16" Background = "Aqua" />
+            </StackPanel>
+			
+            <StackPanel Grid.Row = "9" Grid.Column = "2" HorizontalAlignment = "Left" VerticalAlignment = "Top"
+						Margin = "10,0,0,0">
+                <TextBlock Text = "PT2-M" FontSize = "16" />
+                <TextBlock Name = "UI_PT2_M" FontSize = "16" Background = "Aqua" />
+            </StackPanel>
+			
+            <StackPanel Grid.Row = "9" Grid.Column = "5" HorizontalAlignment = "Left" VerticalAlignment = "Top"
+						Margin = "10,0,0,0">
+                <TextBlock Text = "PT3-M" FontSize = "16" />
+                <TextBlock Name = "UI_PT3_M" FontSize = "16" Background = "Aqua" />
+            </StackPanel>
+			
+            <StackPanel Grid.Row = "9" Grid.Column = "7" HorizontalAlignment = "Left" VerticalAlignment = "Top"
+						Margin = "10,0,0,0">
+                <TextBlock Text = "PT4-M" FontSize = "16" />
+                <TextBlock Name = "UI_PT4_M" FontSize = "16" Background = "Aqua" />
+            </StackPanel>
+
+            <StackPanel Grid.Row = "10" Grid.Column = "0" HorizontalAlignment = "Left" VerticalAlignment = "Top"
+						Margin = "10,0,0,0">
+                <TextBlock Text = "TCw1-E" FontSize = "16" />
+                <TextBlock Name = "UI_TCW1_E" FontSize = "16" Background = "Aqua" />
+            </StackPanel>
+			
+            <StackPanel Grid.Row = "10" Grid.Column = "2" HorizontalAlignment = "Left" VerticalAlignment = "Top"
+						Margin = "10,0,0,0">
+                <TextBlock Text = "TCw2-E" FontSize = "16" />
+                <TextBlock Name = "UI_TCW2_E" FontSize = "16" Background = "Aqua" />
+            </StackPanel>
+			
+            <StackPanel Grid.Row = "10" Grid.Column = "5" HorizontalAlignment = "Left" VerticalAlignment = "Top"
+						Margin = "10,0,0,0">
+                <TextBlock Text = "TCw3-E" FontSize = "16" />
+                <TextBlock Name = "UI_TCW3_E" FontSize = "16" Background = "Aqua" />
+            </StackPanel>
+			
+            <StackPanel Grid.Row = "10" Grid.Column = "7" HorizontalAlignment = "Left" VerticalAlignment = "Top"
+						Margin = "10,0,0,0">
+                <TextBlock Text = "TCw4-E" FontSize = "16" />
+                <TextBlock Name = "UI_TCW4_E" FontSize = "16" Background = "Aqua" />
             </StackPanel>
         </Grid>
-        <StackPanel Grid.Row="0" Grid.Column="5">
-            <DataGrid AlternatingRowBackground="LightSteelBlue" x:Name="PTsensorTable" IsReadOnly="True" AutoGenerateColumns="False">
+		
+        <StackPanel Grid.Row = "0" Grid.Column = "5">
+            <DataGrid AlternatingRowBackground = "LightSteelBlue" x:Name = "PTsensorTable" IsReadOnly = "True"
+					  AutoGenerateColumns = "False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Pressure Sensor" Binding="{Binding Name}" Width="*"/>
-                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*">
+                    <DataGridTextColumn Header = "Pressure Sensor" Binding = "{Binding Name}" Width = "*"/>
+                    <DataGridTextColumn Header = "Value" Binding = "{Binding Value}" Width = "*">
                         <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="Background" Value="{Binding Status}"/>
+                            <Style TargetType = "{x:Type TextBlock}">
+                                <Setter Property = "Background" Value = "{Binding Status}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Max Value" Binding="{Binding MaxValue}" Width="*"/>
+                    <DataGridTextColumn Header = "Max Value" Binding = "{Binding MaxValue}" Width = "*"/>
                 </DataGrid.Columns>
             </DataGrid>
-            <DataGrid AlternatingRowBackground="{Binding Path=AlternatingRowBackground, ElementName=PTsensorTable}" 
-                      x:Name="TCsensorTable" IsReadOnly="True" AutoGenerateColumns="False">
+			
+            <DataGrid AlternatingRowBackground = "{Binding Path = AlternatingRowBackground, ElementName = PTsensorTable}"
+                      x:Name = "TCsensorTable" IsReadOnly = "True" AutoGenerateColumns = "False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Thermocouple" Binding="{Binding Name}" Width="*"/>
-                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*">
+                    <DataGridTextColumn Header = "Thermocouple" Binding = "{Binding Name}" Width = "*"/>
+                    <DataGridTextColumn Header = "Value" Binding = "{Binding Value}" Width = "*">
                         <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="Background" Value="{Binding Status}"/>
+                            <Style TargetType = "{x:Type TextBlock}">
+                                <Setter Property = "Background" Value = "{Binding Status}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Max Value" Binding="{Binding MaxValue}" Width="*"/>
+                    <DataGridTextColumn Header = "Max Value" Binding = "{Binding MaxValue}" Width = "*"/>
                 </DataGrid.Columns>
             </DataGrid>
-            <DataGrid x:Name="VoltageSensorTable" IsReadOnly="True" AutoGenerateColumns="False">
+			
+            <DataGrid x:Name = "VoltageSensorTable" IsReadOnly = "True" AutoGenerateColumns = "False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Voltage Sensor" Binding="{Binding Name}" Width="*"/>
-                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*">
+                    <DataGridTextColumn Header = "Voltage Sensor" Binding = "{Binding Name}" Width = "*"/>
+                    <DataGridTextColumn Header = "Value" Binding = "{Binding Value}" Width = "*">
                         <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="Background" Value="{Binding Status}"/>
+                            <Style TargetType = "{x:Type TextBlock}">
+                                <Setter Property = "Background" Value = "{Binding Status}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Max Value" Binding="{Binding MaxValue}" Width="*"/>
+                    <DataGridTextColumn Header = "Max Value" Binding = "{Binding MaxValue}" Width = "*"/>
                 </DataGrid.Columns>
             </DataGrid>
-            <DataGrid x:Name="AmmeterTable" IsReadOnly="True" AutoGenerateColumns="False">
+			
+            <DataGrid x:Name = "AmmeterTable" IsReadOnly = "True" AutoGenerateColumns = "False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Ammeter" Binding="{Binding Name}" Width="*"/>
-                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*">
+                    <DataGridTextColumn Header = "Ammeter" Binding = "{Binding Name}" Width = "*"/>
+                    <DataGridTextColumn Header = "Value" Binding = "{Binding Value}" Width = "*">
                         <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="Background" Value="{Binding Status}"/>
+                            <Style TargetType = "{x:Type TextBlock}">
+                                <Setter Property = "Background" Value = "{Binding Status}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            <DataGrid x:Name="ServoValsTable" IsReadOnly="True" AutoGenerateColumns="False" 
-                      AlternatingRowBackground="{Binding Path=AlternatingRowBackground, ElementName=PTsensorTable}">
+			
+            <DataGrid x:Name = "ServoValsTable" IsReadOnly = "True" AutoGenerateColumns = "False" 
+                      AlternatingRowBackground = "{Binding Path = AlternatingRowBackground, ElementName = PTsensorTable}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Servo Motor" Binding="{Binding Name}" Width="*"/>
-                    <DataGridTextColumn Header="PWM Value" Binding="{Binding PWM}" Width="*"/>
+                    <DataGridTextColumn Header = "Servo Motor" Binding = "{Binding Name}" Width = "*"/>
+                    <DataGridTextColumn Header = "PWM Value" Binding = "{Binding PWM}" Width = "*"/>
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>
-        <StackPanel Grid.Column="3" Grid.Row="1" Margin="{Binding Path=Margin, ElementName=Stack1}">
-            <Label HorizontalAlignment="{Binding Path=HorizontalContentAlignment, ElementName=PrimSafeLabel}">COM Port</Label>
-            <TextBox x:Name="comPortName" TextAlignment="Center" Text="COM10"/>
+		
+        <StackPanel Grid.Column = "3" Grid.Row = "1" Margin = "{Binding Path = Margin, ElementName = Stack1}">
+            <Label HorizontalAlignment = "{Binding Path = HorizontalContentAlignment,
+										  ElementName = PrimSafeLabel}" Content = "COM Port" />
+            <TextBox x:Name = "comPortName" TextAlignment = "Center" Text = "COM10"/>
         </StackPanel>
     </Grid>
 </Window>
