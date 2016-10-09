@@ -94,7 +94,7 @@ namespace GCS_3._0
                 is_active = is_active ? false : true;
 
                 MainWindow main = (MainWindow)Application.Current.MainWindow;
-                main.changeCommandString(this, command_character, is_active);
+                main.change_command_string(this, command_character, is_active);
 
                 button.Background = is_green ? dark_red : dark_green;
                 is_green = is_green ? false : true;
@@ -111,7 +111,7 @@ namespace GCS_3._0
                 is_active = false;
 
                 MainWindow main = (MainWindow)Application.Current.MainWindow;
-                main.changeCommandString(this, command_character, false);
+                main.change_command_string(this, command_character, false);
 
                 button.Background = default_on ? dark_green : dark_red;
                 is_green = default_on ? true : false;
