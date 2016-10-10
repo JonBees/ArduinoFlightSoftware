@@ -13,23 +13,21 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace GCS_3._0
-{
+namespace GCS_3._0 {
     /// <summary>
     /// Interaction logic for CommandButton.xaml
     /// </summary>
-    public partial class CommandButton : UserControl
-    {
+    public partial class CommandButton : UserControl {
         SolidColorBrush dark_red, dark_green, green, red;
         string button_name;
         bool must_confirm;
         
         public CommandButton()
         {
-            dark_green = new SolidColorBrush(Color.FromArgb(255, 0, 180, 0));
-            dark_red = new SolidColorBrush(Color.FromArgb(255, 180, 0, 0));
             red = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0));
             green = new SolidColorBrush(Color.FromArgb(255, 0, 255, 0));
+            dark_red = new SolidColorBrush(Color.FromArgb(255, 180, 0, 0));
+            dark_green = new SolidColorBrush(Color.FromArgb(255, 0, 180, 0));
 
             InitializeComponent();
 
@@ -43,7 +41,7 @@ namespace GCS_3._0
             is_active = false;
 
             default_on = def_on;
-            is_green = default_on ? true : false;
+            is_green = default_on;
             button.Background = is_green ? dark_green : dark_red;
             must_confirm = confirmation;
 
@@ -79,7 +77,8 @@ namespace GCS_3._0
         {
             MessageBoxResult user_confirmation;
 
-            //If the confirmation message is enabled for the button, present it. Otherwise, continue to the toggling of the button.
+            /* If the confirmation message is enabled for the button, present it. Otherwise, 
+             * continue to the toggling of the button. */
             if (must_confirm) {
                 string onOrOff = is_green ? "off" : "on";
                 user_confirmation = MessageBox.Show("Are you sure you want to toggle " + button_name + " " +
@@ -89,15 +88,14 @@ namespace GCS_3._0
                 user_confirmation = MessageBoxResult.Yes;
             }
 
-            if (MessageBoxResult.Yes == user_confirmation)
-            {
-                is_active = is_active ? false : true;
+            if (MessageBoxResult.Yes == user_confirmation) {
+                is_active = !is_active;
 
                 MainWindow main = (MainWindow)Application.Current.MainWindow;
                 main.change_command_string(this, command_character, is_active);
 
                 button.Background = is_green ? dark_red : dark_green;
-                is_green = is_green ? false : true;
+                is_green = !is_green;
             }
         }
 
@@ -106,36 +104,47 @@ namespace GCS_3._0
             button.IsEnabled = enab;
             button.Opacity = enab ? 1 : 0.3;
 
-            if(!enab)
-            {
+            if(!enab) {
                 is_active = false;
 
                 MainWindow main = (MainWindow)Application.Current.MainWindow;
                 main.change_command_string(this, command_character, false);
 
                 button.Background = default_on ? dark_green : dark_red;
-                is_green = default_on ? true : false;
+                is_green = default_on;
             }
         }
 
         public void set_confirmed_state(bool active)
         {
-            if (!waiting)
-            {
+            if (!waiting) {
                 is_active = active;
 
-                if (is_active)
-                {
-                    button.Background = default_on ? red : green;
-                    if (default_on) is_green = false;
-                    else is_green = true;
-                }
-                else
-                {
-                    button.Background = default_on ? green : red;
-                    if (default_on) is_green = true;
-                    else is_green = false;
-                }
+                /*
+                 * if (is_active) {
+                 *     button.Background = default_on ? red : green;
+                 *     if (default_on) is_green = false;
+                 *     else is_green = true;
+                 * } else {
+                 *     button.Background = default_on ? green : red;
+                 *     if (default_on) is_green = true;
+                 *     else is_green = false;
+                 * }
+                 */
+                /* | is_active | default_on | Background | is_green |
+                 * |-----------|------------|------------|----------|
+                 * | true      | true       | red        | false    |
+                 * | true      | false      | green      | true     |
+                 * | false     | true       | green      | true     |
+                 * | false     | false      | red        | false    |
+                 *
+                 * IE, if both conditions are true, set background to red, and 
+                 * if one is true and one is false, set background to green.
+                 * This is an xnor operation, aka if is_active == default_on
+                 * is_green is simply the result of xor(is_active, default_on)
+                 */
+                button.Background = (is_active == default_on) ? red : green;
+                is_green = is_active ^ default_on;
             }
         }
     }

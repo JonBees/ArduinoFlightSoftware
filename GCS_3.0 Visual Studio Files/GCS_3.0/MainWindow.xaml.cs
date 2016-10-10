@@ -20,14 +20,12 @@ using System.Diagnostics;
 using Microsoft.Win32;
 using System.IO;
 
-namespace GCS_3._0
-{
+namespace GCS_3._0 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
 
-    public partial class MainWindow : Window
-    {
+    public partial class MainWindow : Window {
         List<CommandButton> command_buttons;
         List<char> command_characters;
         List<Sensor> pressure_transducers, thermocouples, voltage, ammeter;
@@ -73,8 +71,7 @@ namespace GCS_3._0
         {
             string[] flags = (string[])e.Argument;
 
-            try
-            {
+            try {
                 gc_arduino.Write(flags[0]);
 
                 packet_parse.packet = gc_arduino.ReadLine().Trim();
@@ -90,6 +87,7 @@ namespace GCS_3._0
         private void exchange_communication_info(object sender, RunWorkerCompletedEventArgs e)
         {
             commandedStateBox.Text = command_flags;
+
             try {
                 recievedStateBox.Text = e.Result.ToString();
             }
@@ -98,21 +96,22 @@ namespace GCS_3._0
             /* Setting colors of buttons based on confirmed state of craft. */
             confirmed_flags = e.Result.ToString();
 
-            if (confirmed_flags != "")
-            {
+            if (confirmed_flags != "") {
                 char[] control_chars = { ' ' };
                 char[] comm_flags = command_flags.Substring(2, command_flags.Length - 3).ToCharArray();
+                
                 try {
                     control_chars = confirmed_flags.Substring(2, confirmed_flags.Length - 3).ToCharArray();
                 }
                 catch { }
+                
                 foreach (char cc in command_characters)
                 {
                     if (Array.IndexOf(control_chars, cc) == Array.IndexOf(comm_flags, cc)) {
                         command_buttons[command_characters.IndexOf(cc)].waiting = false;
                     }
-                    if (-1 != Array.IndexOf(control_chars, 'e') && !craft_abort_flag)
-                    {
+                    
+                    if (-1 != Array.IndexOf(control_chars, 'e') && !craft_abort_flag) {
                         MessageBox.Show("The craft has entered a softkill/hardkill state. FO-U, FC-U, AV5-M, and AV6-M can still be actuated if needed. Avoid sending commands which do not actuate the valves.",
                                         "Craft Status", MessageBoxButton.OK, MessageBoxImage.Stop);
                         craft_abort_flag = true;
@@ -121,12 +120,6 @@ namespace GCS_3._0
                     }
 
                     command_buttons[command_characters.IndexOf(cc)].set_confirmed_state(-1 != Array.IndexOf(control_chars, cc));
-                    /* if (-1 != Array.IndexOf(control_chars, cc)) {
-                     * command_buttons[command_characters.IndexOf(cc)].set_confirmed_state(true);
-                     * } else {
-                     * command_buttons[command_characters.IndexOf(cc)].set_confirmed_state(false);
-                     * }
-                     */
                 }
             }
 
@@ -139,9 +132,9 @@ namespace GCS_3._0
 
             /* Transmit and recieve updated data. */
             string[] flags = new string[2] { command_flags, confirmed_flags };
-            if (running) communicator.RunWorkerAsync(flags);
-            else
-            {
+            if (running) {
+                communicator.RunWorkerAsync(flags);
+            } else {
                 gc_arduino.Close();
                 communicator.Dispose();
             }
@@ -156,16 +149,15 @@ namespace GCS_3._0
 
         bool initiate_connection()
         {
-            try
-            {
+            try {
                 gc_arduino = new SerialPort();
                 gc_arduino.BaudRate = 9600;
                 gc_arduino.PortName = comPortName.Text.Trim();
                 gc_arduino.Open();
                 return true;
             }
-            catch
-            {
+            
+            catch {
                 MessageBox.Show("No device detected at " + gc_arduino.PortName.ToString() +
                                 ". Ensure proper connection and correct port name.");
                 return false;
@@ -190,11 +182,9 @@ namespace GCS_3._0
 
         private void commence_testing(object sender, RoutedEventArgs e)
         {
-            if (initiate_connection())
-            {
+            if (initiate_connection()) {
                 bool cancel = !prepare_data_file();
-                if (cancel)
-                {
+                if (cancel) {
                     gc_arduino.Close();
                     return;
                 }
@@ -203,7 +193,7 @@ namespace GCS_3._0
                 StartButton.IsEnabled = false;
                 running = true;
 
-                //Commence exchange of information.
+                /* Commence exchange of information. */
                 string[] flags = new string[2] { command_flags, confirmed_flags };
                 communicator.RunWorkerAsync(flags);
             }
@@ -299,7 +289,7 @@ namespace GCS_3._0
             command_buttons[12].continue_setup("AV6-M", false, true, command_characters[12]);
         }
 
-        //Meant to be called by the command buttons only.
+        /* Meant to be called by the command buttons only. */
         public void change_command_string(CommandButton cb, string s, bool add_char)
         {
             int index = add_char ? 2 : command_flags.IndexOf(s);
@@ -316,7 +306,9 @@ namespace GCS_3._0
 
             /* This code snippet causes the profile number to come before the 'o' character. To have it come after, 
              * this snippet can be moved to the beginning of this function. */
-            if (s.Equals("o") || s.Equals("p")) {
+            if (s.Equals("o") ||
+                s.Equals("p")) {
+                
                 if (add_char) {
                     selected_profile = Convert.ToInt32(selProf.Text.Trim());
                     change_command_string(cb, selProf.Text.Trim(), add_char);
@@ -328,7 +320,9 @@ namespace GCS_3._0
             cb.waiting = true;
 
             /*If Primary Safety is on, disable the Takeoff button. */
-            if (cb == PrimSafeButton) FullPowerButton.toggle_enabled(cb.is_active);
+            if (cb == PrimSafeButton) {
+                FullPowerButton.toggle_enabled(cb.is_active);
+            }
         }
 
         /* To be used only by the Secondary Safety button to enable/disable the Takeoff button as needed. */
@@ -359,8 +353,6 @@ namespace GCS_3._0
 
             List<double> temperatures = packet_parse.get_temperatures();
             
-            /* Don't be clever like this! Maintain readability and don't do fancy tricks to save a few lines. */
-            /* for (int i = 0; i < thermocouples.Count; i++) thermocouples[i].set_value(i < 2 ? temperatures[i + 4] : temperatures[i - 2]); */
             thermocouples[0].set_value(temperatures[4]);
             thermocouples[1].set_value(temperatures[5]);
             thermocouples[2].set_value(temperatures[0]);
@@ -375,7 +367,7 @@ namespace GCS_3._0
             UI_TCW3_E.Text = temperatures[2].ToString();
             UI_TCW4_E.Text = temperatures[3].ToString();
             
-            //Setting statuses of thermocouple indicators.
+            /* Setting statuses of thermocouple indicators. */
             foreach(Sensor s in thermocouples)
             {
                 TextBox tb = (TextBox)TCInds.Children[thermocouples.IndexOf(s)];
@@ -422,7 +414,7 @@ namespace GCS_3._0
             ServoValsTable.ItemsSource = thrust_servos;
         }
 
-        //Take user input and prepare data file.
+        /* Take user input and prepare data file. */
         bool prepare_data_file()
         {
             SaveFileDialog datalog = new SaveFileDialog();
@@ -430,14 +422,15 @@ namespace GCS_3._0
             datalog.DefaultExt = ".csv";
             datalog.Filter = "CSV File (.csv)|*.csv";
             save_data_flag = datalog.ShowDialog().HasValue;
-            if (save_data_flag)
-            {
+            
+            if (save_data_flag) {
                 data_filename = datalog.FileName;
+                
                 try {
                     File.WriteAllText(data_filename, "");
                 }
-                catch(System.IO.IOException)
-                {
+
+                catch (System.IO.IOException) { 
                     MessageBox.Show("The test file is being used by another program. Close the file and try again. Otherwise, enter a new filename.",
                                     "Data File Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return false;
@@ -445,10 +438,12 @@ namespace GCS_3._0
 
                 data_writer = File.AppendText(data_filename);
                 data_writer.Write("Time,");
+                
                 foreach (Sensor pt in pressure_transducers) { data_writer.Write(pt.name + ","); }
                 foreach (Sensor tc in thermocouples) { data_writer.Write(tc.name + ","); }
                 foreach (Sensor vol in voltage) { data_writer.Write(vol.name + ","); }
                 foreach (ServoMotor sm in thrust_servos) { data_writer.Write(sm.name + ","); }
+                
                 data_writer.Write("Recieved Command Flag");
                 data_writer.Write("\n");
             }
@@ -458,11 +453,13 @@ namespace GCS_3._0
         void record_data()
         {
             data_writer.Write(DateTime.Now.TimeOfDay.ToString() + ",");
+            
             foreach (Sensor pt in pressure_transducers) { data_writer.Write(pt.get_raw_value().ToString() + ","); }
             foreach (Sensor tc in thermocouples) { data_writer.Write(tc.get_raw_value().ToString() + ","); }
             foreach (Sensor vol in voltage) { data_writer.Write(vol.get_raw_value().ToString() + ","); }
             foreach (Sensor am in ammeter) { data_writer.Write(am.get_raw_value().ToString() + ","); }
             foreach (ServoMotor sm in thrust_servos) { data_writer.Write(sm.pwm + ","); }
+            
             data_writer.Write(confirmed_flags + "\n");
         }
     }
