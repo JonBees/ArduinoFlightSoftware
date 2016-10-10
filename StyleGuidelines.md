@@ -101,7 +101,7 @@
         baz = baz/2 + 7; /* NO! BAD! */
     ```
     
-## Conditionals<a id="conditionals"></a>
+## Conditionals and Try/Catch<a id="conditionals"></a>
 
 -  As stated above, always use brackets with conditional statements.
 
@@ -122,6 +122,32 @@
        predicate3) {
 
        return ALART;
+   }
+   ```
+-  Else If and Else goes on the same line as the closing brace for the preceding
+   condition.
+
+   ```
+   if (foo) {
+       qux(1);
+   } else if (bar) {
+       baz(2);
+   } else {
+       qux(0);
+   }
+   ```
+
+-  Catch blocks should have one empty line between the closing brace of the try
+   block.
+
+   ```
+   try {
+       something_which_can_fail();
+       return success_indicator;
+   }
+
+   catch (GenericException) {
+       return failure_indicator;
    }
    ```
 
