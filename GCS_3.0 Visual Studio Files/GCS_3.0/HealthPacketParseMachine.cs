@@ -55,12 +55,11 @@ namespace GCS_3._0
             return Convert.ToDouble(voltString);
         }
 
-        // This is a temporary dummy function until the appropriate function is written
         public double get_current()
         {
             int start_idx = packet.IndexOf('v') + 2;
             string raw_current = packet.Substring(start_idx);
-            raw_current = raw_current.Split(';')[0];
+            raw_current = raw_current.Split(',',';')[1];
 
             return Convert.ToDouble(raw_current);
         }
