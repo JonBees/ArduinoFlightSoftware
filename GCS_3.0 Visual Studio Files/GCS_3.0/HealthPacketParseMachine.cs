@@ -1,21 +1,20 @@
-﻿using System;
+﻿/* HealthPacketParseMachine.cs parses the health packet from puma, a string, into arrays of doubles for pressures,
+ * temperatures, doubles for voltage and current, an array of ints for the servos and a string for the craft's state.
+ *
+ * Sample health packet recieved from craft for reference:
+ * 3301|p:203,196,196,195,194,197,194;t:74.30,72.95,70.70,71.15,70.70,70.70;v:549,849;m:1000,1000,1000,1000;h:;s:;?102|b:-1.00
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-/* Sample health packet recieved from craft for reference:
- * 3301|p:203,196,196,195,194,197,194;t:74.30,72.95,70.70,71.15,70.70,70.70;v:549,849;m:1000,1000,1000,1000;h:;s:;?102|b:-1.00
- */
-
-namespace GCS_3._0
-{
-
-    /* TO-DO: Must add calibrations and such.
-     * TO-DO: Add current reading to health packet */
-    class HealthPacketParseMachine
-    {
+namespace GCS_3._0 {
+    /* TO-DO: Must add calibrations and such. */
+    class HealthPacketParseMachine {
         public HealthPacketParseMachine() { }
 
         public string packet { get; set; }

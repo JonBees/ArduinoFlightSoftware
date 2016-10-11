@@ -341,54 +341,54 @@
             <DataGrid AlternatingRowBackground = "LightSteelBlue" x:Name = "PTsensorTable" IsReadOnly = "True"
 					  AutoGenerateColumns = "False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header = "Pressure Sensor" Binding = "{Binding Name}" Width = "*"/>
-                    <DataGridTextColumn Header = "Value" Binding = "{Binding Value}" Width = "*">
+                    <DataGridTextColumn Header = "Pressure Sensor" Binding = "{Binding name}" Width = "*"/>
+                    <DataGridTextColumn Header = "Value" Binding = "{Binding value}" Width = "*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType = "{x:Type TextBlock}">
-                                <Setter Property = "Background" Value = "{Binding Status}"/>
+                                <Setter Property = "Background" Value = "{Binding status}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header = "Max Value" Binding = "{Binding MaxValue}" Width = "*"/>
+                    <DataGridTextColumn Header = "Max Value" Binding = "{Binding max_value}" Width = "*"/>
                 </DataGrid.Columns>
             </DataGrid>
 			
             <DataGrid AlternatingRowBackground = "{Binding Path = AlternatingRowBackground, ElementName = PTsensorTable}"
                       x:Name = "TCsensorTable" IsReadOnly = "True" AutoGenerateColumns = "False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header = "Thermocouple" Binding = "{Binding Name}" Width = "*"/>
-                    <DataGridTextColumn Header = "Value" Binding = "{Binding Value}" Width = "*">
+                    <DataGridTextColumn Header = "Thermocouple" Binding = "{Binding name}" Width = "*"/>
+                    <DataGridTextColumn Header = "Value" Binding = "{Binding value}" Width = "*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType = "{x:Type TextBlock}">
-                                <Setter Property = "Background" Value = "{Binding Status}"/>
+                                <Setter Property = "Background" Value = "{Binding status}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header = "Max Value" Binding = "{Binding MaxValue}" Width = "*"/>
+                    <DataGridTextColumn Header = "Max Value" Binding = "{Binding max_value}" Width = "*"/>
                 </DataGrid.Columns>
             </DataGrid>
 			
             <DataGrid x:Name = "VoltageSensorTable" IsReadOnly = "True" AutoGenerateColumns = "False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header = "Voltage Sensor" Binding = "{Binding Name}" Width = "*"/>
-                    <DataGridTextColumn Header = "Value" Binding = "{Binding Value}" Width = "*">
+                    <DataGridTextColumn Header = "Voltage Sensor" Binding = "{Binding name}" Width = "*"/>
+                    <DataGridTextColumn Header = "Value" Binding = "{Binding value}" Width = "*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType = "{x:Type TextBlock}">
-                                <Setter Property = "Background" Value = "{Binding Status}"/>
+                                <Setter Property = "Background" Value = "{Binding status}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header = "Max Value" Binding = "{Binding MaxValue}" Width = "*"/>
+                    <DataGridTextColumn Header = "Max Value" Binding = "{Binding max_value}" Width = "*"/>
                 </DataGrid.Columns>
             </DataGrid>
 			
             <DataGrid x:Name = "AmmeterTable" IsReadOnly = "True" AutoGenerateColumns = "False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header = "Ammeter" Binding = "{Binding Name}" Width = "*"/>
-                    <DataGridTextColumn Header = "Value" Binding = "{Binding Value}" Width = "*">
+                    <DataGridTextColumn Header = "Ammeter" Binding = "{Binding name}" Width = "*"/>
+                    <DataGridTextColumn Header = "Value" Binding = "{Binding value}" Width = "*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType = "{x:Type TextBlock}">
-                                <Setter Property = "Background" Value = "{Binding Status}"/>
+                                <Setter Property = "Background" Value = "{Binding status}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
@@ -398,8 +398,8 @@
             <DataGrid x:Name = "ServoValsTable" IsReadOnly = "True" AutoGenerateColumns = "False" 
                       AlternatingRowBackground = "{Binding Path = AlternatingRowBackground, ElementName = PTsensorTable}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header = "Servo Motor" Binding = "{Binding Name}" Width = "*"/>
-                    <DataGridTextColumn Header = "PWM Value" Binding = "{Binding PWM}" Width = "*"/>
+                    <DataGridTextColumn Header = "Servo Motor" Binding = "{Binding name}" Width = "*"/>
+                    <DataGridTextColumn Header = "PWM Value" Binding = "{Binding pwm}" Width = "*"/>
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>

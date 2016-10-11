@@ -60,7 +60,7 @@ namespace GCS_3._0
         const double OVER_CURRENT_WARNING = 30.0, OVER_CURRENT_DANGER = 40.0;
         private int subtype { get; set; }
         public string name { get; private set; }
-        public SolidColorBrush Status
+        public SolidColorBrush status
         {
             get
             {
