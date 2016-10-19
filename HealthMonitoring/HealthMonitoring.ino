@@ -1072,10 +1072,10 @@ String createHealthPacket(health_packet& data)
   outgoingPacket += String(";t:");
   //outgoingPacket += String(Serial1.available());
   for (int i = 0; i < 5; i++) {
-    outgoingPacket += String(data.temp_values[i]);
+    outgoingPacket += String((int)data.temp_values[i]);
     outgoingPacket += String(",");
   }
-  outgoingPacket += String(data.temp_values[5]);
+  outgoingPacket += String((int)data.temp_values[5]);
   outgoingPacket += String(";v:");
   outgoingPacket += String(data.voltage);
   outgoingPacket += String(",");
