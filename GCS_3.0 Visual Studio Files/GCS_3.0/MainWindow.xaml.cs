@@ -1,4 +1,5 @@
 ﻿using System;
+//using System.Math;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -343,13 +344,13 @@ namespace GCS_3._0 {
             pressure_transducers[5].set_value(pressures[0]);
             pressure_transducers[6].set_value(pressures[6]);
 
-            UI_PT1_U.Text = pressures[3].ToString();
-            UI_PT2_U.Text = pressures[4].ToString();
-            UI_PT1_M.Text = pressures[1].ToString();
-            UI_PT2_M.Text = pressures[5].ToString();
-            UI_PT3_M.Text = pressures[2].ToString();
-            UI_PT4_M.Text = pressures[0].ToString();    
-            UI_PT5_M.Text = pressures[6].ToString();
+            UI_PT1_U.Text = Math.Round(pressures[3]).ToString();
+            UI_PT2_U.Text = Math.Round(pressures[4]).ToString();
+            UI_PT1_M.Text = Math.Round(pressures[1]).ToString();
+            UI_PT2_M.Text = Math.Round(pressures[5]).ToString();
+            UI_PT3_M.Text = Math.Round(pressures[2]).ToString();
+            UI_PT4_M.Text = Math.Round(pressures[0]).ToString();
+            UI_PT5_M.Text = Math.Round(pressures[6]).ToString();
 
             List<double> temperatures = packet_parse.get_temperatures();
             
@@ -414,6 +415,13 @@ namespace GCS_3._0 {
             ServoValsTable.ItemsSource = thrust_servos;
         }
 
+        void write_data<T>(List<T> instruments, Func<T, string> info_method, string postfix)
+        {
+            foreach (dynamic s in instruments) {
+                data_writer.Write(info_method(s) + postfix);
+            }
+        }
+
         /* Take user input and prepare data file. */
         bool prepare_data_file()
         {
@@ -438,11 +446,17 @@ namespace GCS_3._0 {
 
                 data_writer = File.AppendText(data_filename);
                 data_writer.Write("Time,");
-                
-                foreach (Sensor pt in pressure_transducers) { data_writer.Write(pt.name + ","); }
-                foreach (Sensor tc in thermocouples) { data_writer.Write(tc.name + ","); }
-                foreach (Sensor vol in voltage) { data_writer.Write(vol.name + ","); }
-                foreach (ServoMotor sm in thrust_servos) { data_writer.Write(sm.name + ","); }
+
+                string postfix = ",";
+                Func<Sensor, string> info_method = instrument => instrument.name;
+                Func<ServoMotor, string> thrust_method = sm => sm.pwm;
+
+                write_data(pressure_transducers, info_method, postfix);
+                write_data(thermocouples, info_method, postfix);
+                write_data(voltage, info_method, postfix);
+                write_data(ammeter, info_method, postfix);
+                write_data(thrust_servos, thrust_method, postfix);
+
                 
                 data_writer.Write("Recieved Command Flag");
                 data_writer.Write("\n");
@@ -452,14 +466,21 @@ namespace GCS_3._0 {
 
         void record_data()
         {
+            string postfix = ",";
             data_writer.Write(DateTime.Now.TimeOfDay.ToString() + ",");
             
-            foreach (Sensor pt in pressure_transducers) { data_writer.Write(pt.get_raw_value().ToString() + ","); }
-            foreach (Sensor tc in thermocouples) { data_writer.Write(tc.get_raw_value().ToString() + ","); }
-            foreach (Sensor vol in voltage) { data_writer.Write(vol.get_raw_value().ToString() + ","); }
-            foreach (Sensor am in ammeter) { data_writer.Write(am.get_raw_value().ToString() + ","); }
-            foreach (ServoMotor sm in thrust_servos) { data_writer.Write(sm.pwm + ","); }
-            
+            Func<Sensor, string> info_method = instrument => instrument.get_raw_value_string();
+            Func<ServoMotor, string> thrust_method = sm => sm.pwm;
+
+            write_data(pressure_transducers, info_method, postfix);
+            write_data(thermocouples, info_method, postfix);
+            write_data(voltage, info_method, postfix);
+            write_data(ammeter, info_method, postfix);
+            write_data(thrust_servos, thrust_method, postfix);
+
+            foreach (ServoMotor sm in thrust_servos) {
+                data_writer.Write(sm.pwm + postfix);
+            }
             data_writer.Write(confirmed_flags + "\n");
         }
     }

@@ -196,5 +196,10 @@ namespace GCS_3._0
         {
             return raw_value;
         }
+
+        public string get_raw_value_string()
+        {
+            return raw_value.ToString();
+        }
     }
 }
