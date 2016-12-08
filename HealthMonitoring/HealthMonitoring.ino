@@ -1,24 +1,23 @@
-/*
-  Health Monitoring Sketch
-
-  Inputs:
-  Pressure Transducers - analog input pins 0 - 6
-  Thermocouple - digital pins 24,26,27,28,29,50,52
-  Power Relay - digital pins 8,10
-
-  Output:
-  Xbee Radio - Serial1
-  Micro SD Card - 52 to CLK
-                  50 to MISO
-                  51 to MOSI
-                  53 to CS
-
-  Tank-iso = 12
-  Servo Dump Valve = 11
-  Fail Closed Valve = 45
-  Fail Open Valve = 44
-
-*/
+/* 
+ *Health Monitoring Sketch
+ *
+ * Inputs:
+ * Pressure Transducers - analog input pins 0 - 6
+ * Thermocouple - digital pins 24,26,27,28,29,50,52
+ * Power Relay - digital pins 8,10
+ *
+ * Output:
+ * Xbee Radio - Serial1
+ * Micro SD Card - 52 to CLK
+ *                 50 to MISO
+ *                 51 to MOSI
+ *                 53 to CS
+ *
+ * Tank-iso = 12
+ * Servo Dump Valve = 11
+ * Fail Closed Valve = 45
+ * Fail Open Valve = 44
+ */
 #include <SPI.h>
 #include <SD.h>
 #include <SoftwareSerial.h>
@@ -62,52 +61,23 @@ static const int THERMOCOUPLE1_CHIP_SELECT = 24; /* needs to be set to LOW when 
 MAX31855 TC(THERMOCOUPLE1_CHIP_SELECT);
 static const int THERMOCOUPLE2_CHIP_SELECT = 25;
 
-//Max Pressure Values
-static const int SOFTKILL_MAX_PRESSURE[] = {
-    900, 900, 900, 10000, 900, 900, 900
-};
-static const int ABORT_MAX_PRESSURE[] = {
-    1000, 1000, 1000, 10000, 1000, 1000, 1000
-};
-static const int MAX_SOFTKILL_PRESSURE_OVERAGES[] = {
-    5, 5, 5, 5, 5, 5, 5 /* 5 corresponds to 5 cycles off. 1s */
-};
-static const int MAX_ABORT_PRESSURE_OVERAGES[] = {
-    5, 5, 5, 5, 5, 5, 5
-};
-
-int SOFTKILL_PRESSURE_OVERAGES[] = {
-    0, 0, 0, 0, 0, 0, 0
-};
-int ABORT_PRESSURE_OVERAGES[] = {
-    0, 0, 0, 0, 0, 0, 0
-};
+/* Max Pressure Values */
+static const int SOFTKILL_MAX_PRESSURE = 900;
+static const int SOFTKILL_PT1_U_MAX_PRESSURE = 10000;
+static const int ABORT_MAX_PRESSURE = 1000;
+static const int ABORT_PT1_U_MAX_PRESSURE = 10000;
+static const int MAX_PRESSURE_OVERAGES = 5;
 
 /* Max Temperature Values
  * Celsius Values
  * double SOFTKILL_MAX_TEMPERATURE[] = {
  * 65.5,1093,65.5,1093,1093,1093}; */
 /* Fahrenheit Values for TCpw-1,2,3,4, TCp-1,2 */
-static const double SOFTKILL_MAX_TEMPERATURE[] = {
-    1400, 1400, 1400, 1400, 140, 140
-};
-static const double ABORT_MAX_TEMPERATURE[] = {
-    14000, 14000, 14000, 14000, 200, 200
-};
-
-static const int MAX_SOFTKILL_TEMPERATURE_OVERAGES[] = {
-    5, 5, 5, 5, 5, 5 /* 5 corresponds to 5 readings of the thermocouples. 1s */
-};
-
-int SOFTKILL_TEMPERATURE_OVERAGES[] = {
-    0, 0, 0, 0, 0, 0
-};
-int MAX_ABORT_TEMPERATURE_OVERAGES[] = {
-    5, 5, 5, 5, 5, 5
-};
-int ABORT_TEMPERATURE_OVERAGES[] = {
-    0, 0, 0, 0, 0, 0
-};
+static const double SOFTKILL_TCpw_MAX_TEMP = 1400.0;
+static const double SOFTKILL_TCp_MAX_TEMP = 140.0;
+static const double ABORT_TCpw_MAX_TEMP = 14000;
+static const double ABORT_TCp_MAX_TEMP = 200;
+static const int MAX_TEMPERATURE_OVERAGES = 5;
 
 static const int CURRENT_SENSOR_ANALOG = 7;
 static const int VOLTAGE_SENSOR_ANALOG = 8;
@@ -213,6 +183,18 @@ void send_health_packet(String& str);
 void write_to_sdcard(String& str);
 void check_valve_status(HealthPacket& data);
 
+int G_SOFTKILL_PRESSURE_OVERAGES[] = {
+    0, 0, 0, 0, 0, 0, 0
+};
+int G_ABORT_PRESSURE_OVERAGES[] = {
+    0, 0, 0, 0, 0, 0, 0
+};
+int G_SOFTKILL_TEMPERATURE_OVERAGES[] = {
+    0, 0, 0, 0, 0, 0
+};
+int G_ABORT_TEMPERATURE_OVERAGES[] = {
+    0, 0, 0, 0, 0, 0
+};
 int G_UNDERVOLTAGES_SOFTKILL = 0;
 int G_OVERVOLTAGES_ABORT = 0;
 int G_UNDERVOLTAGES_ABORT = 0;
@@ -225,12 +207,11 @@ File G_RECORDING_FILE;
 HealthPacket G_CURRENT_HEALTH_PACKET;
 String G_LAST_STATE_STRING = "";
 
-int G_THERMO_COUNTER = 1;//we start at thermocouple 2 (zero indexed)
+int G_THERMO_COUNTER = 1; /* we start at thermocouple 2 (zero indexed) */
 
 bool G_WRITE_SUCCESS = false;
-
-boolean G_RELAY_TRIGGERED = false;
-boolean G_FC_COMMAND_SENT = false;
+bool G_RELAY_TRIGGERED = false;
+bool G_FC_COMMAND_SENT = false;
 
 long G_LAST_FLAG_READ_TIME = 0;
 long G_LAST_FC_COMM = 0;
@@ -286,8 +267,7 @@ void setup()
         Serial.println("initialization failed!");
         digitalWrite(SD_CHIP_SELECT, HIGH);
         return;
-    }
-    else {
+    } else {
         Serial.println("initialized");
     }
 
@@ -315,7 +295,6 @@ void loop()
     read_flags(); 
     G_CURRENT_TIME = millis();
 
-    /* sets all error flags to false */
     reset_error_flags(G_CURRENT_HEALTH_PACKET);
 
     /* if no read check time 1m 30 sec handshake process has failed. Turn on appropriate abort based on last health packet */
@@ -326,6 +305,7 @@ void loop()
     if(!G_CURRENT_HEALTH_PACKET.state.flight_computer_on) {
         G_LAST_FC_COMM = millis();
     }
+    
     if (G_CURRENT_HEALTH_PACKET.state.flight_computer_on && (G_CURRENT_TIME - G_LAST_FC_COMM) > 30000) {
         G_CURRENT_HEALTH_PACKET.errorflags.fc_time = true;
     }
@@ -352,7 +332,6 @@ void loop()
 
     if (G_CURRENT_HEALTH_PACKET.state.fuel_load_open && !G_CURRENT_HEALTH_PACKET.state.soft_kill) {
         G_DUMP_TIMER++;
-
         Serial2.write('b');
         G_FC_COMMAND_SENT = true;
     } else {
@@ -474,52 +453,46 @@ void check_valve_status(HealthPacket& data)
 
 void check_motors(HealthPacket& data)
 {
-    boolean failed = false;
-    boolean done = false;
-    int loop_counter_check_motor = 0;
-    const int LOOPMAX = 14;
+    const int LOOPMAX = 4; 
+    const int FAILED_VAL = 1000;
     const char ASCII_ZERO = 48;
+
+    char c = 0;
+    bool failed = false;
+    int loop_counter_check_motor = 0;
+    G_LAST_FC_COMM = millis();
     
-    if (Serial2.available()) {
-        G_LAST_FC_COMM = millis();
-        while (Serial2.available() && loop_counter_check_motor < LOOPMAX && !failed && !done) {
-            /* motors are being read */
-            loop_counter_check_motor++;
-            char c = Serial2.read();
-            if (c == 'm') {
+    while (Serial2.available() && loop_counter_check_motor < LOOPMAX && c != 'm') {
+        loop_counter_check_motor++;
+        c = Serial2.read();
+    }
+    
+    if (c == 'm' && Serial2.available() && (c = Serial2.read()) == ':') {
+        for (int i = 0; i < 4; i++) {
+            int j = 0;
+            int numbers[] = {
+                0, 0, 0, 0
+            };
+            do {
                 if (Serial2.available()) {
                     c = Serial2.read();
+                    numbers[j] = c - ASCII_ZERO;
                 }
-                if (c == ':') {
-                    int numbers[] = {
-                        0, 0, 0, 0
-                    };
-                    for (int i = 0; i < 4; i++) {
-                        for (int j = 0; j < 4; j++) {
-                            if (Serial2.available()) {
-                                c = Serial2.read();
-                                numbers[j] = c - ASCII_ZERO;
-                            }
-                            if (c == 'm') {
-                                failed = true;
-                            }
-                        }
-                        /* assign reads to four int */
-                        data.motor_values[i] = (numbers[0] * 1000) + (numbers[1] * 100) + (numbers[2] * 10) + (numbers[3]);
+                if (c == 'm') {
+                    failed = true;
+                    for (int k = 0; k < 4; k++) {
+                        data.motor_values[k] = FAILED_VAL;
                     }
-                    
-                    if (failed) {
-                        for (int i = 0; i < 4; i++) {
-                            data.motor_values[i] = 1000;
-                        }
-                    }
-                    done = true;
                 }
-            }
+                j++;
+            } while (!failed && j < 4);
+            data.motor_values[i] = numbers[0] * 1000 + numbers[1] * 100 + numbers[2] * 10 + numbers[3]; /* add the tousands/hundreds/tens/ones places */
         }
-    } else {
-        for (int i = 0; i < 4; i++) {
-            data.motor_values[i] = 1000;
+    }
+    
+    if (failed) {
+        for (int k = 0; k < 4; k++) {
+            data.motor_values[k] = FAILED_VAL;
         }
     }
 }
@@ -775,21 +748,25 @@ void read_pressure_transducers(HealthPacket& data) {
     data.pressure_values[6] = analogRead(PT5_M);
 
     for (int i = 0; i < 7; i++) {
-        if (data.pressure_values[i] > ((ABORT_MAX_PRESSURE[i] * 1.27) - 250)) {
-            ABORT_PRESSURE_OVERAGES[i]++;
+        int abort_max_pressure = ABORT_MAX_PRESSURE;
+        int softkill_max_pressure = SOFTKILL_MAX_PRESSURE;
+        if (3 == i) {
+            abort_max_pressure = ABORT_PT1_U_MAX_PRESSURE;
+            softkill_max_pressure = SOFTKILL_PT1_U_MAX_PRESSURE;
         }
-        else if (data.pressure_values[i] > ((SOFTKILL_MAX_PRESSURE[i] * 1.27) - 250)) {
-            SOFTKILL_PRESSURE_OVERAGES[i]++;
-        }
-        else {
-            SOFTKILL_PRESSURE_OVERAGES[i] = 0;
-            ABORT_PRESSURE_OVERAGES[i] = 0;
+        
+        if (data.pressure_values[i] > (abort_max_pressure * 1.27 - 250)) {
+            G_ABORT_PRESSURE_OVERAGES[i]++;
+        } else if (data.pressure_values[i] > (softkill_max_pressure * 1.27 - 250)) {
+            G_SOFTKILL_PRESSURE_OVERAGES[i]++;
+        } else {
+            G_SOFTKILL_PRESSURE_OVERAGES[i] = 0;
+            G_ABORT_PRESSURE_OVERAGES[i] = 0;
         }
 
-        if (ABORT_PRESSURE_OVERAGES[i] >= MAX_ABORT_PRESSURE_OVERAGES[i]) {
+        if (G_ABORT_PRESSURE_OVERAGES[i] >= MAX_PRESSURE_OVERAGES) {
             data.errorflags.pressure_abort = true;
-        }
-        else if (SOFTKILL_PRESSURE_OVERAGES[i] >= MAX_SOFTKILL_PRESSURE_OVERAGES[i]) {
+        } else if (G_SOFTKILL_PRESSURE_OVERAGES[i] >= MAX_PRESSURE_OVERAGES) {
             data.errorflags.pressure_softkill = true;
         }
     }
@@ -842,7 +819,7 @@ void check_current(HealthPacket& data)
     data.current = analogRead(CURRENT_SENSOR_ANALOG);
 }
 
-double readThermocouple(int index, byte& error)
+double read_thermocouple(int index, byte& error)
 {
     double result, dummy;
     /* ExternalfTempDoubleVariable, InternalTempDoubleVariable, SCALE, ErrorByteVariable) --- 
@@ -867,27 +844,33 @@ void read_thermocouples(HealthPacket& data)
     digitalWrite(THERMOCOUPLE1_CHIP_SELECT, LOW);
 
     byte dummy;
-    int thermoCounterTemp = G_THERMO_COUNTER - 1;
+    int thermo_counter_temp = G_THERMO_COUNTER - 1;
     if (G_THERMO_COUNTER == 7) {
         G_THERMO_COUNTER = 1;
-    }
-    else {
-        data.temp_values[thermoCounterTemp] = readThermocouple(G_THERMO_COUNTER, dummy);
-        if (data.temp_values[thermoCounterTemp] > ABORT_MAX_TEMPERATURE[thermoCounterTemp]) {
-            ABORT_TEMPERATURE_OVERAGES[thermoCounterTemp]++;
+    } else {
+        int abort_max_temp = ABORT_TCpw_MAX_TEMP;
+        int softkill_max_temp = SOFTKILL_TCpw_MAX_TEMP;
+        if (thermo_counter_temp > 3) {
+            abort_max_temp = ABORT_TCp_MAX_TEMP;
+            softkill_max_temp = SOFTKILL_TCp_MAX_TEMP;
         }
-        else if (data.temp_values[thermoCounterTemp] > SOFTKILL_MAX_TEMPERATURE[thermoCounterTemp]) {
-            SOFTKILL_TEMPERATURE_OVERAGES[thermoCounterTemp]++;
+        
+        data.temp_values[thermo_counter_temp] = read_thermocouple(G_THERMO_COUNTER, dummy);
+        if (data.temp_values[thermo_counter_temp] > abort_max_temp) {
+            G_ABORT_TEMPERATURE_OVERAGES[thermo_counter_temp]++;
+        }
+        else if (data.temp_values[thermo_counter_temp] > softkill_max_temp) {
+            G_SOFTKILL_TEMPERATURE_OVERAGES[thermo_counter_temp]++;
         }
         else {
-            SOFTKILL_TEMPERATURE_OVERAGES[thermoCounterTemp] = 0;
-            ABORT_TEMPERATURE_OVERAGES[thermoCounterTemp] = 0;
+            G_SOFTKILL_TEMPERATURE_OVERAGES[thermo_counter_temp] = 0;
+            G_ABORT_TEMPERATURE_OVERAGES[thermo_counter_temp] = 0;
         }
         for (int i = 0; i < 6; i++) {
-            if (ABORT_TEMPERATURE_OVERAGES[i] >= MAX_ABORT_TEMPERATURE_OVERAGES[i]) {
+            if (G_ABORT_TEMPERATURE_OVERAGES[i] >= MAX_TEMPERATURE_OVERAGES) {
                 data.errorflags.temperature_abort = true;
             }
-            else if (SOFTKILL_TEMPERATURE_OVERAGES[i] >= MAX_SOFTKILL_TEMPERATURE_OVERAGES[i]) {
+            else if (G_SOFTKILL_TEMPERATURE_OVERAGES[i] >= MAX_TEMPERATURE_OVERAGES) {
                 data.errorflags.temperature_softkill = true;
                 if (i >= 4) {
                     data.state.FO_U_dump = true;
