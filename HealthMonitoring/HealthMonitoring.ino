@@ -169,10 +169,14 @@ struct HealthPacket {
 
 void check_motors(HealthPacket& data);
 String create_health_packet(HealthPacket& data);
+void evaluate_error_flag(bool cond, char killtype, char flag, String message, char state_string_id);
 void error_flags_evaluation(HealthPacket& data);
-void add_flag_to_string(HealthPacket& data);
+void add_flag_to_string(HealthPacket& data, char flag);
 void state_function_evaluation(HealthPacket& data);
 void reset_state();
+void read_flags();
+void check_voltage(HealthPacket& data);
+void set_flight_profile(HealthPacket& data);
 void state_evaluation(HealthPacket& data);
 void reset_error_flags(HealthPacket& data);
 void read_pressure_transducers(HealthPacket& data);
@@ -497,73 +501,40 @@ void check_motors(HealthPacket& data)
     }
 }
 
+void evaluate_error_flag(bool cond, char killtype, char flag, String message, char state_string_id)
+{
+    if (cond) {
+        add_flag_to_string(G_CURRENT_HEALTH_PACKET, flag);
+        switch (killtype) {
+        case 's':
+            G_CURRENT_HEALTH_PACKET.state.soft_kill = true;
+            break;
+        case 'a':
+            G_CURRENT_HEALTH_PACKET.state.abort = true;
+            break;
+        }
+                
+        Serial.println(message);
+        if (G_CURRENT_HEALTH_PACKET.state_string.indexOf(state_string_id) == -1) {
+            G_CURRENT_HEALTH_PACKET.state_string += String(state_string_id);
+        }
+    }
+}
+
 void error_flags_evaluation(HealthPacket& data)
 {
-    if (G_CURRENT_HEALTH_PACKET.errorflags.temperature_softkill) {
-        add_flag_to_string(G_CURRENT_HEALTH_PACKET, 'u');
-        data.state.soft_kill = true;
-        Serial.println(" Temperature Softkill ");
-        if (data.state_string.indexOf('k') == -1) {
-            data.state_string += String('k');
-        }
-    }
-    if (G_CURRENT_HEALTH_PACKET.errorflags.temperature_abort) {
-        add_flag_to_string(G_CURRENT_HEALTH_PACKET, 'u');
-        data.state.abort = true;
-        Serial.println(" Temperature Abort ");
-        if (data.state_string.indexOf('a') == -1) {
-            data.state_string += String('a');
-        }
-    }
-    if (G_CURRENT_HEALTH_PACKET.errorflags.pressure_softkill) {
-        add_flag_to_string(G_CURRENT_HEALTH_PACKET, 'n');
-        data.state.soft_kill = true;
-        Serial.println(" Pressure Softkill ");
-        if (data.state_string.indexOf('k') == -1) {
-            data.state_string += String('k');
-        }
-    }
-    if (G_CURRENT_HEALTH_PACKET.errorflags.pressure_abort) {
-        add_flag_to_string(G_CURRENT_HEALTH_PACKET, 'n');
-        data.state.abort = true;
-        Serial.println(" Pressure Abort ");
-        if (data.state_string.indexOf('a') == -1) {
-            data.state_string += String('a');
-        }
-    }
-    if (G_CURRENT_HEALTH_PACKET.errorflags.voltage_abort) {
-        add_flag_to_string(G_CURRENT_HEALTH_PACKET, 'g');
-        data.state.abort = true;
-        Serial.println(" Voltage Abort ");
-        if (data.state_string.indexOf('a') == -1) {
-            data.state_string += String('a');
-        }
-    }
-    if (G_CURRENT_HEALTH_PACKET.errorflags.voltage_softkill) {
-        add_flag_to_string(G_CURRENT_HEALTH_PACKET, 'g');
-        data.state.soft_kill = true;
-        Serial.println(" Voltage Softkill ");
-        if (data.state_string.indexOf('k') == -1) {
-            data.state_string += String('k');
-        }
-    }
-    if (G_CURRENT_HEALTH_PACKET.errorflags.time) {
-        add_flag_to_string(G_CURRENT_HEALTH_PACKET, 'x');
-        //timeout abort
-        data.state.abort = true;
-        Serial.println(" Time Abort ");
-        if (data.state_string.indexOf('a') == -1) {
-            data.state_string += String('a');
-        }
-    }
-    if(G_CURRENT_HEALTH_PACKET.errorflags.fc_time){
-        add_flag_to_string(G_CURRENT_HEALTH_PACKET, 'q');
-        data.state.abort = true;
-        Serial.println(" Arduino Communication Abort");
-        if (data.state_string.indexOf('a') == -1) {
-            data.state_string += String('a');
-        }
-    }
+    evaluate_error_flag(G_CURRENT_HEALTH_PACKET.errorflags.temperature_softkill, 's', 'u', " Temperature Softkill ", 'k');
+    evaluate_error_flag(G_CURRENT_HEALTH_PACKET.errorflags.temperature_abort, 'a', 'u', "Temperature Abort ", 'a');
+
+    evaluate_error_flag(G_CURRENT_HEALTH_PACKET.errorflags.pressure_softkill, 's', 'n', "Pressure Softkill ", 'k');
+    evaluate_error_flag(G_CURRENT_HEALTH_PACKET.errorflags.pressure_abort, 'a', 'n', " Pressure Abort ", 'a');
+
+    evaluate_error_flag(G_CURRENT_HEALTH_PACKET.errorflags.voltage_abort, 'a', 'g', " Voltage Abort ", 'a');
+    evaluate_error_flag(G_CURRENT_HEALTH_PACKET.errorflags.voltage_softkill, 's', 'g', " Voltage Softkill ", 'k');
+
+    evaluate_error_flag(G_CURRENT_HEALTH_PACKET.errorflags.time, 'a', 'x', " Time Abort ", 'a');
+    evaluate_error_flag(G_CURRENT_HEALTH_PACKET.errorflags.fc_time, 'a', 'q', " Arduino Communication Abort ", 'a');
+    
     if(G_CURRENT_HEALTH_PACKET.errorflags.power){
         add_flag_to_string(G_CURRENT_HEALTH_PACKET, 'j');
         Serial.println(" Power Error ");
@@ -1014,48 +985,48 @@ void read_flags()
     while (!packet_received && (time >= time_eval)) {
         time_eval = millis();
         char check;
-        
+
         if (Serial1.available()) {
             check = Serial1.read();
         }
-        
-        if (check == 'h') {
-            check = Serial1.read();
-            if (check == ':') {
-                String incoming_health_packet = "";
-                while (check != ';' && Serial1.available() && (time >= time_eval)  && !((G_LOOP_START_TIME - G_LOOP_END_TIME) > G_LOOP_LENGTH)) {
-                    time_eval = millis();
-                    check = Serial1.read();
-                    if (check != ';') {
-                        incoming_health_packet += check;
-                    }
-                }
-                String checksum = "";
-                while (check != '|' &&
-                       (time >= time_eval) &&
-                       !((G_LOOP_START_TIME - G_LOOP_END_TIME) > G_LOOP_LENGTH)) {
 
-                    time_eval = millis();
-                    
-                    if (Serial1.available()) {
-                        check = Serial1.read();
-                        if (check != '|') {
-                            checksum += check;
-                        }
-                    }
-                }
+        if (check != 'h' || (Serial.read()) != ':') {
+            continue;
+        }
+
+        String incoming_health_packet = "";
+        while (check != ';' && Serial1.available() && (time >= time_eval)  && !((G_LOOP_START_TIME - G_LOOP_END_TIME) > G_LOOP_LENGTH)) {
+            time_eval = millis();
+            check = Serial1.read();
+            if (check != ';') {
+                incoming_health_packet += check;
+            }
+        }
+        
+        String checksum = "";
+        while (check != '|' &&
+               (time >= time_eval) &&
+               !((G_LOOP_START_TIME - G_LOOP_END_TIME) > G_LOOP_LENGTH)) {
                 
-                int checksum_int = checksum.toInt();
-                if (checksum_int == incoming_health_packet.length()) {
-                    G_CURRENT_HEALTH_PACKET.state_string = incoming_health_packet;
-                    G_LAST_FLAG_READ_TIME = millis();
-                    packet_received = true;
-                }
-                while (Serial1.available() && (time >= time_eval) && !((G_LOOP_START_TIME - G_LOOP_END_TIME) > G_LOOP_LENGTH)) {
-                    Serial1.read();
-                    time_eval = millis();
+            time_eval = millis();
+            
+            if (Serial1.available()) {
+                check = Serial1.read();
+                if (check != '|') {
+                    checksum += check;
                 }
             }
+        }
+                
+        int checksum_int = checksum.toInt();
+        if (checksum_int == incoming_health_packet.length()) {
+            G_CURRENT_HEALTH_PACKET.state_string = incoming_health_packet;
+            G_LAST_FLAG_READ_TIME = millis();
+            packet_received = true;
+        }
+        while (Serial1.available() && (time >= time_eval) && !((G_LOOP_START_TIME - G_LOOP_END_TIME) > G_LOOP_LENGTH)) {
+            Serial1.read();
+            time_eval = millis();
         }
     }
 }
