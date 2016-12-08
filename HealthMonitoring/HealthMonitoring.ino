@@ -453,7 +453,7 @@ void check_valve_status(HealthPacket& data)
 
 void check_motors(HealthPacket& data)
 {
-    const int LOOPMAX = 4; 
+    const int LOOPMAX = 14; 
     const int FAILED_VAL = 1000;
     const char ASCII_ZERO = 48;
 
