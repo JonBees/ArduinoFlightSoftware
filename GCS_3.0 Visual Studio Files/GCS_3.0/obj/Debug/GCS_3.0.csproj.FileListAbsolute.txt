@@ -18,3 +18,30 @@ C:\Users\Vikas\documents\visual studio 2015\Projects\GCS_3.0\GCS_3.0\obj\Debug\C
 C:\Users\Vikas\documents\visual studio 2015\Projects\GCS_3.0\GCS_3.0\obj\Debug\CommandButton.baml
 C:\Users\Vikas\documents\visual studio 2015\Projects\GCS_3.0\GCS_3.0\obj\Debug\SecSafetyButton.g.cs
 C:\Users\Vikas\documents\visual studio 2015\Projects\GCS_3.0\GCS_3.0\obj\Debug\SecSafetyButton.baml
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\GCS_3.0.exe.config
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0.exe
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0.pdb
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\GCS_3.0.exe
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\GCS_3.0.pdb
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0.csprojResolveAssemblyReference.cache
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\CommandButton.g.cs
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\MainWindow.g.cs
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\SecSafetyButton.g.cs
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\App.g.cs
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0_MarkupCompile.cache
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0_MarkupCompile.lref
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\App.baml
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\CommandButton.baml
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\MainWindow.baml
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\SecSafetyButton.baml
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0.g.resources
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3._0.Properties.Resources.resources
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0.csproj.GenerateResource.Cache
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\DynamicDataDisplay.dll
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\DynamicDataDisplay.Maps.dll
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\DynamicDataDisplay.Markers.dll
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\DynamicDataDisplay.Markers2.dll
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\Parser.dll
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\Monitor.baml
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\Monitor.g.cs
