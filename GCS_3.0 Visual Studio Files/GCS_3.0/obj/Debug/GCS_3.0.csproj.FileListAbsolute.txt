@@ -38,3 +38,10 @@ C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio 
 C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0.g.resources
 C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3._0.Properties.Resources.resources
 C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0.csproj.GenerateResource.Cache
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\DynamicDataDisplay.dll
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\DynamicDataDisplay.Maps.dll
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\DynamicDataDisplay.Markers.dll
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\DynamicDataDisplay.Markers2.dll
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\Parser.dll
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\Monitor.baml
+C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\Monitor.g.cs

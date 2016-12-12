@@ -27,6 +27,7 @@ namespace GCS_3._0 {
     /// </summary>
 
     public partial class MainWindow : Window {
+        Monitor graph_monitor;
         List<CommandButton> command_buttons;
         List<char> command_characters;
         List<Sensor> pressure_transducers, thermocouples, voltage, ammeter;
@@ -57,6 +58,7 @@ namespace GCS_3._0 {
             craft_abort_flag = false;
 
             InitializeComponent();
+            refreshPorts();
 
             command_buttons = new List<CommandButton>() {
                 PrimSafeButton, FullPowerButton, TakeoffButton, SimButton, ResetButton, SoftkillButton,
@@ -153,7 +155,7 @@ namespace GCS_3._0 {
             try {
                 gc_arduino = new SerialPort();
                 gc_arduino.BaudRate = 9600;
-                gc_arduino.PortName = comPortName.Text.Trim();
+                gc_arduino.PortName = COMlist.SelectedItem.ToString();
                 gc_arduino.Open();
                 return true;
             }
@@ -197,6 +199,8 @@ namespace GCS_3._0 {
                 /* Commence exchange of information. */
                 string[] flags = new string[2] { command_flags, confirmed_flags };
                 communicator.RunWorkerAsync(flags);
+                graph_monitor = new Monitor();
+                graph_monitor.Show();
             }
         }
 
@@ -326,6 +330,23 @@ namespace GCS_3._0 {
             }
         }
 
+        private void refreshComList_Click(object sender, RoutedEventArgs e)
+        {
+            refreshPorts();
+        }
+        private void refreshPorts()
+        {
+            for (int i = 0; i < COMlist.Items.Count; i++)
+            {
+                COMlist.Items.RemoveAt(i);
+            }
+            string[] ports = SerialPort.GetPortNames();
+            foreach (string port in ports)
+            {
+                COMlist.Items.Add(port.ToString());
+            }
+        }
+
         /* To be used only by the Secondary Safety button to enable/disable the Takeoff button as needed. */
         public void toggle_takeoff_enabled(bool b)
         {
@@ -343,6 +364,7 @@ namespace GCS_3._0 {
             pressure_transducers[4].set_value(pressures[2]);
             pressure_transducers[5].set_value(pressures[0]);
             pressure_transducers[6].set_value(pressures[6]);
+            graph_monitor.updatePressures(pressures);
 
             UI_PT1_U.Text = Math.Round(pressures[3]).ToString();
             UI_PT2_U.Text = Math.Round(pressures[4]).ToString();
@@ -360,6 +382,7 @@ namespace GCS_3._0 {
             thermocouples[3].set_value(temperatures[1]);
             thermocouples[4].set_value(temperatures[2]);
             thermocouples[5].set_value(temperatures[3]);
+            graph_monitor.updateTemperatures(temperatures); //Set voltage on graph
 
             UI_TCP1_M.Text = temperatures[4].ToString();
             UI_TCP2_M.Text = temperatures[5].ToString();
@@ -386,9 +409,11 @@ namespace GCS_3._0 {
                         break;
                 }
             }
-
+            
             voltage[0].set_value(packet_parse.get_voltage());
             ammeter[0].set_value(packet_parse.get_current());
+            graph_monitor.updateVoltage(voltage[0].get_raw_value()); //Set voltage on graph
+            graph_monitor.updateCurrent(ammeter[0].get_raw_value()); //Set current on graph
             
             /* Refresh datagrid and textblocks */
             
@@ -410,7 +435,7 @@ namespace GCS_3._0 {
             for(int i = 0; i < serv_vals.Count; i++) {
                 thrust_servos[i].set_value(serv_vals[i]);
             }
-
+            graph_monitor.updateMotors(serv_vals);
             ServoValsTable.ItemsSource = null;
             ServoValsTable.ItemsSource = thrust_servos;
         }
