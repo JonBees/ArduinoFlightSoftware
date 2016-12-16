@@ -45,3 +45,30 @@ C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio 
 C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\Parser.dll
 C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\Monitor.baml
 C:\Users\ajp57\Documents\Lunar Lion\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\Monitor.g.cs
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\GCS_3.0.exe.config
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0.exe
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0.pdb
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\GCS_3.0.exe
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\GCS_3.0.pdb
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\DynamicDataDisplay.dll
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\DynamicDataDisplay.Maps.dll
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\DynamicDataDisplay.Markers.dll
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\DynamicDataDisplay.Markers2.dll
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\bin\Debug\Parser.dll
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0.csprojResolveAssemblyReference.cache
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\Monitor.baml
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\CommandButton.g.cs
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\MainWindow.g.cs
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\Monitor.g.cs
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\SecSafetyButton.g.cs
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\App.g.cs
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0_MarkupCompile.cache
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0_MarkupCompile.lref
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\App.baml
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\CommandButton.baml
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\MainWindow.baml
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\SecSafetyButton.baml
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0.g.resources
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3._0.Properties.Resources.resources
+C:\Users\Vikas\Documents\GitHub\ArduinoFlightSoftware\GCS_3.0 Visual Studio Files\GCS_3.0\obj\Debug\GCS_3.0.csproj.GenerateResource.Cache

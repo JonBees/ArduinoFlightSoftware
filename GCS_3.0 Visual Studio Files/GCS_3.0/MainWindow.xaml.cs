@@ -407,6 +407,9 @@ namespace GCS_3._0 {
                     case -3:
                         tb.Background = Brushes.SpringGreen;
                         break;
+                    default:
+                        tb.Background = Brushes.White;
+                        break;
                 }
             }
             
