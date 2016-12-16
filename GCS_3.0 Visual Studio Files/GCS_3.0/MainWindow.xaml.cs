@@ -334,15 +334,14 @@ namespace GCS_3._0 {
         {
             refreshPorts();
         }
+        
         private void refreshPorts()
         {
-            for (int i = 0; i < COMlist.Items.Count; i++)
-            {
+            for (int i = 0; i < COMlist.Items.Count; i++) {
                 COMlist.Items.RemoveAt(i);
             }
             string[] ports = SerialPort.GetPortNames();
-            foreach (string port in ports)
-            {
+            foreach (string port in ports) {
                 COMlist.Items.Add(port.ToString());
             }
         }
@@ -364,6 +363,8 @@ namespace GCS_3._0 {
             pressure_transducers[4].set_value(pressures[2]);
             pressure_transducers[5].set_value(pressures[0]);
             pressure_transducers[6].set_value(pressures[6]);
+
+            /* Set pressures on graph */
             graph_monitor.updatePressures(pressures);
 
             UI_PT1_U.Text = Math.Round(pressures[3]).ToString();
@@ -382,7 +383,9 @@ namespace GCS_3._0 {
             thermocouples[3].set_value(temperatures[1]);
             thermocouples[4].set_value(temperatures[2]);
             thermocouples[5].set_value(temperatures[3]);
-            graph_monitor.updateTemperatures(temperatures); //Set voltage on graph
+
+            /* Set temperatures on graph */
+            graph_monitor.updateTemperatures(temperatures); 
 
             UI_TCP1_M.Text = temperatures[4].ToString();
             UI_TCP2_M.Text = temperatures[5].ToString();
@@ -415,8 +418,11 @@ namespace GCS_3._0 {
             
             voltage[0].set_value(packet_parse.get_voltage());
             ammeter[0].set_value(packet_parse.get_current());
-            graph_monitor.updateVoltage(voltage[0].get_raw_value()); //Set voltage on graph
-            graph_monitor.updateCurrent(ammeter[0].get_raw_value()); //Set current on graph
+
+            /* Set voltage on graph */
+            graph_monitor.updateVoltage(voltage[0].get_raw_value());
+            /* Set current on graph */ 
+            graph_monitor.updateCurrent(ammeter[0].get_raw_value()); 
             
             /* Refresh datagrid and textblocks */
             

@@ -184,12 +184,16 @@ namespace GCS_3._0
             }
         }
 
-        //Put calibrations here with switch statement for each type of sensor.
+        /* Put calibrations in either of the set_value methods. */
         public void set_value(double val)
         {
-            raw_value = (multi * val) + off;
+            if (type == (int)Instrumentation.TRANSDUCER) {
+                raw_value = Math.Round((multi * val) + off);
+            } else {
+                raw_value = (multi * val) + off;
+            }
 
-            if(raw_value > max_raw_value) max_raw_value = raw_value;
+            if (raw_value > max_raw_value) max_raw_value = raw_value;
         }
 
         public double get_raw_value()
