@@ -477,7 +477,7 @@ namespace GCS_3._0 {
 
                 string postfix = ",";
                 Func<Sensor, string> info_method = instrument => instrument.name;
-                Func<ServoMotor, string> thrust_method = sm => sm.pwm;
+                Func<ServoMotor, string> thrust_method = sm => sm.name;
 
                 write_data(pressure_transducers, info_method, postfix);
                 write_data(thermocouples, info_method, postfix);
@@ -506,9 +506,6 @@ namespace GCS_3._0 {
             write_data(ammeter, info_method, postfix);
             write_data(thrust_servos, thrust_method, postfix);
 
-            foreach (ServoMotor sm in thrust_servos) {
-                data_writer.Write(sm.pwm + postfix);
-            }
             data_writer.Write(confirmed_flags + "\n");
         }
     }
