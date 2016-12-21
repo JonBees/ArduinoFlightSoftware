@@ -35,10 +35,10 @@ static const int FC_U = 45;
 static const int FO_U = 44;
 static const int FC2 = 42;
 static const int FC3 = 43;
-static const int POWERBOX_FAN_DIGITAL = 7;
 
 static const int SD_CHIP_SELECT = 53; /* needs to be set to LOW when the SD card is being used and HIGH otherwise. */
 static const int POWER_RELAY_DIGITAL = 8;
+static const int POWER_ERROR_DIGITAL = 40;
 
 static const int PT4_M = 0;
 static const int PT1_M = 1;
@@ -48,19 +48,6 @@ static const int PT2_U = 4;
 static const int PT2_M = 5;
 static const int PT5_M = 6;
 
-/* other sensors */
-static const int SENSOR9_ANALOG = 9;
-static const int SENSOR8_ANALOG = 10;
-static const int SENSOR11_ANALOG = 11;
-static const int SENSOR10_ANALOG = 12;
-
-static const int POWER_ERROR_DIGITAL = 40;
-
-/* thermocouple */
-static const int THERMOCOUPLE1_CHIP_SELECT = 24; /* needs to be set to LOW when the Thermocouple shield is being used and HIGH otherwise. */
-MAX31855 TC(THERMOCOUPLE1_CHIP_SELECT);
-static const int THERMOCOUPLE2_CHIP_SELECT = 25;
-
 /* Max Pressure Values */
 static const int SOFTKILL_MAX_PRESSURE = 900;
 static const int SOFTKILL_PT1_U_MAX_PRESSURE = 10000;
@@ -68,11 +55,12 @@ static const int ABORT_MAX_PRESSURE = 1000;
 static const int ABORT_PT1_U_MAX_PRESSURE = 10000;
 static const int MAX_PRESSURE_OVERAGES = 5;
 
-/* Max Temperature Values
- * Celsius Values
- * double SOFTKILL_MAX_TEMPERATURE[] = {
- * 65.5,1093,65.5,1093,1093,1093}; */
-/* Fahrenheit Values for TCpw-1,2,3,4, TCp-1,2 */
+/* thermocouple */
+static const int THERMOCOUPLE1_CHIP_SELECT = 24; /* needs to be set to LOW when the Thermocouple shield is being used and HIGH otherwise. */
+MAX31855 TC(THERMOCOUPLE1_CHIP_SELECT);
+static const int THERMOCOUPLE2_CHIP_SELECT = 25;
+
+/* Max Temperature Values in Fahrenheit for TCpw-1,2,3,4, TCp-1,2 */
 static const double SOFTKILL_TCpw_MAX_TEMP = 1400.0;
 static const double SOFTKILL_TCp_MAX_TEMP = 140.0;
 static const double ABORT_TCpw_MAX_TEMP = 14000;
@@ -176,6 +164,7 @@ void state_function_evaluation(HealthPacket& data);
 void reset_state();
 void read_flags();
 void check_voltage(HealthPacket& data);
+void flight_profile_writer(char c);
 void set_flight_profile(HealthPacket& data);
 void state_evaluation(HealthPacket& data);
 void reset_error_flags(HealthPacket& data);
@@ -323,9 +312,7 @@ void loop()
     check_voltage(G_CURRENT_HEALTH_PACKET);
     check_current(G_CURRENT_HEALTH_PACKET);
     
-    /* checks for soft/hardkills, adds an error flag to the statestring if any are enabled */
     error_flags_evaluation(G_CURRENT_HEALTH_PACKET);
-    
     check_motors(G_CURRENT_HEALTH_PACKET);
 
     if (!G_CURRENT_HEALTH_PACKET.state_string.equals(G_LAST_STATE_STRING)) {
@@ -341,30 +328,32 @@ void loop()
     } else {
         G_DUMP_TIMER = 0;
     }
-    
-    if (G_DUMP_TIMER > 0) {
-        if (G_DUMP_TIMER == 1) {
-            G_CURRENT_HEALTH_PACKET.state.AV5_M_open = true;
-            if (G_CURRENT_HEALTH_PACKET.state_string.indexOf('t') == -1) {
-                G_CURRENT_HEALTH_PACKET.state_string += String('t');
-            }
+
+    switch (G_DUMP_TIMER) {
+    case 1:
+        G_CURRENT_HEALTH_PACKET.state.AV5_M_open = true;
+        if (G_CURRENT_HEALTH_PACKET.state_string.indexOf('t') == -1) {
+            G_CURRENT_HEALTH_PACKET.state_string += String('t');
         }
-        if (G_DUMP_TIMER == 7) {
-            G_CURRENT_HEALTH_PACKET.state.AV6_M_open = false;
-            if (G_CURRENT_HEALTH_PACKET.state_string.indexOf('v') != -1) {
-                G_CURRENT_HEALTH_PACKET.state_string.remove(G_CURRENT_HEALTH_PACKET.state_string.indexOf('v'), 1);
-            }
+        break;
+    case 7:
+        G_CURRENT_HEALTH_PACKET.state.AV6_M_open = false;
+        if (G_CURRENT_HEALTH_PACKET.state_string.indexOf('v') != -1) {
+            G_CURRENT_HEALTH_PACKET.state_string.remove(G_CURRENT_HEALTH_PACKET.state_string.indexOf('v'), 1);
         }
-        if (G_DUMP_TIMER == 13) {
-            G_CURRENT_HEALTH_PACKET.state.FO_U_dump = false;
-            if (G_CURRENT_HEALTH_PACKET.state_string.indexOf('d') == -1) {
-                G_CURRENT_HEALTH_PACKET.state_string += String('d');
-            }
-            G_CURRENT_HEALTH_PACKET.state.FC_U_open = true;
-            if (G_CURRENT_HEALTH_PACKET.state_string.indexOf('i') == -1) {
-                G_CURRENT_HEALTH_PACKET.state_string += String('i');
-            }
+        break;
+    case 13:
+        G_CURRENT_HEALTH_PACKET.state.FO_U_dump = false;
+        if (G_CURRENT_HEALTH_PACKET.state_string.indexOf('d') == -1) {
+            G_CURRENT_HEALTH_PACKET.state_string += String('d');
         }
+        G_CURRENT_HEALTH_PACKET.state.FC_U_open = true;
+        if (G_CURRENT_HEALTH_PACKET.state_string.indexOf('i') == -1) {
+            G_CURRENT_HEALTH_PACKET.state_string += String('i');
+        }
+        break;
+    default:
+        break;
     }
 
     /* if abort, change valve states */
@@ -374,21 +363,24 @@ void loop()
         }
     
         G_CURRENT_HEALTH_PACKET.state.AV5_M_open = true;
-    
-        if (G_CURRENT_HEALTH_PACKET.state_string.indexOf('t') != -1) {
-            G_CURRENT_HEALTH_PACKET.state_string.remove(G_CURRENT_HEALTH_PACKET.state_string.indexOf('t'), 1);
+
+        int t_index = G_CURRENT_HEALTH_PACKET.state_string.indexOf('t');
+        if (t_index != -1) {
+            G_CURRENT_HEALTH_PACKET.state_string.remove(t_index, 1);
         }
     
         G_CURRENT_HEALTH_PACKET.state.FO_U_dump = true;
-    
-        if (G_CURRENT_HEALTH_PACKET.state_string.indexOf('d') != -1) {
-            G_CURRENT_HEALTH_PACKET.state_string.remove(G_CURRENT_HEALTH_PACKET.state_string.indexOf('d'), 1);
+
+        int d_index = G_CURRENT_HEALTH_PACKET.state_string.indexOf('d');
+        if (d_index != -1) {
+            G_CURRENT_HEALTH_PACKET.state_string.remove(d_index, 1);
         }
     
         G_CURRENT_HEALTH_PACKET.state.FC_U_open = false;
-    
-        if (G_CURRENT_HEALTH_PACKET.state_string.indexOf('i') != -1) {
-            G_CURRENT_HEALTH_PACKET.state_string.remove(G_CURRENT_HEALTH_PACKET.state_string.indexOf('i'), 1);
+
+        int i_index = G_CURRENT_HEALTH_PACKET.state_string.indexOf('i');
+        if (i_index != -1) {
+            G_CURRENT_HEALTH_PACKET.state_string.remove(i_index, 1);
         }
 
         Serial2.write('a');
@@ -396,11 +388,9 @@ void loop()
     
     } else if(G_CURRENT_HEALTH_PACKET.state.soft_kill) {
         Serial.println(" Softkill ");
-
         if (G_CURRENT_HEALTH_PACKET.state_string.indexOf('k') == -1) {
             G_CURRENT_HEALTH_PACKET.state_string += String('k');
         }
-
         Serial2.write('k');
         G_FC_COMMAND_SENT = true;
     }
@@ -505,13 +495,10 @@ void evaluate_error_flag(bool cond, char killtype, char flag, String message, ch
 {
     if (cond) {
         add_flag_to_string(G_CURRENT_HEALTH_PACKET, flag);
-        switch (killtype) {
-        case 's':
+        if ('s' == killtype) {
             G_CURRENT_HEALTH_PACKET.state.soft_kill = true;
-            break;
-        case 'a':
+        } else if ('a' == killtype) {
             G_CURRENT_HEALTH_PACKET.state.abort = true;
-            break;
         }
                 
         Serial.println(message);
@@ -581,7 +568,6 @@ void state_function_evaluation(HealthPacket& data)
         G_FC_COMMAND_SENT = true;
         data.state_activated.take_off = data.state.take_off;
     }
-
     /* Flight computer state adjustments */
     if (data.state.flight_computer_reset && !data.state_activated.abort && !data.state_activated.safety) {
         /* On change, will reset computer */
@@ -840,8 +826,7 @@ void read_thermocouples(HealthPacket& data)
         for (int i = 0; i < 6; i++) {
             if (G_ABORT_TEMPERATURE_OVERAGES[i] >= MAX_TEMPERATURE_OVERAGES) {
                 data.errorflags.temperature_abort = true;
-            }
-            else if (G_SOFTKILL_TEMPERATURE_OVERAGES[i] >= MAX_TEMPERATURE_OVERAGES) {
+            } else if (G_SOFTKILL_TEMPERATURE_OVERAGES[i] >= MAX_TEMPERATURE_OVERAGES) {
                 data.errorflags.temperature_softkill = true;
                 if (i >= 4) {
                     data.state.FO_U_dump = true;
@@ -860,7 +845,7 @@ void read_thermocouples(HealthPacket& data)
     }
     
     TC.setMUX(G_THERMO_COUNTER);
-    digitalWrite(THERMOCOUPLE1_CHIP_SELECT, HIGH);//disables connection from TC board
+    digitalWrite(THERMOCOUPLE1_CHIP_SELECT, HIGH); /* disables connection from TC board */
 }
 
 void flip_relay()
@@ -870,48 +855,35 @@ void flip_relay()
     digitalWrite(POWER_RELAY_DIGITAL, LOW);
 }
 
+void flight_profile_writer(char profile)
+{
+    Serial2.write(profile);
+    Serial.println(String(profile));
+    G_FC_COMMAND_SENT = true;
+}
+
 void set_flight_profile(HealthPacket& data)
 {
     if (data.state.fp_0) {
-        Serial2.write('0');
-        Serial.println("0");
-        G_FC_COMMAND_SENT = true;
+        flight_profile_writer('0');
     } else if (data.state.fp_1) {
-        Serial2.write('1');
-        Serial.println("1");
-        G_FC_COMMAND_SENT = true;
+        flight_profile_writer('1');
     } else if (data.state.fp_2) {
-        Serial2.write('2');
-        Serial.println("2");
-        G_FC_COMMAND_SENT = true;
+        flight_profile_writer('2');
     } else if (data.state.fp_3) {
-        Serial2.write('3');
-        Serial.println("3");
-        G_FC_COMMAND_SENT = true;
+        flight_profile_writer('3');
     } else if (data.state.fp_4) {
-        Serial2.write('4');
-        Serial.println("4");
-        G_FC_COMMAND_SENT = true;
+        flight_profile_writer('4');
     } else if (data.state.fp_5) {
-        Serial2.write('5');
-        Serial.println("5");
-        G_FC_COMMAND_SENT = true;
+        flight_profile_writer('5');
     } else if (data.state.fp_6) {
-        Serial2.write('6');
-        Serial.println("6");
-        G_FC_COMMAND_SENT = true;
+        flight_profile_writer('6');
     } else if (data.state.fp_7) {
-        Serial2.write('7');
-        Serial.println("7");
-        G_FC_COMMAND_SENT = true;
+        flight_profile_writer('7');
     } else if (data.state.fp_8) {
-        Serial2.write('8');
-        Serial.println("8");
-        G_FC_COMMAND_SENT = true;
+        flight_profile_writer('8');
     } else if (data.state.fp_9) {
-        Serial2.write('9');
-        Serial.println("9");
-        G_FC_COMMAND_SENT = true;
+        flight_profile_writer('9');
     }
 }
 
